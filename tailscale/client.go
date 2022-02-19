@@ -386,6 +386,19 @@ func (c *Client) AuthorizeDevice(ctx context.Context, deviceID string) error {
 	return c.performRequest(req, nil)
 }
 
+// DeleteDevice deletes the device given its deviceID.
+func (c *Client) DeleteDevice(ctx context.Context, deviceID string) error {
+	const uriFmt = "/api/v2/device/%s"
+	req, err := c.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, deviceID), map[string]bool{
+		"authorized": true,
+	})
+	if err != nil {
+		return err
+	}
+
+	return c.performRequest(req, nil)
+}
+
 type (
 	// The KeyCapabilities type describes the capabilities of an authentication key.
 	KeyCapabilities struct {
