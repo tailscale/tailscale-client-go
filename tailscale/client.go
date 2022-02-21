@@ -450,6 +450,20 @@ func (c *Client) DeleteKey(ctx context.Context, id string) error {
 	return c.performRequest(req, nil)
 }
 
+// SetDeviceTags updates the tags of a target device.
+func (c *Client) SetDeviceTags(ctx context.Context, deviceID string, tags []string) error {
+	const uriFmt = "/api/v2/device/%s/tags"
+
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), map[string][]string{
+		"tags": tags,
+	})
+	if err != nil {
+		return err
+	}
+
+	return c.performRequest(req, nil)
+}
+
 // IsNotFound returns true if the provided error implementation is an APIError with a status of 404.
 func IsNotFound(err error) bool {
 	var apiErr APIError
