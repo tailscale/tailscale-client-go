@@ -353,6 +353,7 @@ type Device struct {
 	ID         string   `json:"id"`
 	Authorized bool     `json:"authorized"`
 	User       string   `json:"user"`
+	Tags       []string `json:"tags"`
 }
 
 // Devices lists the devices in a tailnet.
