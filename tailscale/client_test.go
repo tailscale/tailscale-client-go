@@ -507,3 +507,21 @@ func TestIsNotFound(t *testing.T) {
 	_, err := client.GetKey(context.Background(), "test")
 	assert.True(t, tailscale.IsNotFound(err))
 }
+
+func TestClient_SetDeviceTags(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	const deviceID = "test"
+	tags := []string{"a:b", "b:c"}
+
+	assert.NoError(t, client.SetDeviceTags(context.Background(), deviceID, tags))
+	assert.EqualValues(t, http.MethodPost, server.Method)
+	assert.EqualValues(t, "/api/v2/device/"+deviceID+"/tags", server.Path)
+
+	body := make(map[string][]string)
+	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &body))
+	assert.EqualValues(t, tags, body["tags"])
+}
