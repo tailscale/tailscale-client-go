@@ -295,9 +295,8 @@ func TestClient_DeleteDevice(t *testing.T) {
 	server.ResponseCode = http.StatusOK
 	ctx := context.Background()
 
-	deviceId := "deviceTestId"
-	err := client.DeleteDevice(ctx, deviceId)
-	assert.NoError(t, err)
+	deviceID := "deviceTestId"
+	assert.NoError(t, client.DeleteDevice(ctx, deviceID))
 	assert.Equal(t, http.MethodDelete, server.Method)
 	assert.Equal(t, "/api/v2/device/deviceTestId", server.Path)
 }

@@ -389,9 +389,7 @@ func (c *Client) AuthorizeDevice(ctx context.Context, deviceID string) error {
 // DeleteDevice deletes the device given its deviceID.
 func (c *Client) DeleteDevice(ctx context.Context, deviceID string) error {
 	const uriFmt = "/api/v2/device/%s"
-	req, err := c.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, deviceID), map[string]bool{
-		"authorized": true,
-	})
+	req, err := c.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, deviceID), nil)
 	if err != nil {
 		return err
 	}
