@@ -286,7 +286,19 @@ func TestClient_Devices(t *testing.T) {
 	assert.Equal(t, http.MethodGet, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/devices", server.Path)
 	assert.EqualValues(t, expectedDevices["devices"], actualDevices)
+}
 
+func TestClient_DeleteDevice(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+	ctx := context.Background()
+
+	deviceID := "deviceTestId"
+	assert.NoError(t, client.DeleteDevice(ctx, deviceID))
+	assert.Equal(t, http.MethodDelete, server.Method)
+	assert.Equal(t, "/api/v2/device/deviceTestId", server.Path)
 }
 
 func TestClient_DeviceSubnetRoutes(t *testing.T) {

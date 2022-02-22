@@ -21,8 +21,8 @@ import (
 )
 
 func main() {
-	apiKey := os.GetEnv("TAILSCALE_API_KEY")
-	tailnet := os.GetEnv("TAILSCALE_TAILNET")
+	apiKey := os.Getenv("TAILSCALE_API_KEY")
+	tailnet := os.Getenv("TAILSCALE_TAILNET")
 
 	client, err := tailscale.NewClient(apiKey, tailnet)
 	if err != nil {
