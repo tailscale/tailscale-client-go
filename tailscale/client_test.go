@@ -539,6 +539,29 @@ func TestClient_SetDeviceTags(t *testing.T) {
 	assert.EqualValues(t, tags, body["tags"])
 }
 
+func TestClient_SetDeviceKey(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	const deviceID = "test"
+	expected := tailscale.DeviceKey{
+		KeyExpiryDisabled: true,
+		Preauthorized:     true,
+	}
+
+	assert.NoError(t, client.SetDeviceKey(context.Background(), deviceID, expected))
+
+	assert.EqualValues(t, http.MethodPost, server.Method)
+	assert.EqualValues(t, "/api/v2/device/"+deviceID+"/key", server.Path)
+
+	var actual tailscale.DeviceKey
+	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &actual))
+	assert.EqualValues(t, expected, actual)
+
+}
+
 func TestErrorData(t *testing.T) {
 	t.Parallel()
 
