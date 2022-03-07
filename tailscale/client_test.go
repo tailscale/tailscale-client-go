@@ -272,8 +272,15 @@ func TestClient_Devices(t *testing.T) {
 	expectedDevices := map[string][]tailscale.Device{
 		"devices": {
 			{
-				Name: "test",
-				ID:   "test",
+				Addresses:         []string{"127.0.0.1"},
+				Name:              "test",
+				ID:                "test",
+				Authorized:        true,
+				KeyExpiryDisabled: true,
+				User:              "test@example.com",
+				Tags: []string{
+					"tag:value",
+				},
 			},
 		},
 	}
