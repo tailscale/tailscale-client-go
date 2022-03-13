@@ -281,6 +281,17 @@ func TestClient_Devices(t *testing.T) {
 				Tags: []string{
 					"tag:value",
 				},
+				BlocksIncomingConnections: false,
+				ClientVersion:             "1.22.1",
+				Created:                   time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC),
+				Expires:                   time.Date(2022, 8, 9, 11, 50, 23, 0, time.UTC),
+				Hostname:                  "test",
+				IsExternal:                false,
+				LastSeen:                  time.Date(2022, 3, 9, 20, 3, 42, 0, time.UTC),
+				MachineKey:                "mkey:test",
+				NodeKey:                   "nodekey:test",
+				OS:                        "windows",
+				UpdateAvailable:           true,
 			},
 		},
 	}
