@@ -3,7 +3,7 @@ module github.com/davidsbond/tailscale-client-go
 go 1.17
 
 require (
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/tailscale/hujson v0.0.0-20211215203138-ffd971c5f362
 )
 
