@@ -87,7 +87,6 @@ func TestACL_Unmarshal(t *testing.T) {
 						Allow:       []string(nil),
 						Deny:        []string(nil),
 						Source:      "carl@example.com",
-						Destination: "",
 						Accept:      []string{"tag:prod:80"},
 					},
 					{
@@ -95,7 +94,6 @@ func TestACL_Unmarshal(t *testing.T) {
 						Allow:       []string(nil),
 						Deny:        []string{"tag:prod:80"},
 						Source:      "alice@example.com",
-						Destination: "",
 						Accept:      []string{"tag:dev:80"}},
 				},
 			},
@@ -156,7 +154,6 @@ func TestACL_Unmarshal(t *testing.T) {
 						Allow:       []string(nil),
 						Deny:        []string(nil),
 						Source:      "carl@example.com",
-						Destination: "",
 						Accept:      []string{"tag:prod:80"},
 					},
 					{
@@ -164,7 +161,6 @@ func TestACL_Unmarshal(t *testing.T) {
 						Allow:       []string(nil),
 						Deny:        []string{"tag:prod:80"},
 						Source:      "alice@example.com",
-						Destination: "",
 						Accept:      []string{"tag:dev:80"}},
 				},
 			},
