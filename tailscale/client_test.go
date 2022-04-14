@@ -38,51 +38,65 @@ func TestACL_Unmarshal(t *testing.T) {
 			Expected: tailscale.ACL{
 				ACLs: []tailscale.ACLEntry{
 					{
-						Action: "accept",
-						Ports:  []string{"*:*"},
-						Users:  []string{"*"},
+						Action:      "accept",
+						Ports:       []string(nil),
+						Users:       []string(nil),
+						Source:      []string{"autogroup:members"},
+						Destination: []string{"autogroup:self:*"},
+						Protocol:    "",
 					},
-				},
-				TagOwners: map[string][]string{
-					"tag:example": {"group:example"},
-				},
-				Hosts: map[string]string{
-					"example-host-1": "100.100.100.100",
-					"example-host-2": "100.100.101.100/24",
-				},
-				DERPMap: &tailscale.ACLDERPMap{
-					Regions: map[int]*tailscale.ACLDERPRegion{
-						900: {
-							RegionID:   900,
-							RegionCode: "example",
-							RegionName: "example",
-							Nodes: []*tailscale.ACLDERPNode{
-								{
-									Name:     "1",
-									RegionID: 900,
-									HostName: "example.com",
-								},
-							},
-						},
+					{
+						Action:      "accept",
+						Ports:       []string(nil),
+						Users:       []string(nil),
+						Source:      []string{"group:dev"},
+						Destination: []string{"tag:dev:*"},
+						Protocol:    "",
 					},
-					OmitDefaultRegions: false,
+					{
+						Action:      "accept",
+						Ports:       []string(nil),
+						Users:       []string(nil),
+						Source:      []string{"group:devops"},
+						Destination: []string{"tag:prod:*"},
+						Protocol:    "",
+					},
+					{
+						Action:      "accept",
+						Ports:       []string(nil),
+						Users:       []string(nil),
+						Source:      []string{"autogroup:members"},
+						Destination: []string{"tag:monitoring:80,443"},
+						Protocol:    "",
+					},
 				},
 				Groups: map[string][]string{
-					"group:example": {
-						"user1@example.com",
-						"user2@example.com",
-					},
+					"group:dev":    {"alice@example.com", "bob@example.com"},
+					"group:devops": {"carl@example.com"},
 				},
+				Hosts: map[string]string(nil),
+				TagOwners: map[string][]string{
+					"tag:dev":        {"group:devops"},
+					"tag:monitoring": {"group:devops"},
+					"tag:prod":       {"group:devops"},
+				},
+				DERPMap: (*tailscale.ACLDERPMap)(nil),
 				Tests: []tailscale.ACLTest{
 					{
-						User:  "user1@example.com",
-						Allow: []string{"example-host-1:22", "example-host-2:80"},
-						Deny:  []string{"exapmle-host-2:100"},
+						User:        "",
+						Allow:       []string(nil),
+						Deny:        []string(nil),
+						Source:      "carl@example.com",
+						Destination: "",
+						Accept:      []string{"tag:prod:80"},
 					},
 					{
-						User:  "user2@example.com",
-						Allow: []string{"100.60.3.4:22"},
-					},
+						User:        "",
+						Allow:       []string(nil),
+						Deny:        []string{"tag:prod:80"},
+						Source:      "alice@example.com",
+						Destination: "",
+						Accept:      []string{"tag:dev:80"}},
 				},
 			},
 		},
@@ -93,51 +107,65 @@ func TestACL_Unmarshal(t *testing.T) {
 			Expected: tailscale.ACL{
 				ACLs: []tailscale.ACLEntry{
 					{
-						Action: "accept",
-						Ports:  []string{"*:*"},
-						Users:  []string{"*"},
+						Action:      "accept",
+						Ports:       []string(nil),
+						Users:       []string(nil),
+						Source:      []string{"autogroup:members"},
+						Destination: []string{"autogroup:self:*"},
+						Protocol:    "",
 					},
-				},
-				TagOwners: map[string][]string{
-					"tag:example": {"group:example"},
-				},
-				Hosts: map[string]string{
-					"example-host-1": "100.100.100.100",
-					"example-host-2": "100.100.101.100/24",
-				},
-				DERPMap: &tailscale.ACLDERPMap{
-					Regions: map[int]*tailscale.ACLDERPRegion{
-						900: {
-							RegionID:   900,
-							RegionCode: "example",
-							RegionName: "example",
-							Nodes: []*tailscale.ACLDERPNode{
-								{
-									Name:     "1",
-									RegionID: 900,
-									HostName: "example.com",
-								},
-							},
-						},
+					{
+						Action:      "accept",
+						Ports:       []string(nil),
+						Users:       []string(nil),
+						Source:      []string{"group:dev"},
+						Destination: []string{"tag:dev:*"},
+						Protocol:    "",
 					},
-					OmitDefaultRegions: false,
+					{
+						Action:      "accept",
+						Ports:       []string(nil),
+						Users:       []string(nil),
+						Source:      []string{"group:devops"},
+						Destination: []string{"tag:prod:*"},
+						Protocol:    "",
+					},
+					{
+						Action:      "accept",
+						Ports:       []string(nil),
+						Users:       []string(nil),
+						Source:      []string{"autogroup:members"},
+						Destination: []string{"tag:monitoring:80,443"},
+						Protocol:    "",
+					},
 				},
 				Groups: map[string][]string{
-					"group:example": {
-						"user1@example.com",
-						"user2@example.com",
-					},
+					"group:dev":    {"alice@example.com", "bob@example.com"},
+					"group:devops": {"carl@example.com"},
 				},
+				Hosts: map[string]string(nil),
+				TagOwners: map[string][]string{
+					"tag:dev":        {"group:devops"},
+					"tag:monitoring": {"group:devops"},
+					"tag:prod":       {"group:devops"},
+				},
+				DERPMap: (*tailscale.ACLDERPMap)(nil),
 				Tests: []tailscale.ACLTest{
 					{
-						User:  "user1@example.com",
-						Allow: []string{"example-host-1:22", "example-host-2:80"},
-						Deny:  []string{"exapmle-host-2:100"},
+						User:        "",
+						Allow:       []string(nil),
+						Deny:        []string(nil),
+						Source:      "carl@example.com",
+						Destination: "",
+						Accept:      []string{"tag:prod:80"},
 					},
 					{
-						User:  "user2@example.com",
-						Allow: []string{"100.60.3.4:22"},
-					},
+						User:        "",
+						Allow:       []string(nil),
+						Deny:        []string{"tag:prod:80"},
+						Source:      "alice@example.com",
+						Destination: "",
+						Accept:      []string{"tag:dev:80"}},
 				},
 			},
 		},
