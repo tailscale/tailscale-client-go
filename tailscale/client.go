@@ -5,6 +5,7 @@ package tailscale
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -220,11 +221,11 @@ type ACLEntry struct {
 }
 
 type ACLTest struct {
-	User        string   `json:"user" hujson:"User"`
-	Allow       []string `json:"allow" hujson:"Allow"`
-	Deny        []string `json:"deny" hujson:"Deny"`
-	Source      string   `json:"src" hujson:"Src"`
-	Accept      []string `json:"accept" hujson:"Accept"`
+	User   string   `json:"user" hujson:"User"`
+	Allow  []string `json:"allow" hujson:"Allow"`
+	Deny   []string `json:"deny" hujson:"Deny"`
+	Source string   `json:"src" hujson:"Src"`
+	Accept []string `json:"accept" hujson:"Accept"`
 }
 
 type ACLDERPMap struct {
@@ -359,25 +360,49 @@ func (c *Client) DeviceSubnetRoutes(ctx context.Context, deviceID string) (*Devi
 	return &resp, nil
 }
 
+// MaybeEmptyTime wraps a time and allows for unmarshalling timestamps that represent an empty time as an empty string (e.g "")
+// this is used by the tailscale API when it returns services that have no created date, such as it's hello service.
+type MaybeEmptyTime struct {
+	time.Time
+}
+
+// MarshalJSON is an implementation of json.Marshal.
+func (t MaybeEmptyTime) MarshalJSON() ([]byte, error) {
+	return json.Marshal(t.Time)
+}
+
+// MarshalJSON returns nil if it is a blank string, otherwise, returns the result of json.Unmarshal.
+func (t *MaybeEmptyTime) UnmarshalJSON(data []byte) error {
+	if string(data) == "\"\"" {
+		return nil
+	}
+
+	if err := json.Unmarshal(data, &t.Time); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 type Device struct {
-	Addresses                 []string  `json:"addresses"`
-	Name                      string    `json:"name"`
-	ID                        string    `json:"id"`
-	Authorized                bool      `json:"authorized"`
-	User                      string    `json:"user"`
-	Tags                      []string  `json:"tags"`
-	KeyExpiryDisabled         bool      `json:"keyExpiryDisabled"`
-	BlocksIncomingConnections bool      `json:"blocksIncomingConnections"`
-	ClientVersion             string    `json:"clientVersion"`
-	Created                   time.Time `json:"created"`
-	Expires                   time.Time `json:"expires"`
-	Hostname                  string    `json:"hostname"`
-	IsExternal                bool      `json:"isExternal"`
-	LastSeen                  time.Time `json:"lastSeen"`
-	MachineKey                string    `json:"machineKey"`
-	NodeKey                   string    `json:"nodeKey"`
-	OS                        string    `json:"os"`
-	UpdateAvailable           bool      `json:"updateAvailable"`
+	Addresses                 []string       `json:"addresses"`
+	Name                      string         `json:"name"`
+	ID                        string         `json:"id"`
+	Authorized                bool           `json:"authorized"`
+	User                      string         `json:"user"`
+	Tags                      []string       `json:"tags"`
+	KeyExpiryDisabled         bool           `json:"keyExpiryDisabled"`
+	BlocksIncomingConnections bool           `json:"blocksIncomingConnections"`
+	ClientVersion             string         `json:"clientVersion"`
+	Created                   MaybeEmptyTime `json:"created"`
+	Expires                   MaybeEmptyTime `json:"expires"`
+	Hostname                  string         `json:"hostname"`
+	IsExternal                bool           `json:"isExternal"`
+	LastSeen                  MaybeEmptyTime `json:"lastSeen"`
+	MachineKey                string         `json:"machineKey"`
+	NodeKey                   string         `json:"nodeKey"`
+	OS                        string         `json:"os"`
+	UpdateAvailable           bool           `json:"updateAvailable"`
 }
 
 // Devices lists the devices in a tailnet.
