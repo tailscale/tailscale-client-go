@@ -202,12 +202,18 @@ func (c *Client) DNSNameservers(ctx context.Context) ([]string, error) {
 }
 
 type ACL struct {
-	ACLs      []ACLEntry          `json:"acls" hujson:"ACLs,omitempty"`
-	Groups    map[string][]string `json:"groups,omitempty" hujson:"Groups,omitempty"`
-	Hosts     map[string]string   `json:"hosts,omitempty" hujson:"Hosts,omitempty"`
-	TagOwners map[string][]string `json:"tagowners,omitempty" hujson:"TagOwners,omitempty"`
-	DERPMap   *ACLDERPMap         `json:"derpMap,omitempty" hujson:"DerpMap,omitempty"`
-	Tests     []ACLTest           `json:"tests,omitempty" hujson:"Tests,omitempty"`
+	ACLs          []ACLEntry          `json:"acls" hujson:"ACLs,omitempty"`
+	AutoApprovers *ACLAutoApprovers   `json:"autoapprovers,omitempty" hujson:"AutoApprovers,omitempty"`
+	Groups        map[string][]string `json:"groups,omitempty" hujson:"Groups,omitempty"`
+	Hosts         map[string]string   `json:"hosts,omitempty" hujson:"Hosts,omitempty"`
+	TagOwners     map[string][]string `json:"tagowners,omitempty" hujson:"TagOwners,omitempty"`
+	DERPMap       *ACLDERPMap         `json:"derpMap,omitempty" hujson:"DerpMap,omitempty"`
+	Tests         []ACLTest           `json:"tests,omitempty" hujson:"Tests,omitempty"`
+}
+
+type ACLAutoApprovers struct {
+	Routes   map[string][]string `json:"routes" hujson:"Routes"`
+	ExitNode []string            `json:"exitNode" hujson:"ExitNode"`
 }
 
 type ACLEntry struct {
@@ -220,11 +226,11 @@ type ACLEntry struct {
 }
 
 type ACLTest struct {
-	User        string   `json:"user" hujson:"User"`
-	Allow       []string `json:"allow" hujson:"Allow"`
-	Deny        []string `json:"deny" hujson:"Deny"`
-	Source      string   `json:"src" hujson:"Src"`
-	Accept      []string `json:"accept" hujson:"Accept"`
+	User   string   `json:"user" hujson:"User"`
+	Allow  []string `json:"allow" hujson:"Allow"`
+	Deny   []string `json:"deny" hujson:"Deny"`
+	Source string   `json:"src" hujson:"Src"`
+	Accept []string `json:"accept" hujson:"Accept"`
 }
 
 type ACLDERPMap struct {
