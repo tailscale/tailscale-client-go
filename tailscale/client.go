@@ -360,19 +360,19 @@ func (c *Client) DeviceSubnetRoutes(ctx context.Context, deviceID string) (*Devi
 	return &resp, nil
 }
 
-// MaybeEmptyTime wraps a time and allows for unmarshalling timestamps that represent an empty time as an empty string (e.g "")
+// Time wraps a time and allows for unmarshalling timestamps that represent an empty time as an empty string (e.g "")
 // this is used by the tailscale API when it returns devices that have no created date, such as its hello service.
-type MaybeEmptyTime struct {
+type Time struct {
 	time.Time
 }
 
 // MarshalJSON is an implementation of json.Marshal.
-func (t MaybeEmptyTime) MarshalJSON() ([]byte, error) {
+func (t Time) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.Time)
 }
 
 // MarshalJSON unmarshals the content of data as a time.Duration, a blank string will keep the time at its zero value.
-func (t *MaybeEmptyTime) UnmarshalJSON(data []byte) error {
+func (t *Time) UnmarshalJSON(data []byte) error {
 	if string(data) == `""` {
 		return nil
 	}
@@ -394,11 +394,11 @@ type Device struct {
 	KeyExpiryDisabled         bool           `json:"keyExpiryDisabled"`
 	BlocksIncomingConnections bool           `json:"blocksIncomingConnections"`
 	ClientVersion             string         `json:"clientVersion"`
-	Created                   MaybeEmptyTime `json:"created"`
-	Expires                   MaybeEmptyTime `json:"expires"`
+	Created                   Time `json:"created"`
+	Expires                   Time `json:"expires"`
 	Hostname                  string         `json:"hostname"`
 	IsExternal                bool           `json:"isExternal"`
-	LastSeen                  MaybeEmptyTime `json:"lastSeen"`
+	LastSeen                  Time `json:"lastSeen"`
 	MachineKey                string         `json:"machineKey"`
 	NodeKey                   string         `json:"nodeKey"`
 	OS                        string         `json:"os"`

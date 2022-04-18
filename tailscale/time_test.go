@@ -9,18 +9,18 @@ import (
 )
 
 func TestWrapsStdTime(t *testing.T) {
-	expectedTime := tailscale.MaybeEmptyTime{}
+	expectedTime := tailscale.Time{}
 	newTime := time.Time{}
 	assert.Equal(t, expectedTime.Time.UTC(), newTime.UTC())
 }
 
 func TestFailsToParseInvalidTimestamps(t *testing.T) {
-	ti := tailscale.MaybeEmptyTime{}
+	ti := tailscale.Time{}
 	invalidIso8601Date := []byte("\"2022-13-05T17:10:27Z\"")
 	assert.Error(t, ti.UnmarshalJSON(invalidIso8601Date))
 }
 
-func TestMarshalingMaybeEmptyTimestamps(t *testing.T) {
+func TestMarshalingTimestamps(t *testing.T) {
 	t.Parallel()
 	utcMinusFour := time.FixedZone("UTC-4", -60*60*4)
 
@@ -48,7 +48,7 @@ func TestMarshalingMaybeEmptyTimestamps(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.Name, func(t *testing.T) {
-			actual := tailscale.MaybeEmptyTime{}
+			actual := tailscale.Time{}
 
 			assert.NoError(t, actual.UnmarshalJSON([]byte(tc.TimeContent)))
 			assert.Equal(t, tc.Expected.UTC(), actual.Time.UTC())

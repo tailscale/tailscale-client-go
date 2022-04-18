@@ -309,11 +309,11 @@ func TestClient_Devices(t *testing.T) {
 				},
 				BlocksIncomingConnections: false,
 				ClientVersion:             "1.22.1",
-				Created:                   tailscale.MaybeEmptyTime{time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC)},
-				Expires:                   tailscale.MaybeEmptyTime{time.Date(2022, 8, 9, 11, 50, 23, 0, time.UTC)},
+				Created:                   tailscale.Time{time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC)},
+				Expires:                   tailscale.Time{time.Date(2022, 8, 9, 11, 50, 23, 0, time.UTC)},
 				Hostname:                  "test",
 				IsExternal:                false,
-				LastSeen:                  tailscale.MaybeEmptyTime{time.Date(2022, 3, 9, 20, 3, 42, 0, time.UTC)},
+				LastSeen:                  tailscale.Time{time.Date(2022, 3, 9, 20, 3, 42, 0, time.UTC)},
 				MachineKey:                "mkey:test",
 				NodeKey:                   "nodekey:test",
 				OS:                        "windows",
@@ -352,15 +352,15 @@ func TestDevices_Unmarshal(t *testing.T) {
 					Authorized:                true,
 					BlocksIncomingConnections: false,
 					ClientVersion:             "",
-					Created:                   tailscale.MaybeEmptyTime{},
-					Expires: tailscale.MaybeEmptyTime{
+					Created:                   tailscale.Time{},
+					Expires: tailscale.Time{
 						time.Date(1, 1, 1, 00, 00, 00, 0, time.UTC),
 					},
 					Hostname:          "hello",
 					ID:                "50052",
 					IsExternal:        true,
 					KeyExpiryDisabled: true,
-					LastSeen: tailscale.MaybeEmptyTime{
+					LastSeen: tailscale.Time{
 						time.Date(2022, 4, 15, 13, 24, 40, 0, time.UTC),
 					},
 					MachineKey:      "",
@@ -375,17 +375,17 @@ func TestDevices_Unmarshal(t *testing.T) {
 					Authorized:                true,
 					BlocksIncomingConnections: false,
 					ClientVersion:             "1.22.2-t60b671955-gecc5d9846",
-					Created: tailscale.MaybeEmptyTime{
+					Created: tailscale.Time{
 						time.Date(2022, 3, 5, 17, 10, 27, 0, time.UTC),
 					},
-					Expires: tailscale.MaybeEmptyTime{
+					Expires: tailscale.Time{
 						time.Date(2022, 9, 1, 17, 10, 27, 0, time.UTC),
 					},
 					Hostname:          "foo",
 					ID:                "50053",
 					IsExternal:        false,
 					KeyExpiryDisabled: true,
-					LastSeen: tailscale.MaybeEmptyTime{
+					LastSeen: tailscale.Time{
 						time.Date(2022, 4, 15, 13, 25, 21, 0, time.UTC),
 					},
 					MachineKey:      "mkey:30dc3c061ac8b33fdc6d88a4a67b053b01b56930d78cae0cf7a164411d424c0d",
