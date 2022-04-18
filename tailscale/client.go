@@ -361,7 +361,7 @@ func (c *Client) DeviceSubnetRoutes(ctx context.Context, deviceID string) (*Devi
 }
 
 // MaybeEmptyTime wraps a time and allows for unmarshalling timestamps that represent an empty time as an empty string (e.g "")
-// this is used by the tailscale API when it returns services that have no created date, such as it's hello service.
+// this is used by the tailscale API when it returns devices that have no created date, such as its hello service.
 type MaybeEmptyTime struct {
 	time.Time
 }
@@ -371,9 +371,9 @@ func (t MaybeEmptyTime) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.Time)
 }
 
-// MarshalJSON returns nil if it is a blank string, otherwise, returns the result of json.Unmarshal.
+// MarshalJSON unmarshals the content of data as a time.Duration, a blank string will keep the time at its zero value.
 func (t *MaybeEmptyTime) UnmarshalJSON(data []byte) error {
-	if string(data) == "\"\"" {
+	if string(data) == `""` {
 		return nil
 	}
 
