@@ -101,9 +101,15 @@ func TestACL_Unmarshal(t *testing.T) {
 			},
 		},
 		{
-			Name:          "It should handle HuJSON ACLs",
-			ACLContent:    huJSONACL,
-			UnmarshalFunc: hujson.Unmarshal,
+			Name:       "It should handle HuJSON ACLs",
+			ACLContent: huJSONACL,
+			UnmarshalFunc: func(b []byte, v interface{}) error {
+				b, err := hujson.Standardize(b)
+				if err != nil {
+					return err
+				}
+				return json.Unmarshal(b, v)
+			},
 			Expected: tailscale.ACL{
 				ACLs: []tailscale.ACLEntry{
 					{
