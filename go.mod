@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/stretchr/testify v1.7.1
-	github.com/tailscale/hujson v0.0.0-20211215203138-ffd971c5f362
+	github.com/tailscale/hujson v0.0.0-20220506213045-af5ed07155e5
 )
 
 require (
