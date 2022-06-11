@@ -579,6 +579,8 @@ func TestClient_CreateKey(t *testing.T) {
 	capabilities := tailscale.KeyCapabilities{}
 	capabilities.Devices.Create.Ephemeral = true
 	capabilities.Devices.Create.Reusable = true
+	capabilities.Devices.Create.Preauthorized = true
+	capabilities.Devices.Create.Tags = []string{"test:test"}
 
 	expected := tailscale.Key{
 		ID:           "test",
@@ -606,6 +608,8 @@ func TestClient_GetKey(t *testing.T) {
 	capabilities := tailscale.KeyCapabilities{}
 	capabilities.Devices.Create.Ephemeral = true
 	capabilities.Devices.Create.Reusable = true
+	capabilities.Devices.Create.Preauthorized = true
+	capabilities.Devices.Create.Tags = []string{"test:test"}
 
 	expected := tailscale.Key{
 		ID:           "test",
@@ -674,7 +678,6 @@ func TestClient_SetDeviceKey(t *testing.T) {
 	const deviceID = "test"
 	expected := tailscale.DeviceKey{
 		KeyExpiryDisabled: true,
-		Preauthorized:     true,
 	}
 
 	assert.NoError(t, client.SetDeviceKey(context.Background(), deviceID, expected))

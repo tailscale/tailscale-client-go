@@ -470,9 +470,10 @@ type (
 	KeyCapabilities struct {
 		Devices struct {
 			Create struct {
-				Reusable  bool     `json:"reusable"`
-				Ephemeral bool     `json:"ephemeral"`
-				Tags      []string `json:"tags"`
+				Reusable      bool     `json:"reusable"`
+				Ephemeral     bool     `json:"ephemeral"`
+				Tags          []string `json:"tags"`
+				Preauthorized bool     `json:"preauthorized"`
 			} `json:"create"`
 		} `json:"devices"`
 	}
@@ -548,7 +549,6 @@ type (
 	// the tailnet.
 	DeviceKey struct {
 		KeyExpiryDisabled bool `json:"keyExpiryDisabled"` // Whether or not this device's key will ever expire.
-		Preauthorized     bool `json:"preauthorized"`     // Whether or not this device is pre-authorized for the tailnet.
 	}
 )
 
