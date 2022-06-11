@@ -123,11 +123,24 @@ func (c *Client) performRequest(req *http.Request, out interface{}) error {
 	if err != nil {
 		return err
 	}
-	if !json.Valid(body) {
-		body, err = hujson.Standardize(body)
-		if err != nil {
-			return err
+
+	if res.StatusCode >= http.StatusOK && res.StatusCode < http.StatusMultipleChoices {
+		// If we don't care about the response body, leave. This check is required as some
+		// API responses have empty bodies, so we don't want to try and standardize them for
+		// parsing.
+		if out == nil {
+			return nil
 		}
+
+		// If we've got hujson back, convert it to JSON, so we can natively parse it.
+		if !json.Valid(body) {
+			body, err = hujson.Standardize(body)
+			if err != nil {
+				return err
+			}
+		}
+
+		return json.Unmarshal(body, out)
 	}
 
 	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
@@ -138,10 +151,6 @@ func (c *Client) performRequest(req *http.Request, out interface{}) error {
 
 		apiErr.status = res.StatusCode
 		return apiErr
-	}
-
-	if out != nil {
-		return json.Unmarshal(body, out)
 	}
 
 	return nil

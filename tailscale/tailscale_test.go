@@ -67,5 +67,7 @@ func (t *TestServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	assert.NoError(t.t, err)
 
 	w.WriteHeader(t.ResponseCode)
-	assert.NoError(t.t, json.NewEncoder(w).Encode(t.ResponseBody))
+	if t.ResponseBody != nil {
+		assert.NoError(t.t, json.NewEncoder(w).Encode(t.ResponseBody))
+	}
 }
