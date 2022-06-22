@@ -4,8 +4,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/davidsbond/tailscale-client-go/tailscale"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/davidsbond/tailscale-client-go/tailscale"
 )
 
 func TestWrapsStdTime(t *testing.T) {
@@ -54,4 +55,10 @@ func TestMarshalingTimestamps(t *testing.T) {
 			assert.Equal(t, tc.Expected.UTC(), actual.Time.UTC())
 		})
 	}
+}
+
+func TestWrapsStdDuration(t *testing.T) {
+	expectedDuration := tailscale.Duration{}
+	newDuration := time.Duration(0)
+	assert.Equal(t, expectedDuration.Duration, newDuration)
 }
