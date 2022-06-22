@@ -223,64 +223,75 @@ func (c *Client) DNSNameservers(ctx context.Context) ([]string, error) {
 	return resp["dns"], nil
 }
 
-type ACL struct {
-	ACLs          []ACLEntry          `json:"acls" hujson:"ACLs,omitempty"`
-	AutoApprovers *ACLAutoApprovers   `json:"autoapprovers,omitempty" hujson:"AutoApprovers,omitempty"`
-	Groups        map[string][]string `json:"groups,omitempty" hujson:"Groups,omitempty"`
-	Hosts         map[string]string   `json:"hosts,omitempty" hujson:"Hosts,omitempty"`
-	TagOwners     map[string][]string `json:"tagowners,omitempty" hujson:"TagOwners,omitempty"`
-	DERPMap       *ACLDERPMap         `json:"derpMap,omitempty" hujson:"DerpMap,omitempty"`
-	Tests         []ACLTest           `json:"tests,omitempty" hujson:"Tests,omitempty"`
-}
+type (
+	ACL struct {
+		ACLs          []ACLEntry          `json:"acls" hujson:"ACLs,omitempty"`
+		AutoApprovers *ACLAutoApprovers   `json:"autoapprovers,omitempty" hujson:"AutoApprovers,omitempty"`
+		Groups        map[string][]string `json:"groups,omitempty" hujson:"Groups,omitempty"`
+		Hosts         map[string]string   `json:"hosts,omitempty" hujson:"Hosts,omitempty"`
+		TagOwners     map[string][]string `json:"tagowners,omitempty" hujson:"TagOwners,omitempty"`
+		DERPMap       *ACLDERPMap         `json:"derpMap,omitempty" hujson:"DerpMap,omitempty"`
+		Tests         []ACLTest           `json:"tests,omitempty" hujson:"Tests,omitempty"`
+		SSH           []ACLSSH            `json:"ssh,omitempty" hujson:"SSH,omitempty"`
+	}
 
-type ACLAutoApprovers struct {
-	Routes   map[string][]string `json:"routes" hujson:"Routes"`
-	ExitNode []string            `json:"exitNode" hujson:"ExitNode"`
-}
+	ACLAutoApprovers struct {
+		Routes   map[string][]string `json:"routes" hujson:"Routes"`
+		ExitNode []string            `json:"exitNode" hujson:"ExitNode"`
+	}
 
-type ACLEntry struct {
-	Action      string   `json:"action" hujson:"Action"`
-	Ports       []string `json:"ports" hujson:"Ports"`
-	Users       []string `json:"users" hujson:"Users"`
-	Source      []string `json:"src" hujson:"Src"`
-	Destination []string `json:"dst" hujson:"Dst"`
-	Protocol    string   `json:"proto" hujson:"Proto"`
-}
+	ACLEntry struct {
+		Action      string   `json:"action" hujson:"Action"`
+		Ports       []string `json:"ports" hujson:"Ports"`
+		Users       []string `json:"users" hujson:"Users"`
+		Source      []string `json:"src" hujson:"Src"`
+		Destination []string `json:"dst" hujson:"Dst"`
+		Protocol    string   `json:"proto" hujson:"Proto"`
+	}
 
-type ACLTest struct {
-	User   string   `json:"user" hujson:"User"`
-	Allow  []string `json:"allow" hujson:"Allow"`
-	Deny   []string `json:"deny" hujson:"Deny"`
-	Source string   `json:"src" hujson:"Src"`
-	Accept []string `json:"accept" hujson:"Accept"`
-}
+	ACLTest struct {
+		User   string   `json:"user" hujson:"User"`
+		Allow  []string `json:"allow" hujson:"Allow"`
+		Deny   []string `json:"deny" hujson:"Deny"`
+		Source string   `json:"src" hujson:"Src"`
+		Accept []string `json:"accept" hujson:"Accept"`
+	}
 
-type ACLDERPMap struct {
-	Regions            map[int]*ACLDERPRegion `json:"regions" hujson:"Regions"`
-	OmitDefaultRegions bool                   `json:"omitDefaultRegions,omitempty" hujson:"OmitDefaultRegions,omitempty"`
-}
+	ACLDERPMap struct {
+		Regions            map[int]*ACLDERPRegion `json:"regions" hujson:"Regions"`
+		OmitDefaultRegions bool                   `json:"omitDefaultRegions,omitempty" hujson:"OmitDefaultRegions,omitempty"`
+	}
 
-type ACLDERPRegion struct {
-	RegionID   int            `json:"regionID" hujson:"RegionID"`
-	RegionCode string         `json:"regionCode" hujson:"RegionCode"`
-	RegionName string         `json:"regionName" hujson:"RegionName"`
-	Avoid      bool           `json:"avoid,omitempty" hujson:"Avoid,omitempty"`
-	Nodes      []*ACLDERPNode `json:"nodes" hujson:"Nodes"`
-}
+	ACLDERPRegion struct {
+		RegionID   int            `json:"regionID" hujson:"RegionID"`
+		RegionCode string         `json:"regionCode" hujson:"RegionCode"`
+		RegionName string         `json:"regionName" hujson:"RegionName"`
+		Avoid      bool           `json:"avoid,omitempty" hujson:"Avoid,omitempty"`
+		Nodes      []*ACLDERPNode `json:"nodes" hujson:"Nodes"`
+	}
 
-type ACLDERPNode struct {
-	Name             string `json:"name" hujson:"Name"`
-	RegionID         int    `json:"regionID" hujson:"RegionID"`
-	HostName         string `json:"hostName" hujson:"HostName"`
-	CertName         string `json:"certName,omitempty" hujson:"CertName,omitempty"`
-	IPv4             string `json:"ipv4,omitempty" hujson:"IPv4,omitempty"`
-	IPv6             string `json:"ipv6,omitempty" hujson:"IPv6,omitempty"`
-	STUNPort         int    `json:"stunPort,omitempty" hujson:"STUNPort,omitempty"`
-	STUNOnly         bool   `json:"stunOnly,omitempty" hujson:"STUNOnly,omitempty"`
-	DERPPort         int    `json:"derpPort,omitempty" hujson:"DERPPort,omitempty"`
-	InsecureForTests bool   `json:"insecureForRests,omitempty" hujson:"InsecureForTests,omitempty"`
-	STUNTestIP       string `json:"stunTestIP,omitempty" hujson:"STUNTestIP,omitempty"`
-}
+	ACLDERPNode struct {
+		Name             string `json:"name" hujson:"Name"`
+		RegionID         int    `json:"regionID" hujson:"RegionID"`
+		HostName         string `json:"hostName" hujson:"HostName"`
+		CertName         string `json:"certName,omitempty" hujson:"CertName,omitempty"`
+		IPv4             string `json:"ipv4,omitempty" hujson:"IPv4,omitempty"`
+		IPv6             string `json:"ipv6,omitempty" hujson:"IPv6,omitempty"`
+		STUNPort         int    `json:"stunPort,omitempty" hujson:"STUNPort,omitempty"`
+		STUNOnly         bool   `json:"stunOnly,omitempty" hujson:"STUNOnly,omitempty"`
+		DERPPort         int    `json:"derpPort,omitempty" hujson:"DERPPort,omitempty"`
+		InsecureForTests bool   `json:"insecureForRests,omitempty" hujson:"InsecureForTests,omitempty"`
+		STUNTestIP       string `json:"stunTestIP,omitempty" hujson:"STUNTestIP,omitempty"`
+	}
+
+	ACLSSH struct {
+		Action      string   `json:"action" hujson:"Action"`
+		Users       []string `json:"users" hujson:"Users"`
+		Source      []string `json:"src" hujson:"Src"`
+		Destination []string `json:"dst" hujson:"Dst"`
+		CheckPeriod Duration `json:"checkPeriod" hujson:"CheckPeriod"`
+	}
+)
 
 // ACL retrieves the ACL that is currently set for the given tailnet.
 func (c *Client) ACL(ctx context.Context) (*ACL, error) {
@@ -398,7 +409,7 @@ func (t Time) MarshalJSON() ([]byte, error) {
 	return json.Marshal(t.Time)
 }
 
-// MarshalJSON unmarshals the content of data as a time.Duration, a blank string will keep the time at its zero value.
+// UnmarshalJSON unmarshals the content of data as a time.Time, a blank string will keep the time at its zero value.
 func (t *Time) UnmarshalJSON(data []byte) error {
 	if string(data) == `""` {
 		return nil
@@ -591,5 +602,36 @@ func ErrorData(err error) []APIErrorData {
 		return apiErr.Data
 	}
 
+	return nil
+}
+
+// The Duration type wraps a time.Duration, allowing it to be JSON marshalled as a string like "20h" rather than
+// a numeric value.
+type Duration struct {
+	time.Duration
+}
+
+// MarshalJSON is an implementation of json.Marshal.
+func (d Duration) MarshalJSON() ([]byte, error) {
+	return json.Marshal(d.Duration.String())
+}
+
+// UnmarshalJSON unmarshals the content of data as a time.Duration, a blank string will keep the duration at its zero value.
+func (d *Duration) UnmarshalJSON(data []byte) error {
+	if string(data) == `""` {
+		return nil
+	}
+
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
+		return err
+	}
+
+	dur, err := time.ParseDuration(str)
+	if err != nil {
+		return err
+	}
+
+	d.Duration = dur
 	return nil
 }

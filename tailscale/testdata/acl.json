@@ -24,5 +24,26 @@
       "accept": ["tag:dev:80"],
       "deny": ["tag:prod:80"]
     }
+  ],
+  "ssh": [
+    {
+      "action": "accept",
+      "src": ["autogroup:members"],
+      "dst": ["autogroup:self"],
+      "users": ["root", "autogroup:nonroot"]
+    },
+    {
+      "action": "accept",
+      "src": ["autogroup:members"],
+      "dst": ["tag:prod"],
+      "users": ["root", "autogroup:nonroot"]
+    },
+    {
+      "action": "accept",
+      "src": ["tag:logging"],
+      "dst": ["tag:prod"],
+      "users": ["root", "autogroup:nonroot"],
+      "checkPeriod": "20h"
+    }
   ]
 }

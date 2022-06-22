@@ -98,6 +98,27 @@ func TestACL_Unmarshal(t *testing.T) {
 						Source: "alice@example.com",
 						Accept: []string{"tag:dev:80"}},
 				},
+				SSH: []tailscale.ACLSSH{
+					{
+						Action:      "accept",
+						Source:      []string{"autogroup:members"},
+						Destination: []string{"autogroup:self"},
+						Users:       []string{"root", "autogroup:nonroot"},
+					},
+					{
+						Action:      "accept",
+						Source:      []string{"autogroup:members"},
+						Destination: []string{"tag:prod"},
+						Users:       []string{"root", "autogroup:nonroot"},
+					},
+					{
+						Action:      "accept",
+						Source:      []string{"tag:logging"},
+						Destination: []string{"tag:prod"},
+						Users:       []string{"root", "autogroup:nonroot"},
+						CheckPeriod: tailscale.Duration{Duration: time.Hour * 20},
+					},
+				},
 			},
 		},
 		{
@@ -156,6 +177,27 @@ func TestACL_Unmarshal(t *testing.T) {
 					"tag:prod":       {"group:devops"},
 				},
 				DERPMap: (*tailscale.ACLDERPMap)(nil),
+				SSH: []tailscale.ACLSSH{
+					{
+						Action:      "accept",
+						Source:      []string{"autogroup:members"},
+						Destination: []string{"autogroup:self"},
+						Users:       []string{"root", "autogroup:nonroot"},
+					},
+					{
+						Action:      "accept",
+						Source:      []string{"autogroup:members"},
+						Destination: []string{"tag:prod"},
+						Users:       []string{"root", "autogroup:nonroot"},
+					},
+					{
+						Action:      "accept",
+						Source:      []string{"tag:logging"},
+						Destination: []string{"tag:prod"},
+						Users:       []string{"root", "autogroup:nonroot"},
+						CheckPeriod: tailscale.Duration{Duration: time.Hour * 20},
+					},
+				},
 				Tests: []tailscale.ACLTest{
 					{
 						User:   "",
