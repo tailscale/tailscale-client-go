@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tailscale/hujson"
 
-	"github.com/davidsbond/tailscale-client-go/tailscale"
+	"github.com/tailscale/tailscale-client-go/tailscale"
 )
 
 var (

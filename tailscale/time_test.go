@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/davidsbond/tailscale-client-go/tailscale"
+	"github.com/tailscale/tailscale-client-go/tailscale"
 )
 
 func TestWrapsStdTime(t *testing.T) {
