@@ -322,6 +322,18 @@ func (c *Client) SetACL(ctx context.Context, acl ACL) error {
 	return c.performRequest(req, nil)
 }
 
+// ValidateACL validates the provided ACL via the API.
+func (c *Client) ValidateACL(ctx context.Context, acl ACL) error {
+	const uriFmt = "/api/v2/tailnet/%s/acl/validate"
+
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), acl)
+	if err != nil {
+		return err
+	}
+
+	return c.performRequest(req, nil)
+}
+
 type DNSPreferences struct {
 	MagicDNS bool `json:"magicDNS"`
 }
