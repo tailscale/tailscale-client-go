@@ -669,6 +669,28 @@ func TestClient_GetKey(t *testing.T) {
 	assert.Equal(t, "/api/v2/tailnet/example.com/keys/"+expected.ID, server.Path)
 }
 
+func TestClient_Keys(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	expected := []tailscale.Key{
+		{ID: "key-a"},
+		{ID: "key-b"},
+	}
+
+	server.ResponseBody = map[string][]tailscale.Key{
+		"keys": expected,
+	}
+
+	actual, err := client.Keys(context.Background())
+	assert.NoError(t, err)
+	assert.EqualValues(t, expected, actual)
+	assert.Equal(t, http.MethodGet, server.Method)
+	assert.Equal(t, "/api/v2/tailnet/example.com/keys", server.Path)
+}
+
 func TestClient_DeleteKey(t *testing.T) {
 	t.Parallel()
 
