@@ -756,3 +756,52 @@ func TestErrorData(t *testing.T) {
 		assert.Empty(t, tailscale.ErrorData(io.EOF))
 	})
 }
+
+func TestClient_ValidateACL(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+
+	acl := tailscale.ACL{
+		ACLs: []tailscale.ACLEntry{
+			{
+				Action: "accept",
+				Ports:  []string{"*:*"},
+				Users:  []string{"*"},
+			},
+		},
+		TagOwners: map[string][]string{
+			"tag:example": {"group:example"},
+		},
+		Hosts: map[string]string{
+			"example-host-1": "10.0.0.0/8",
+			"example-host-2": "10.0.0.1",
+		},
+		Groups: map[string][]string{
+			"group:example": {
+				"user1@example.com",
+				"user2@example.com",
+			},
+		},
+		Tests: []tailscale.ACLTest{
+			{
+				User:  "user1@example.com",
+				Allow: []string{"example-host-1:22", "example-host-2:80"},
+				Deny:  []string{"exapmle-host-2:100"},
+			},
+			{
+				User:  "user2@example.com",
+				Allow: []string{"100.64.0.1:22"},
+			},
+		},
+	}
+
+	server.ResponseCode = http.StatusOK
+	server.ResponseBody = acl
+
+	err := client.ValidateACL(context.Background(), acl)
+	assert.NoError(t, err)
+	assert.EqualValues(t, server.ResponseBody, acl)
+	assert.EqualValues(t, http.MethodPost, server.Method)
+	assert.EqualValues(t, "/api/v2/tailnet/example.com/acl/validate", server.Path)
+}
