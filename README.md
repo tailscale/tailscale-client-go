@@ -1,8 +1,8 @@
 # tailscale-client-go
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/davidsbond/tailscale-client-go.svg)](https://pkg.go.dev/github.com/davidsbond/tailscale-client-go)
-[![Go Report Card](https://goreportcard.com/badge/github.com/davidsbond/tailscale-client-go)](https://goreportcard.com/report/github.com/davidsbond/tailscale-client-go)
-![Github Actions](https://github.com/davidsbond/tailscale-client-go/actions/workflows/ci.yml/badge.svg?branch=master)
+[![Go Reference](https://pkg.go.dev/badge/github.com/tailscale/tailscale-client-go.svg)](https://pkg.go.dev/github.com/tailscale/tailscale-client-go)
+[![Go Report Card](https://goreportcard.com/badge/github.com/tailscale/tailscale-client-go)](https://goreportcard.com/report/github.com/tailscale/tailscale-client-go)
+![Github Actions](https://github.com/tailscale/tailscale-client-go/actions/workflows/ci.yml/badge.svg?branch=master)
 
 
 A client implementation for the [Tailscale](https://tailscale.com) HTTP API
@@ -17,7 +17,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/davidsbond/tailscale-client-go/tailscale"
+	"github.com/tailscale/tailscale-client-go/tailscale"
 )
 
 func main() {

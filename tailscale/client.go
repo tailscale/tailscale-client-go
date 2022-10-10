@@ -550,6 +550,24 @@ func (c *Client) GetKey(ctx context.Context, id string) (Key, error) {
 	return key, c.performRequest(req, &key)
 }
 
+// Keys returns all keys within the tailnet. The only fields set for each key will be its identifier. The keys returned
+// are relative to the user that owns the API key used to authenticate the client.
+func (c *Client) Keys(ctx context.Context) ([]Key, error) {
+	const uriFmt = "/api/v2/tailnet/%s/keys"
+
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make(map[string][]Key)
+	if err = c.performRequest(req, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp["keys"], nil
+}
+
 // DeleteKey removes an authentication key from the tailnet.
 func (c *Client) DeleteKey(ctx context.Context, id string) error {
 	const uriFmt = "/api/v2/tailnet/%s/keys/%s"
