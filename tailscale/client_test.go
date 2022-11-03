@@ -623,6 +623,7 @@ func TestClient_CreateKey(t *testing.T) {
 	capabilities.Devices.Create.Reusable = true
 	capabilities.Devices.Create.Preauthorized = true
 	capabilities.Devices.Create.Tags = []string{"test:test"}
+	capabilities.Devices.Create.Expiry = 3600
 
 	expected := tailscale.Key{
 		ID:           "test",
