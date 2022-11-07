@@ -506,7 +506,6 @@ type (
 				Ephemeral     bool     `json:"ephemeral"`
 				Tags          []string `json:"tags"`
 				Preauthorized bool     `json:"preauthorized"`
-				Expiry        int      `json:"expirySeconds"`
 			} `json:"create"`
 		} `json:"devices"`
 	}
@@ -518,6 +517,7 @@ type (
 		Created      time.Time       `json:"created"`
 		Expires      time.Time       `json:"expires"`
 		Capabilities KeyCapabilities `json:"capabilities"`
+		Expiry       int             `json:"expirySeconds"`
 	}
 )
 
