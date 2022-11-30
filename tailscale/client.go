@@ -506,10 +506,18 @@ type (
 				Ephemeral     bool     `json:"ephemeral"`
 				Tags          []string `json:"tags"`
 				Preauthorized bool     `json:"preauthorized"`
-				Expiry        int      `json:"expirySeconds"`
 			} `json:"create"`
 		} `json:"devices"`
 	}
+
+	// The CreateKeyRequest type describes the definition of an authentication key to create.
+	CreateKeyRequest struct {
+		Capabilities  KeyCapabilities `json:"capabilities"`
+		ExpirySeconds int64           `json:"expirySeconds"`
+	}
+
+	// The CreateKeyOption type is a function that is used to modify a CreateKeyRequest.
+	CreateKeyOption func(c *CreateKeyRequest) error
 
 	// The Key type describes an authentication key within the tailnet.
 	Key struct {
@@ -521,14 +529,30 @@ type (
 	}
 )
 
+// WithKeyExpiry sets how long the key is valid for.
+func WithKeyExpiry(e time.Duration) CreateKeyOption {
+	return func(c *CreateKeyRequest) error {
+		c.ExpirySeconds = int64(e.Seconds())
+		return nil
+	}
+}
+
 // CreateKey creates a new authentication key with the capabilities selected via the KeyCapabilities type. Returns
 // the generated key if successful.
-func (c *Client) CreateKey(ctx context.Context, capabilities KeyCapabilities) (Key, error) {
+func (c *Client) CreateKey(ctx context.Context, capabilities KeyCapabilities, opts ...CreateKeyOption) (Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys"
 
-	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), map[string]KeyCapabilities{
-		"capabilities": capabilities,
-	})
+	ckr := &CreateKeyRequest{
+		Capabilities: capabilities,
+	}
+
+	for _, opt := range opts {
+		if err := opt(ckr); err != nil {
+			return Key{}, err
+		}
+	}
+
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), ckr)
 	if err != nil {
 		return Key{}, err
 	}
