@@ -269,6 +269,32 @@ func TestClient_SetACL(t *testing.T) {
 	assert.NoError(t, client.SetACL(context.Background(), expectedACL))
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/acl", server.Path)
+	assert.Equal(t, "", server.Header.Get("If-Match"))
+
+	var actualACL tailscale.ACL
+	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &actualACL))
+	assert.EqualValues(t, expectedACL, actualACL)
+}
+
+func TestClient_SetACLWithETag(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+	expectedACL := tailscale.ACL{
+		ACLs: []tailscale.ACLEntry{
+			{
+				Action: "accept",
+				Ports:  []string{"*:*"},
+				Users:  []string{"*"},
+			},
+		},
+	}
+
+	assert.NoError(t, client.SetACL(context.Background(), expectedACL, tailscale.WithETag("test-etag")))
+	assert.Equal(t, http.MethodPost, server.Method)
+	assert.Equal(t, "/api/v2/tailnet/example.com/acl", server.Path)
+	assert.Equal(t, `"test-etag"`, server.Header.Get("If-Match"))
 
 	var actualACL tailscale.ACL
 	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &actualACL))

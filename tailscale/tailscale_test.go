@@ -20,6 +20,7 @@ type TestServer struct {
 	Method string
 	Path   string
 	Body   *bytes.Buffer
+	Header http.Header
 
 	ResponseCode int
 	ResponseBody interface{}
@@ -61,6 +62,7 @@ func NewTestHarness(t *testing.T) (*tailscale.Client, *TestServer) {
 func (t *TestServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.Method = r.Method
 	t.Path = r.URL.Path
+	t.Header = r.Header
 
 	t.Body = bytes.NewBuffer([]byte{})
 	_, err := io.Copy(t.Body, r.Body)
