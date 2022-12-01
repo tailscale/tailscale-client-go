@@ -116,7 +116,7 @@ func TestACL_Unmarshal(t *testing.T) {
 						Source:      []string{"tag:logging"},
 						Destination: []string{"tag:prod"},
 						Users:       []string{"root", "autogroup:nonroot"},
-						CheckPeriod: tailscale.Duration{Duration: time.Hour * 20},
+						CheckPeriod: tailscale.Duration(time.Hour * 20),
 					},
 				},
 			},
@@ -195,7 +195,7 @@ func TestACL_Unmarshal(t *testing.T) {
 						Source:      []string{"tag:logging"},
 						Destination: []string{"tag:prod"},
 						Users:       []string{"root", "autogroup:nonroot"},
-						CheckPeriod: tailscale.Duration{Duration: time.Hour * 20},
+						CheckPeriod: tailscale.Duration(time.Hour * 20),
 					},
 				},
 				Tests: []tailscale.ACLTest{

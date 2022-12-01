@@ -1,6 +1,7 @@
 package tailscale_test
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -57,8 +58,79 @@ func TestMarshalingTimestamps(t *testing.T) {
 	}
 }
 
-func TestWrapsStdDuration(t *testing.T) {
-	expectedDuration := tailscale.Duration{}
-	newDuration := time.Duration(0)
-	assert.Equal(t, expectedDuration.Duration, newDuration)
+func TestDurationUnmarshal(t *testing.T) {
+	t.Parallel()
+
+	tt := []struct {
+		Name     string
+		Content  string
+		Expected tailscale.Duration
+	}{
+		{
+			Name:     "It should handle empty string as zero value",
+			Content:  `""`,
+			Expected: tailscale.Duration(0),
+		},
+		{
+			Name:     "It should handle null as zero value",
+			Content:  `null`,
+			Expected: tailscale.Duration(0),
+		},
+		{
+			Name:     "It should handle 0s as zero value",
+			Content:  `"0s"`,
+			Expected: tailscale.Duration(0),
+		},
+		{
+			Name:     "It should parse duration strings",
+			Content:  `"15s"`,
+			Expected: tailscale.Duration(15 * time.Second),
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.Name, func(t *testing.T) {
+			var actual tailscale.Duration
+
+			assert.NoError(t, json.Unmarshal([]byte(tc.Content), &actual))
+			assert.Equal(t, tc.Expected, actual)
+		})
+	}
+}
+
+func TestDurationMarshal(t *testing.T) {
+	t.Parallel()
+
+	tt := []struct {
+		Name     string
+		Content  any
+		Expected string
+	}{
+		{
+			Name:     "It should marshal zero duration as 0s",
+			Content:  struct{ D tailscale.Duration }{tailscale.Duration(0)},
+			Expected: `{"D":"0s"}`,
+		},
+		{
+			Name: "It should not marshal zero duration if omitempty",
+			Content: struct {
+				D tailscale.Duration `json:"d,omitempty"`
+			}{tailscale.Duration(0)},
+			Expected: `{}`,
+		},
+		{
+			Name:     "It should marshal duration correctly",
+			Content:  struct{ D tailscale.Duration }{tailscale.Duration(15 * time.Second)},
+			Expected: `{"D":"15s"}`,
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.Name, func(t *testing.T) {
+			actual, err := json.Marshal(tc.Content)
+
+			assert.NoError(t, err)
+			assert.Equal(t, tc.Expected, string(actual))
+		})
+	}
 }

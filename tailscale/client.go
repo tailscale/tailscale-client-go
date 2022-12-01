@@ -230,7 +230,7 @@ func (c *Client) DNSNameservers(ctx context.Context) ([]string, error) {
 
 type (
 	ACL struct {
-		ACLs                []ACLEntry          `json:"acls" hujson:"ACLs,omitempty"`
+		ACLs                []ACLEntry          `json:"acls,omitempty" hujson:"ACLs,omitempty"`
 		AutoApprovers       *ACLAutoApprovers   `json:"autoapprovers,omitempty" hujson:"AutoApprovers,omitempty"`
 		Groups              map[string][]string `json:"groups,omitempty" hujson:"Groups,omitempty"`
 		Hosts               map[string]string   `json:"hosts,omitempty" hujson:"Hosts,omitempty"`
@@ -245,25 +245,25 @@ type (
 	}
 
 	ACLAutoApprovers struct {
-		Routes   map[string][]string `json:"routes" hujson:"Routes"`
-		ExitNode []string            `json:"exitNode" hujson:"ExitNode"`
+		Routes   map[string][]string `json:"routes,omitempty" hujson:"Routes,omitempty"`
+		ExitNode []string            `json:"exitNode,omitempty" hujson:"ExitNode,omitempty"`
 	}
 
 	ACLEntry struct {
-		Action      string   `json:"action" hujson:"Action"`
-		Ports       []string `json:"ports" hujson:"Ports"`
-		Users       []string `json:"users" hujson:"Users"`
-		Source      []string `json:"src" hujson:"Src"`
-		Destination []string `json:"dst" hujson:"Dst"`
-		Protocol    string   `json:"proto" hujson:"Proto"`
+		Action      string   `json:"action,omitempty" hujson:"Action,omitempty"`
+		Ports       []string `json:"ports,omitempty" hujson:"Ports,omitempty"`
+		Users       []string `json:"users,omitempty" hujson:"Users,omitempty"`
+		Source      []string `json:"src,omitempty" hujson:"Src,omitempty"`
+		Destination []string `json:"dst,omitempty" hujson:"Dst,omitempty"`
+		Protocol    string   `json:"proto,omitempty" hujson:"Proto,omitempty"`
 	}
 
 	ACLTest struct {
-		User   string   `json:"user" hujson:"User"`
-		Allow  []string `json:"allow" hujson:"Allow"`
-		Deny   []string `json:"deny" hujson:"Deny"`
-		Source string   `json:"src" hujson:"Src"`
-		Accept []string `json:"accept" hujson:"Accept"`
+		User   string   `json:"user,omitempty" hujson:"User,omitempty"`
+		Allow  []string `json:"allow,omitempty" hujson:"Allow,omitempty"`
+		Deny   []string `json:"deny,omitempty" hujson:"Deny,omitempty"`
+		Source string   `json:"src,omitempty" hujson:"Src,omitempty"`
+		Accept []string `json:"accept,omitempty" hujson:"Accept,omitempty"`
 	}
 
 	ACLDERPMap struct {
@@ -294,11 +294,11 @@ type (
 	}
 
 	ACLSSH struct {
-		Action      string   `json:"action" hujson:"Action"`
-		Users       []string `json:"users" hujson:"Users"`
-		Source      []string `json:"src" hujson:"Src"`
-		Destination []string `json:"dst" hujson:"Dst"`
-		CheckPeriod Duration `json:"checkPeriod" hujson:"CheckPeriod"`
+		Action      string   `json:"action,omitempty" hujson:"Action,omitempty"`
+		Users       []string `json:"users,omitempty" hujson:"Users,omitempty"`
+		Source      []string `json:"src,omitempty" hujson:"Src,omitempty"`
+		Destination []string `json:"dst,omitempty" hujson:"Dst,omitempty"`
+		CheckPeriod Duration `json:"checkPeriod,omitempty" hujson:"CheckPeriod,omitempty"`
 	}
 
 	NodeAttrGrant struct {
@@ -694,31 +694,25 @@ func ErrorData(err error) []APIErrorData {
 
 // The Duration type wraps a time.Duration, allowing it to be JSON marshalled as a string like "20h" rather than
 // a numeric value.
-type Duration struct {
-	time.Duration
+type Duration time.Duration
+
+func (d Duration) String() string {
+	return time.Duration(d).String()
 }
 
-// MarshalJSON is an implementation of json.Marshal.
-func (d Duration) MarshalJSON() ([]byte, error) {
-	return json.Marshal(d.Duration.String())
+func (d Duration) MarshalText() ([]byte, error) {
+	return []byte(d.String()), nil
 }
 
-// UnmarshalJSON unmarshals the content of data as a time.Duration, a blank string will keep the duration at its zero value.
-func (d *Duration) UnmarshalJSON(data []byte) error {
-	if string(data) == `""` {
-		return nil
+func (d *Duration) UnmarshalText(b []byte) error {
+	text := string(b)
+	if text == "" {
+		text = "0s"
 	}
-
-	var str string
-	if err := json.Unmarshal(data, &str); err != nil {
-		return err
-	}
-
-	dur, err := time.ParseDuration(str)
+	pd, err := time.ParseDuration(text)
 	if err != nil {
 		return err
 	}
-
-	d.Duration = dur
+	*d = Duration(pd)
 	return nil
 }
