@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/tailscale/hujson"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 type (
@@ -82,6 +83,23 @@ func WithBaseURL(baseURL string) ClientOption {
 	}
 }
 
+func WithClientCredentials(ctx context.Context, clientID, clientSecret string, scopes []string) ClientOption {
+	return func(c *Client) error {
+		relTokenURL, err := url.Parse("/api/v2/oauth/token")
+		if err != nil {
+			return err
+		}
+		config := clientcredentials.Config{
+			ClientID:     clientID,
+			ClientSecret: clientSecret,
+			TokenURL:     c.baseURL.ResolveReference(relTokenURL).String(),
+			Scopes:       scopes,
+		}
+		c.http = config.Client(ctx)
+		return nil
+	}
+}
+
 // TODO: consider setting `headers` and `body` via opts to decrease the number of arguments.
 func (c *Client) buildRequest(ctx context.Context, method, uri string, headers map[string]string, body interface{}) (*http.Request, error) {
 	u, err := c.baseURL.Parse(uri)
@@ -113,7 +131,9 @@ func (c *Client) buildRequest(ctx context.Context, method, uri string, headers m
 		req.Header.Set("Content-Type", contentType)
 	}
 
-	req.SetBasicAuth(c.apiKey, "")
+	if c.apiKey != "" {
+		req.SetBasicAuth(c.apiKey, "")
+	}
 	return req, nil
 }
 
