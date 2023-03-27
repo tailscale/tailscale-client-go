@@ -14,6 +14,8 @@ import (
 	"time"
 
 	"github.com/tailscale/hujson"
+
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 type (
@@ -44,9 +46,18 @@ type (
 
 const baseURL = "https://api.tailscale.com"
 const contentType = "application/json"
+const defaultHttpClientTimeout = time.Minute
 
 // NewClient returns a new instance of the Client type that will perform operations against a chosen tailnet and will
 // provide the apiKey for authorization. Additional options can be provided, see ClientOption for more details.
+//
+// To use OAuth Client credentials pass an empty string as apiKey and use WithOAuthClientCredentials() as below:
+//
+//	client, err := tailscale.NewClient(
+//	"",
+//	tailnet,
+//	tailscale.WithOAuthClientCredentials(oauthClientID, oauthClientSecret, oauthScopes),
+//	)
 func NewClient(apiKey, tailnet string, options ...ClientOption) (*Client, error) {
 	u, err := url.Parse(baseURL)
 	if err != nil {
@@ -54,16 +65,24 @@ func NewClient(apiKey, tailnet string, options ...ClientOption) (*Client, error)
 	}
 
 	c := &Client{
-		apiKey:  apiKey,
-		http:    &http.Client{Timeout: time.Minute},
 		baseURL: u,
 		tailnet: tailnet,
+	}
+
+	if apiKey != "" {
+		c.apiKey = apiKey
+		c.http = &http.Client{Timeout: defaultHttpClientTimeout}
 	}
 
 	for _, option := range options {
 		if err = option(c); err != nil {
 			return nil, err
 		}
+	}
+
+	// apiKey or WithOAuthClientCredentials will initialize the http client. Fail here if both are not set.
+	if c.apiKey == "" && c.http == nil {
+		return nil, errors.New("no authentication credentials provided")
 	}
 
 	return c, nil
@@ -78,6 +97,27 @@ func WithBaseURL(baseURL string) ClientOption {
 		}
 
 		c.baseURL = u
+		return nil
+	}
+}
+
+// WithOAuthClientCredentials sets the OAuth Client Credentials to use for the Tailscale API.
+func WithOAuthClientCredentials(clientID, clientSecret string, scopes []string) ClientOption {
+	return func(c *Client) error {
+		relTokenURL, err := url.Parse("/api/v2/oauth/token")
+		if err != nil {
+			return err
+		}
+		oauthConfig := clientcredentials.Config{
+			ClientID:     clientID,
+			ClientSecret: clientSecret,
+			TokenURL:     c.baseURL.ResolveReference(relTokenURL).String(),
+			Scopes:       scopes,
+		}
+
+		// use context.Background() here, since this is used to refresh the token in the future
+		c.http = oauthConfig.Client(context.Background())
+		c.http.Timeout = defaultHttpClientTimeout
 		return nil
 	}
 }
@@ -113,7 +153,11 @@ func (c *Client) buildRequest(ctx context.Context, method, uri string, headers m
 		req.Header.Set("Content-Type", contentType)
 	}
 
-	req.SetBasicAuth(c.apiKey, "")
+	// c.apiKey will not be set on the client was configured with WithOAuthClientCredentials()
+	if c.apiKey != "" {
+		req.SetBasicAuth(c.apiKey, "")
+	}
+
 	return req, nil
 }
 
