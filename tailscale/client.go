@@ -589,6 +589,7 @@ type (
 	// The CreateKeyRequest type describes the definition of an authentication key to create.
 	CreateKeyRequest struct {
 		Capabilities  KeyCapabilities `json:"capabilities"`
+		Description   string          `json:"description"`
 		ExpirySeconds int64           `json:"expirySeconds"`
 	}
 
@@ -609,6 +610,14 @@ type (
 func WithKeyExpiry(e time.Duration) CreateKeyOption {
 	return func(c *CreateKeyRequest) error {
 		c.ExpirySeconds = int64(e.Seconds())
+		return nil
+	}
+}
+
+// WithDescription sets a description string for the key.
+func WithDescription(e string) CreateKeyOption {
+	return func(c *CreateKeyRequest) error {
+		c.Description = e
 		return nil
 	}
 }
