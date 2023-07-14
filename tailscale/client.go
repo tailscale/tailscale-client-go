@@ -614,8 +614,8 @@ func WithKeyExpiry(e time.Duration) CreateKeyOption {
 	}
 }
 
-// WithDescription sets a description string for the key.
-func WithDescription(e string) CreateKeyOption {
+// WithKeyDescription sets a description string for the key.
+func WithKeyDescription(e string) CreateKeyOption {
 	return func(c *CreateKeyRequest) error {
 		c.Description = e
 		return nil
