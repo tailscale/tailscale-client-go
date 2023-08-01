@@ -590,6 +590,7 @@ type (
 	CreateKeyRequest struct {
 		Capabilities  KeyCapabilities `json:"capabilities"`
 		ExpirySeconds int64           `json:"expirySeconds"`
+		Description   string          `json:"description"`
 	}
 
 	// The CreateKeyOption type is a function that is used to modify a CreateKeyRequest.
@@ -599,6 +600,7 @@ type (
 	Key struct {
 		ID           string          `json:"id"`
 		Key          string          `json:"key"`
+		Description  string          `json:"description"`
 		Created      time.Time       `json:"created"`
 		Expires      time.Time       `json:"expires"`
 		Capabilities KeyCapabilities `json:"capabilities"`
@@ -609,6 +611,14 @@ type (
 func WithKeyExpiry(e time.Duration) CreateKeyOption {
 	return func(c *CreateKeyRequest) error {
 		c.ExpirySeconds = int64(e.Seconds())
+		return nil
+	}
+}
+
+// WithKeyDescription sets the description for the key.
+func WithKeyDescription(desc string) CreateKeyOption {
+	return func(c *CreateKeyRequest) error {
+		c.Description = desc
 		return nil
 	}
 }
