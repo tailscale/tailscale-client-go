@@ -17,6 +17,8 @@ import (
 type TestServer struct {
 	t *testing.T
 
+	BaseURL string
+
 	Method string
 	Path   string
 	Body   *bytes.Buffer
@@ -53,6 +55,7 @@ func NewTestHarness(t *testing.T) (*tailscale.Client, *TestServer) {
 	})
 
 	baseURL := fmt.Sprintf("http://localhost:%v", listener.Addr().(*net.TCPAddr).Port)
+	testServer.BaseURL = baseURL
 	client, err := tailscale.NewClient("not a real key", "example.com", tailscale.WithBaseURL(baseURL))
 	assert.NoError(t, err)
 
