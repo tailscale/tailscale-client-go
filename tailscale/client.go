@@ -19,7 +19,7 @@ import (
 )
 
 type (
-	// The Client type is used to perform actions against the Tailscale API.
+	// Client type is used to perform actions against the Tailscale API.
 	Client struct {
 		apiKey  string
 		http    *http.Client
@@ -27,20 +27,20 @@ type (
 		tailnet string
 	}
 
-	// The APIError type describes an error as returned by the Tailscale API.
+	// APIError type describes an error as returned by the Tailscale API.
 	APIError struct {
 		Message string         `json:"message"`
 		Data    []APIErrorData `json:"data"`
 		status  int
 	}
 
-	// The APIErrorData type describes elements of the data field within errors returned by the Tailscale API.
+	// APIErrorData type describes elements of the data field within errors returned by the Tailscale API.
 	APIErrorData struct {
 		User   string   `json:"user"`
 		Errors []string `json:"errors"`
 	}
 
-	// The ClientOption type is a function that is used to modify a Client.
+	// ClientOption type is a function that is used to modify a Client.
 	ClientOption func(c *Client) error
 )
 
@@ -273,6 +273,7 @@ func (c *Client) DNSNameservers(ctx context.Context) ([]string, error) {
 }
 
 type (
+	// ACL contains the schema for a tailnet policy file. More details: https://tailscale.com/kb/1018/acls/
 	ACL struct {
 		ACLs                []ACLEntry          `json:"acls,omitempty" hujson:"ACLs,omitempty"`
 		AutoApprovers       *ACLAutoApprovers   `json:"autoapprovers,omitempty" hujson:"AutoApprovers,omitempty"`
@@ -287,7 +288,8 @@ type (
 		OneCGNATRoute       string              `json:"oneCGNATRoute,omitempty" hujson:"OneCGNATRoute,omitempty"`
 		RandomizeClientPort bool                `json:"randomizeClientPort,omitempty" hujson:"RandomizeClientPort,omitempty"`
 
-		// As of Aug 2023 these fields are experimental and subject to change.
+		// Postures and DefaultSourcePosture are for an experimental feature and not yet public or documented as of 2023-08-17.
+		// This API is subject to change. Internal bug: corp/13986
 		Postures             map[string][]string `json:"postures,omitempty" hujson:"Postures,omitempty"`
 		DefaultSourcePosture []string            `json:"defaultSrcPosture,omitempty" hujson:"DefaultSrcPosture,omitempty"`
 	}
@@ -305,7 +307,7 @@ type (
 		Destination []string `json:"dst,omitempty" hujson:"Dst,omitempty"`
 		Protocol    string   `json:"proto,omitempty" hujson:"Proto,omitempty"`
 
-		// Experimental.
+		// SourcePosture is for an experimental feature and not yet public or documented as of 2023-08-17.
 		SourcePosture []string `json:"srcPosture,omitempty" hujson:"SrcPosture,omitempty"`
 	}
 
@@ -588,7 +590,7 @@ func (c *Client) DeleteDevice(ctx context.Context, deviceID string) error {
 }
 
 type (
-	// The KeyCapabilities type describes the capabilities of an authentication key.
+	// KeyCapabilities type describes the capabilities of an authentication key.
 	KeyCapabilities struct {
 		Devices struct {
 			Create struct {
@@ -600,17 +602,17 @@ type (
 		} `json:"devices"`
 	}
 
-	// The CreateKeyRequest type describes the definition of an authentication key to create.
+	// CreateKeyRequest type describes the definition of an authentication key to create.
 	CreateKeyRequest struct {
 		Capabilities  KeyCapabilities `json:"capabilities"`
 		ExpirySeconds int64           `json:"expirySeconds"`
 		Description   string          `json:"description"`
 	}
 
-	// The CreateKeyOption type is a function that is used to modify a CreateKeyRequest.
+	// CreateKeyOption type is a function that is used to modify a CreateKeyRequest.
 	CreateKeyOption func(c *CreateKeyRequest) error
 
-	// The Key type describes an authentication key within the tailnet.
+	// Key type describes an authentication key within the tailnet.
 	Key struct {
 		ID           string          `json:"id"`
 		Key          string          `json:"key"`
@@ -720,7 +722,7 @@ func (c *Client) SetDeviceTags(ctx context.Context, deviceID string, tags []stri
 }
 
 type (
-	// The DeviceKey type represents the properties of the key of an individual device within
+	// DeviceKey type represents the properties of the key of an individual device within
 	// the tailnet.
 	DeviceKey struct {
 		KeyExpiryDisabled bool `json:"keyExpiryDisabled"` // Whether or not this device's key will ever expire.
@@ -760,7 +762,7 @@ func ErrorData(err error) []APIErrorData {
 	return nil
 }
 
-// The Duration type wraps a time.Duration, allowing it to be JSON marshalled as a string like "20h" rather than
+// Duration type wraps a time.Duration, allowing it to be JSON marshalled as a string like "20h" rather than
 // a numeric value.
 type Duration time.Duration
 
