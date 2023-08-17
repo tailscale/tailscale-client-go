@@ -638,6 +638,25 @@ func TestClient_AuthorizeDevice(t *testing.T) {
 	assert.EqualValues(t, true, body["authorized"])
 }
 
+func TestClient_SetDeviceAuthorized(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	const deviceID = "test"
+
+	for _, value := range []bool{true, false} {
+		assert.NoError(t, client.SetDeviceAuthorized(context.Background(), deviceID, value))
+		assert.Equal(t, http.MethodPost, server.Method)
+		assert.Equal(t, "/api/v2/device/test/authorized", server.Path)
+
+		body := make(map[string]bool)
+		assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &body))
+		assert.EqualValues(t, value, body["authorized"])
+	}
+}
+
 func TestClient_CreateKey(t *testing.T) {
 	t.Parallel()
 
