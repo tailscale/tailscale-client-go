@@ -5,7 +5,8 @@
 ![Github Actions](https://github.com/tailscale/tailscale-client-go/actions/workflows/ci.yml/badge.svg?branch=master)
 
 
-A client implementation for the [Tailscale](https://tailscale.com) HTTP API
+A client implementation for the [Tailscale](https://tailscale.com) HTTP API.
+For more details, please see [API documentation](https://github.com/tailscale/tailscale/blob/main/api.md).
 
 # Example
 
