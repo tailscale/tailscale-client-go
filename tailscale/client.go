@@ -559,10 +559,15 @@ func (c *Client) Devices(ctx context.Context) ([]Device, error) {
 
 // AuthorizeDevice marks the specified device identifier as authorized to join the tailnet.
 func (c *Client) AuthorizeDevice(ctx context.Context, deviceID string) error {
+	return c.SetDeviceAuthorized(ctx, deviceID, true)
+}
+
+// SetDeviceAuthorized marks the specified device as authorized or not.
+func (c *Client) SetDeviceAuthorized(ctx context.Context, deviceID string, authorized bool) error {
 	const uriFmt = "/api/v2/device/%s/authorized"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), nil, map[string]bool{
-		"authorized": true,
+		"authorized": authorized,
 	})
 	if err != nil {
 		return err
