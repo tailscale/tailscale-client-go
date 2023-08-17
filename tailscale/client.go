@@ -286,6 +286,10 @@ type (
 		DisableIPv4         bool                `json:"disableIPv4,omitempty" hujson:"DisableIPv4,omitempty"`
 		OneCGNATRoute       string              `json:"oneCGNATRoute,omitempty" hujson:"OneCGNATRoute,omitempty"`
 		RandomizeClientPort bool                `json:"randomizeClientPort,omitempty" hujson:"RandomizeClientPort,omitempty"`
+
+		// As of Aug 2023 these fields are experimental and subject to change.
+		Postures             map[string][]string `json:"postures,omitempty" hujson:"Postures,omitempty"`
+		DefaultSourcePosture []string            `json:"defaultSrcPosture,omitempty" hujson:"DefaultSrcPosture,omitempty"`
 	}
 
 	ACLAutoApprovers struct {
@@ -300,6 +304,9 @@ type (
 		Source      []string `json:"src,omitempty" hujson:"Src,omitempty"`
 		Destination []string `json:"dst,omitempty" hujson:"Dst,omitempty"`
 		Protocol    string   `json:"proto,omitempty" hujson:"Proto,omitempty"`
+
+		// Experimental.
+		SourcePosture []string `json:"srcPosture,omitempty" hujson:"SrcPosture,omitempty"`
 	}
 
 	ACLTest struct {
@@ -338,11 +345,13 @@ type (
 	}
 
 	ACLSSH struct {
-		Action      string   `json:"action,omitempty" hujson:"Action,omitempty"`
-		Users       []string `json:"users,omitempty" hujson:"Users,omitempty"`
-		Source      []string `json:"src,omitempty" hujson:"Src,omitempty"`
-		Destination []string `json:"dst,omitempty" hujson:"Dst,omitempty"`
-		CheckPeriod Duration `json:"checkPeriod,omitempty" hujson:"CheckPeriod,omitempty"`
+		Action          string   `json:"action,omitempty" hujson:"Action,omitempty"`
+		Users           []string `json:"users,omitempty" hujson:"Users,omitempty"`
+		Source          []string `json:"src,omitempty" hujson:"Src,omitempty"`
+		Destination     []string `json:"dst,omitempty" hujson:"Dst,omitempty"`
+		CheckPeriod     Duration `json:"checkPeriod,omitempty" hujson:"CheckPeriod,omitempty"`
+		Recorder        []string `json:"recorder,omitempty" hujson:"Recorder,omitempty"`
+		EnforceRecorder bool     `json:"enforceRecorder,omitempty" hujson:"EnforceRecorder,omitempty"`
 	}
 
 	NodeAttrGrant struct {
