@@ -952,3 +952,25 @@ func TestClient_ValidateACL(t *testing.T) {
 	assert.EqualValues(t, http.MethodPost, server.Method)
 	assert.EqualValues(t, "/api/v2/tailnet/example.com/acl/validate", server.Path)
 }
+
+func TestClient_UserAgent(t *testing.T) {
+	t.Parallel()
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	// Check the default user-agent.
+	assert.NoError(t, client.SetDeviceAuthorized(context.Background(), "test", true))
+	assert.Equal(t, "tailscale-client-go", server.Header.Get("User-Agent"))
+
+	// Check a custom user-agent.
+	client, err := tailscale.NewClient("fake key", "", tailscale.WithBaseURL(server.BaseURL), tailscale.WithUserAgent("custom-user-agent"))
+	assert.NoError(t, err)
+	assert.NoError(t, client.SetDeviceAuthorized(context.Background(), "test", true))
+	assert.Equal(t, "custom-user-agent", server.Header.Get("User-Agent"))
+
+	// Overriding with an empty string uses runtime's default value.
+	client, err = tailscale.NewClient("fake key", "", tailscale.WithBaseURL(server.BaseURL), tailscale.WithUserAgent(""))
+	assert.NoError(t, err)
+	assert.NoError(t, client.SetDeviceAuthorized(context.Background(), "test", true))
+	assert.Contains(t, server.Header.Get("User-Agent"), "Go-http-client")
+}

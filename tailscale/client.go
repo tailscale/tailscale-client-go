@@ -21,10 +21,11 @@ import (
 type (
 	// Client type is used to perform actions against the Tailscale API.
 	Client struct {
-		apiKey  string
-		http    *http.Client
-		baseURL *url.URL
-		tailnet string
+		apiKey    string
+		http      *http.Client
+		baseURL   *url.URL
+		tailnet   string
+		userAgent string // empty string means Go's default value.
 	}
 
 	// APIError type describes an error as returned by the Tailscale API.
@@ -47,6 +48,7 @@ type (
 const baseURL = "https://api.tailscale.com"
 const contentType = "application/json"
 const defaultHttpClientTimeout = time.Minute
+const defaultUserAgent = "tailscale-client-go"
 
 // NewClient returns a new instance of the Client type that will perform operations against a chosen tailnet and will
 // provide the apiKey for authorization. Additional options can be provided, see ClientOption for more details.
@@ -65,8 +67,9 @@ func NewClient(apiKey, tailnet string, options ...ClientOption) (*Client, error)
 	}
 
 	c := &Client{
-		baseURL: u,
-		tailnet: tailnet,
+		baseURL:   u,
+		tailnet:   tailnet,
+		userAgent: defaultUserAgent,
 	}
 
 	if apiKey != "" {
@@ -122,6 +125,15 @@ func WithOAuthClientCredentials(clientID, clientSecret string, scopes []string) 
 	}
 }
 
+// WithUserAgent sets a custom User-Agent header in HTTP requests.
+// Passing an empty string will make the client use Go's default value.
+func WithUserAgent(ua string) ClientOption {
+	return func(c *Client) error {
+		c.userAgent = ua
+		return nil
+	}
+}
+
 // TODO: consider setting `headers` and `body` via opts to decrease the number of arguments.
 func (c *Client) buildRequest(ctx context.Context, method, uri string, headers map[string]string, body interface{}) (*http.Request, error) {
 	u, err := c.baseURL.Parse(uri)
@@ -140,6 +152,10 @@ func (c *Client) buildRequest(ctx context.Context, method, uri string, headers m
 	req, err := http.NewRequestWithContext(ctx, method, u.String(), bytes.NewBuffer(bodyBytes))
 	if err != nil {
 		return nil, err
+	}
+
+	if c.userAgent != "" {
+		req.Header.Set("User-Agent", c.userAgent)
 	}
 
 	for k, v := range headers {
