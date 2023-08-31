@@ -292,10 +292,10 @@ type (
 	// ACL contains the schema for a tailnet policy file. More details: https://tailscale.com/kb/1018/acls/
 	ACL struct {
 		ACLs                []ACLEntry          `json:"acls,omitempty" hujson:"ACLs,omitempty"`
-		AutoApprovers       *ACLAutoApprovers   `json:"autoapprovers,omitempty" hujson:"AutoApprovers,omitempty"`
+		AutoApprovers       *ACLAutoApprovers   `json:"autoApprovers,omitempty" hujson:"AutoApprovers,omitempty"`
 		Groups              map[string][]string `json:"groups,omitempty" hujson:"Groups,omitempty"`
 		Hosts               map[string]string   `json:"hosts,omitempty" hujson:"Hosts,omitempty"`
-		TagOwners           map[string][]string `json:"tagowners,omitempty" hujson:"TagOwners,omitempty"`
+		TagOwners           map[string][]string `json:"tagOwners,omitempty" hujson:"TagOwners,omitempty"`
 		DERPMap             *ACLDERPMap         `json:"derpMap,omitempty" hujson:"DerpMap,omitempty"`
 		Tests               []ACLTest           `json:"tests,omitempty" hujson:"Tests,omitempty"`
 		SSH                 []ACLSSH            `json:"ssh,omitempty" hujson:"SSH,omitempty"`
