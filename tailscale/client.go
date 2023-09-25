@@ -635,6 +635,8 @@ type (
 		Description  string          `json:"description"`
 		Created      time.Time       `json:"created"`
 		Expires      time.Time       `json:"expires"`
+		Revoked      time.Time       `json:"revoked"`
+		Invalid      bool            `json:"invalid"`
 		Capabilities KeyCapabilities `json:"capabilities"`
 	}
 )
