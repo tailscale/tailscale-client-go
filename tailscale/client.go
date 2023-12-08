@@ -373,8 +373,15 @@ type (
 	}
 
 	NodeAttrGrant struct {
-		Target []string `json:"target,omitempty" hujson:"Target,omitempty"`
-		Attr   []string `json:"attr,omitempty" hujson:"Attr,omitempty"`
+		Target []string                       `json:"target,omitempty" hujson:"Target,omitempty"`
+		Attr   []string                       `json:"attr,omitempty" hujson:"Attr,omitempty"`
+		App    map[string][]*NodeAttrGrantApp `json:"app,omitempty" hujson:"App,omitempty"`
+	}
+
+	NodeAttrGrantApp struct {
+		Name       string   `json:"name,omitempty" hujson:"Name,omitempty"`
+		Connectors []string `json:"connectors,omitempty" hujson:"Connectors,omitempty"`
+		Domains    []string `json:"domains,omitempty" hujson:"Domains,omitempty"`
 	}
 )
 
