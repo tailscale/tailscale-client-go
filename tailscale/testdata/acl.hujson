@@ -58,5 +58,15 @@
       "users": ["root", "autogroup:nonroot"],
       "checkPeriod": "20h"
     },
-  ]
+  ],
+  "grants": [{
+    "src": ["group:prod"],
+    "dst": ["tag:tailsql"],
+    "ip": ["443"],
+    "app": {
+        "tailscale.com/cap/tailsql": [{
+            "dataSrc": ["*"],
+        }],
+    },
+  }]
 }

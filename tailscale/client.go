@@ -303,6 +303,7 @@ type (
 		DisableIPv4         bool                `json:"disableIPv4,omitempty" hujson:"DisableIPv4,omitempty"`
 		OneCGNATRoute       string              `json:"oneCGNATRoute,omitempty" hujson:"OneCGNATRoute,omitempty"`
 		RandomizeClientPort bool                `json:"randomizeClientPort,omitempty" hujson:"RandomizeClientPort,omitempty"`
+		Grants              []Grant             `json:"grants,omitempty" hujson:"Grants,omitempty"`
 
 		// Postures and DefaultSourcePosture are for an experimental feature and not yet public or documented as of 2023-08-17.
 		// This API is subject to change. Internal bug: corp/13986
@@ -383,6 +384,15 @@ type (
 		Connectors []string `json:"connectors,omitempty" hujson:"Connectors,omitempty"`
 		Domains    []string `json:"domains,omitempty" hujson:"Domains,omitempty"`
 	}
+
+	Grant struct {
+		Src []string              `json:"src,omitempty" hujson:"Src,omitempty"`
+		Dst []string              `json:"dst,omitempty" hujson:"Dst,omitempty"`
+		IP  []string              `json:"ip,omitempty" hujson:"IP,omitempty"`
+		App map[string][]GrantApp `json:"app,omitempty" hujson:"App,omitempty"`
+	}
+
+	GrantApp map[string][]string
 )
 
 // ACL retrieves the ACL that is currently set for the given tailnet.

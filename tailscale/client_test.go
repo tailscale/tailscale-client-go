@@ -119,6 +119,20 @@ func TestACL_Unmarshal(t *testing.T) {
 						CheckPeriod: tailscale.Duration(time.Hour * 20),
 					},
 				},
+				Grants: []tailscale.Grant{
+					{
+						Src: []string{"group:prod"},
+						Dst: []string{"tag:tailsql"},
+						IP:  []string{"443"},
+						App: map[string][]tailscale.GrantApp{
+							"tailscale.com/cap/tailsql": {
+								{
+									"dataSrc": {"*"},
+								},
+							},
+						},
+					},
+				},
 			},
 		},
 		{
@@ -212,6 +226,20 @@ func TestACL_Unmarshal(t *testing.T) {
 						Deny:   []string{"tag:prod:80"},
 						Source: "alice@example.com",
 						Accept: []string{"tag:dev:80"}},
+				},
+				Grants: []tailscale.Grant{
+					{
+						Src: []string{"group:prod"},
+						Dst: []string{"tag:tailsql"},
+						IP:  []string{"443"},
+						App: map[string][]tailscale.GrantApp{
+							"tailscale.com/cap/tailsql": {
+								{
+									"dataSrc": {"*"},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
