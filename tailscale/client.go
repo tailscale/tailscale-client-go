@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/tailscale/hujson"
+	"tailscale.com/tailcfg"
 
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -386,13 +387,11 @@ type (
 	}
 
 	Grant struct {
-		Src []string              `json:"src,omitempty" hujson:"Src,omitempty"`
-		Dst []string              `json:"dst,omitempty" hujson:"Dst,omitempty"`
-		IP  []string              `json:"ip,omitempty" hujson:"IP,omitempty"`
-		App map[string][]GrantApp `json:"app,omitempty" hujson:"App,omitempty"`
+		Src []string           `json:"src,omitempty" hujson:"Src,omitempty"`
+		Dst []string           `json:"dst,omitempty" hujson:"Dst,omitempty"`
+		IP  []string           `json:"ip,omitempty" hujson:"IP,omitempty"`
+		App tailcfg.PeerCapMap `json:"app,omitempty" hujson:"App,omitempty"`
 	}
-
-	GrantApp map[string][]string
 )
 
 // ACL retrieves the ACL that is currently set for the given tailnet.
