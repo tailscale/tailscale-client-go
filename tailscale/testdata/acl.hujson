@@ -63,10 +63,6 @@
     "src": ["group:prod"],
     "dst": ["tag:tailsql"],
     "ip": ["443"],
-    "app": {
-        "tailscale.com/cap/tailsql": [{
-            "dataSrc": ["*"],
-        }],
-    },
+    "app": {"tailscale.com/cap/tailsql": [{"dataSrc": ["*"]}]},
   }]
 }

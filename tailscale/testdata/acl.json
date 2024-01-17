@@ -52,9 +52,7 @@
       "dst": ["tag:tailsql"],
       "ip": ["443"],
       "app":{
-        "tailscale.com/cap/tailsql": [{
-            "dataSrc": ["*"]
-        }]
+        "tailscale.com/cap/tailsql": [{"dataSrc": ["*"]}]
       }
     }
   ]

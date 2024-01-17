@@ -11,6 +11,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/tailscale/hujson"
+	"tailscale.com/tailcfg"
 
 	"github.com/tailscale/tailscale-client-go/tailscale"
 )
@@ -124,12 +125,8 @@ func TestACL_Unmarshal(t *testing.T) {
 						Src: []string{"group:prod"},
 						Dst: []string{"tag:tailsql"},
 						IP:  []string{"443"},
-						App: map[string][]tailscale.GrantApp{
-							"tailscale.com/cap/tailsql": {
-								{
-									"dataSrc": {"*"},
-								},
-							},
+						App: tailcfg.PeerCapMap{
+							"tailscale.com/cap/tailsql": {`{"dataSrc": ["*"]}`},
 						},
 					},
 				},
@@ -225,19 +222,16 @@ func TestACL_Unmarshal(t *testing.T) {
 						Allow:  []string(nil),
 						Deny:   []string{"tag:prod:80"},
 						Source: "alice@example.com",
-						Accept: []string{"tag:dev:80"}},
+						Accept: []string{"tag:dev:80"},
+					},
 				},
 				Grants: []tailscale.Grant{
 					{
 						Src: []string{"group:prod"},
 						Dst: []string{"tag:tailsql"},
 						IP:  []string{"443"},
-						App: map[string][]tailscale.GrantApp{
-							"tailscale.com/cap/tailsql": {
-								{
-									"dataSrc": {"*"},
-								},
-							},
+						App: tailcfg.PeerCapMap{
+							"tailscale.com/cap/tailsql": {`{"dataSrc": ["*"]}`},
 						},
 					},
 				},
