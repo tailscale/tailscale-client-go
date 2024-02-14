@@ -441,7 +441,14 @@ func (c *Client) ValidateACL(ctx context.Context, acl ACL) error {
 		return err
 	}
 
-	return c.performRequest(req, nil)
+	var response APIError
+	if err := c.performRequest(req, &response); err != nil {
+		return err
+	}
+	if response.Message != "" {
+		return fmt.Errorf("ACL validation failed: %s; %v", response.Message, response.Data)
+	}
+	return nil
 }
 
 type DNSPreferences struct {

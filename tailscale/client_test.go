@@ -950,7 +950,36 @@ func TestClient_ValidateACL(t *testing.T) {
 	assert.NoError(t, err)
 	assert.EqualValues(t, server.ResponseBody, acl)
 	assert.EqualValues(t, http.MethodPost, server.Method)
+	assert.EqualValues(t, "application/json", server.Header.Get("Content-Type"))
 	assert.EqualValues(t, "/api/v2/tailnet/example.com/acl/validate", server.Path)
+
+	tests := []struct {
+		name         string
+		responseCode int
+		responseBody any
+		wantErr      string
+	}{
+		{
+			name:         "403_response",
+			responseCode: 403,
+			responseBody: tailscale.APIError{Message: "access denied"},
+			wantErr:      "access denied",
+		},
+		{
+			name:         "200_response_with_error",
+			responseCode: 200,
+			responseBody: tailscale.APIError{Message: "validation failed"},
+			wantErr:      "validation failed",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			server.ResponseCode = tt.responseCode
+			server.ResponseBody = tt.responseBody
+			err := client.ValidateACL(context.Background(), acl)
+			assert.ErrorContains(t, err, tt.wantErr)
+		})
+	}
 }
 
 func TestClient_UserAgent(t *testing.T) {
