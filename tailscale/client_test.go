@@ -270,10 +270,24 @@ func TestClient_SetACL(t *testing.T) {
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/acl", server.Path)
 	assert.Equal(t, "", server.Header.Get("If-Match"))
+	assert.EqualValues(t, "application/json", server.Header.Get("Content-Type"))
 
 	var actualACL tailscale.ACL
 	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &actualACL))
 	assert.EqualValues(t, expectedACL, actualACL)
+}
+func TestClient_SetACL_HuJSON(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	assert.NoError(t, client.SetACL(context.Background(), string(huJSONACL)))
+	assert.Equal(t, http.MethodPost, server.Method)
+	assert.Equal(t, "/api/v2/tailnet/example.com/acl", server.Path)
+	assert.Equal(t, "", server.Header.Get("If-Match"))
+	assert.EqualValues(t, "application/hujson", server.Header.Get("Content-Type"))
+	assert.EqualValues(t, huJSONACL, server.Body.Bytes())
 }
 
 func TestClient_SetACLWithETag(t *testing.T) {
@@ -343,8 +357,25 @@ func TestClient_ACL(t *testing.T) {
 
 	acl, err := client.ACL(context.Background())
 	assert.NoError(t, err)
-	assert.EqualValues(t, server.ResponseBody, acl)
+	assert.EqualValues(t, acl, server.ResponseBody)
 	assert.EqualValues(t, http.MethodGet, server.Method)
+	assert.EqualValues(t, "application/json", server.Header.Get("Accept"))
+	assert.EqualValues(t, "/api/v2/tailnet/example.com/acl", server.Path)
+}
+
+func TestClient_RawACL(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+
+	server.ResponseCode = http.StatusOK
+	server.ResponseBody = huJSONACL
+
+	acl, err := client.RawACL(context.Background())
+	assert.NoError(t, err)
+	assert.EqualValues(t, string(huJSONACL), acl)
+	assert.EqualValues(t, http.MethodGet, server.Method)
+	assert.EqualValues(t, "application/hujson", server.Header.Get("Accept"))
 	assert.EqualValues(t, "/api/v2/tailnet/example.com/acl", server.Path)
 }
 
@@ -980,6 +1011,22 @@ func TestClient_ValidateACL(t *testing.T) {
 			assert.ErrorContains(t, err, tt.wantErr)
 		})
 	}
+}
+
+func TestClient_ValidateACL_HuJSON(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+
+	server.ResponseCode = http.StatusOK
+	server.ResponseBody = huJSONACL
+
+	err := client.ValidateACL(context.Background(), string(huJSONACL))
+	assert.NoError(t, err)
+	assert.EqualValues(t, server.ResponseBody, huJSONACL)
+	assert.EqualValues(t, http.MethodPost, server.Method)
+	assert.EqualValues(t, "application/hujson", server.Header.Get("Content-Type"))
+	assert.EqualValues(t, "/api/v2/tailnet/example.com/acl/validate", server.Path)
 }
 
 func TestClient_UserAgent(t *testing.T) {
