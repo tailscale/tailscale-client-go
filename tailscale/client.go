@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/tailscale/hujson"
-
 	"golang.org/x/oauth2/clientcredentials"
 )
 
@@ -331,6 +330,69 @@ func (c *Client) DNSNameservers(ctx context.Context) ([]string, error) {
 	}
 
 	return resp["dns"], nil
+}
+
+// SplitDnsRequest is a map from domain names to a list of nameservers.
+type SplitDnsRequest map[string][]string
+
+// SplitDnsResponse is a map from domain names to a list of nameservers.
+type SplitDnsResponse SplitDnsRequest
+
+// UpdateSplitDNS updates the split DNS settings for a tailnet using the
+// provided SplitDnsRequest object. This is a PATCH operation that performs
+// partial updates of the underlying data structure.
+//
+// Mapping a domain to a nil slice in the request will unset the nameservers
+// associated with that domain. Values provided for domains will overwrite the
+// current value associated with the domain. Domains not included in the request
+// will remain unchanged.
+func (c *Client) UpdateSplitDNS(ctx context.Context, request SplitDnsRequest) (SplitDnsResponse, error) {
+	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
+
+	req, err := c.buildRequest(ctx, http.MethodPatch, fmt.Sprintf(uriFmt, c.tailnet), requestBody(request))
+	if err != nil {
+		return nil, err
+	}
+
+	var resp SplitDnsResponse
+	if err = c.performRequest(req, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}
+
+// SetSplitDNS sets the split DNS settings for a tailnet using the provided
+// SplitDnsRequest object. This is a PUT operation that fully replaces the underlying
+// data structure.
+//
+// Passing in an empty SplitDnsRequest will unset all split DNS mappings for the tailnet.
+func (c *Client) SetSplitDNS(ctx context.Context, request SplitDnsRequest) error {
+	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
+
+	req, err := c.buildRequest(ctx, http.MethodPut, fmt.Sprintf(uriFmt, c.tailnet), requestBody(request))
+	if err != nil {
+		return err
+	}
+
+	return c.performRequest(req, nil)
+}
+
+// SplitDNS retrieves the split DNS configuration for a tailnet.
+func (c *Client) SplitDNS(ctx context.Context) (SplitDnsResponse, error) {
+	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
+
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
+	if err != nil {
+		return nil, err
+	}
+
+	var resp SplitDnsResponse
+	if err = c.performRequest(req, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp, nil
 }
 
 type (

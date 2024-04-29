@@ -599,6 +599,24 @@ func TestClient_DNSSearchPaths(t *testing.T) {
 	assert.Equal(t, expectedPaths["searchPaths"], paths)
 }
 
+func TestClient_SplitDNS(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	expectedNameservers := tailscale.SplitDnsResponse{
+		"example.com": {"1.1.1.1", "1.2.3.4"},
+	}
+
+	server.ResponseBody = expectedNameservers
+	nameservers, err := client.SplitDNS(context.Background())
+	assert.NoError(t, err)
+	assert.Equal(t, http.MethodGet, server.Method)
+	assert.Equal(t, "/api/v2/tailnet/example.com/dns/split-dns", server.Path)
+	assert.Equal(t, expectedNameservers, nameservers)
+}
+
 func TestClient_SetDNSNameservers(t *testing.T) {
 	t.Parallel()
 
@@ -650,6 +668,53 @@ func TestClient_SetDNSSearchPaths(t *testing.T) {
 	body := make(map[string][]string)
 	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &body))
 	assert.EqualValues(t, paths, body["searchPaths"])
+}
+
+func TestClient_UpdateSplitDNS(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	nameservers := []string{"1.1.2.1", "3.3.3.4"}
+	request := tailscale.SplitDnsRequest{
+		"example.com": nameservers,
+	}
+
+	expectedNameservers := tailscale.SplitDnsResponse{
+		"example.com": nameservers,
+	}
+	server.ResponseBody = expectedNameservers
+
+	resp, err := client.UpdateSplitDNS(context.Background(), request)
+	assert.NoError(t, err)
+	assert.Equal(t, http.MethodPatch, server.Method)
+	assert.Equal(t, "/api/v2/tailnet/example.com/dns/split-dns", server.Path)
+
+	body := make(tailscale.SplitDnsResponse)
+	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &body))
+	assert.EqualValues(t, nameservers, body["example.com"])
+	assert.Equal(t, expectedNameservers, resp)
+}
+
+func TestClient_SetSplitDNS(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	nameservers := []string{"1.1.2.1", "3.3.3.4"}
+	request := tailscale.SplitDnsRequest{
+		"example.com": nameservers,
+	}
+
+	assert.NoError(t, client.SetSplitDNS(context.Background(), request))
+	assert.Equal(t, http.MethodPut, server.Method)
+	assert.Equal(t, "/api/v2/tailnet/example.com/dns/split-dns", server.Path)
+
+	body := make(tailscale.SplitDnsResponse)
+	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &body))
+	assert.EqualValues(t, nameservers, body["example.com"])
 }
 
 func TestClient_AuthorizeDevice(t *testing.T) {
