@@ -923,6 +923,20 @@ func (c *Client) SetDeviceKey(ctx context.Context, deviceID string, key DeviceKe
 	return c.performRequest(req, nil)
 }
 
+// SetDeviceIPv4Address sets the Tailscale IPv4 address of the device.
+func (c *Client) SetDeviceIPv4Address(ctx context.Context, deviceID string, ipv4Address string) error {
+	const uriFmt = "/api/v2/device/%s/ip"
+
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), requestBody(map[string]string{
+		"ipv4": ipv4Address,
+	}))
+	if err != nil {
+		return err
+	}
+
+	return c.performRequest(req, nil)
+}
+
 // IsNotFound returns true if the provided error implementation is an APIError with a status of 404.
 func IsNotFound(err error) bool {
 	var apiErr APIError
