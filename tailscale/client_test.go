@@ -975,6 +975,19 @@ func TestClient_SetDeviceKey(t *testing.T) {
 	assert.EqualValues(t, expected, actual)
 
 }
+func TestClient_SetDeviceIPv4Address(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	const deviceID = "test"
+	address := "100.64.0.1"
+
+	assert.NoError(t, client.SetDeviceIPv4Address(context.Background(), deviceID, address))
+	assert.Equal(t, http.MethodPost, server.Method)
+	assert.EqualValues(t, "/api/v2/device/"+deviceID+"/ip", server.Path)
+}
 
 func TestErrorData(t *testing.T) {
 	t.Parallel()
