@@ -20,11 +20,14 @@ import (
 type (
 	// Client type is used to perform actions against the Tailscale API.
 	Client struct {
-		apiKey    string
-		http      *http.Client
-		baseURL   *url.URL
-		tailnet   string
-		userAgent string // empty string means Go's default value.
+		apiKey  string
+		http    *http.Client
+		baseURL *url.URL
+		tailnet string
+		// tailnetPathEscaped is the value of tailnet passed to url.PathEscape.
+		// This value should be used when formatting paths that have tailnet as a segment.
+		tailnetPathEscaped string
+		userAgent          string // empty string means Go's default value.
 	}
 
 	// APIError type describes an error as returned by the Tailscale API.
@@ -66,9 +69,10 @@ func NewClient(apiKey, tailnet string, options ...ClientOption) (*Client, error)
 	}
 
 	c := &Client{
-		baseURL:   u,
-		tailnet:   tailnet,
-		userAgent: defaultUserAgent,
+		baseURL:            u,
+		tailnet:            tailnet,
+		tailnetPathEscaped: url.PathEscape(tailnet),
+		userAgent:          defaultUserAgent,
 	}
 
 	if apiKey != "" {
@@ -273,7 +277,7 @@ func (err APIError) Error() string {
 func (c *Client) SetDNSSearchPaths(ctx context.Context, searchPaths []string) error {
 	const uriFmt = "/api/v2/tailnet/%v/dns/searchpaths"
 
-	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), requestBody(map[string][]string{
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnetPathEscaped), requestBody(map[string][]string{
 		"searchPaths": searchPaths,
 	}))
 	if err != nil {
@@ -287,7 +291,7 @@ func (c *Client) SetDNSSearchPaths(ctx context.Context, searchPaths []string) er
 func (c *Client) DNSSearchPaths(ctx context.Context) ([]string, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/searchpaths"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -305,7 +309,7 @@ func (c *Client) DNSSearchPaths(ctx context.Context) ([]string, error) {
 func (c *Client) SetDNSNameservers(ctx context.Context, dns []string) error {
 	const uriFmt = "/api/v2/tailnet/%v/dns/nameservers"
 
-	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), requestBody(map[string][]string{
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnetPathEscaped), requestBody(map[string][]string{
 		"dns": dns,
 	}))
 	if err != nil {
@@ -319,7 +323,7 @@ func (c *Client) SetDNSNameservers(ctx context.Context, dns []string) error {
 func (c *Client) DNSNameservers(ctx context.Context) ([]string, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/nameservers"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -349,7 +353,7 @@ type SplitDnsResponse SplitDnsRequest
 func (c *Client) UpdateSplitDNS(ctx context.Context, request SplitDnsRequest) (SplitDnsResponse, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
 
-	req, err := c.buildRequest(ctx, http.MethodPatch, fmt.Sprintf(uriFmt, c.tailnet), requestBody(request))
+	req, err := c.buildRequest(ctx, http.MethodPatch, fmt.Sprintf(uriFmt, c.tailnetPathEscaped), requestBody(request))
 	if err != nil {
 		return nil, err
 	}
@@ -370,7 +374,7 @@ func (c *Client) UpdateSplitDNS(ctx context.Context, request SplitDnsRequest) (S
 func (c *Client) SetSplitDNS(ctx context.Context, request SplitDnsRequest) error {
 	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
 
-	req, err := c.buildRequest(ctx, http.MethodPut, fmt.Sprintf(uriFmt, c.tailnet), requestBody(request))
+	req, err := c.buildRequest(ctx, http.MethodPut, fmt.Sprintf(uriFmt, c.tailnetPathEscaped), requestBody(request))
 	if err != nil {
 		return err
 	}
@@ -382,7 +386,7 @@ func (c *Client) SetSplitDNS(ctx context.Context, request SplitDnsRequest) error
 func (c *Client) SplitDNS(ctx context.Context) (SplitDnsResponse, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -496,7 +500,7 @@ type (
 func (c *Client) ACL(ctx context.Context) (*ACL, error) {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -514,7 +518,7 @@ func (c *Client) ACL(ctx context.Context) (*ACL, error) {
 func (c *Client) RawACL(ctx context.Context) (string, error) {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet), requestContentType("application/hujson"))
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnetPathEscaped), requestContentType("application/hujson"))
 	if err != nil {
 		return "", err
 	}
@@ -562,7 +566,7 @@ func (c *Client) SetACL(ctx context.Context, acl any, opts ...SetACLOption) erro
 		return fmt.Errorf("expected ACL content as a string or as ACL struct; got %T", v)
 	}
 
-	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), reqOpts...)
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnetPathEscaped), reqOpts...)
 	if err != nil {
 		return err
 	}
@@ -586,7 +590,7 @@ func (c *Client) ValidateACL(ctx context.Context, acl any) error {
 		return fmt.Errorf("expected ACL content as a string or as ACL struct; got %T", v)
 	}
 
-	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), reqOpts...)
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnetPathEscaped), reqOpts...)
 	if err != nil {
 		return err
 	}
@@ -610,7 +614,7 @@ type DNSPreferences struct {
 func (c *Client) DNSPreferences(ctx context.Context) (*DNSPreferences, error) {
 	const uriFmt = "/api/v2/tailnet/%s/dns/preferences"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -628,7 +632,7 @@ func (c *Client) DNSPreferences(ctx context.Context) (*DNSPreferences, error) {
 func (c *Client) SetDNSPreferences(ctx context.Context, preferences DNSPreferences) error {
 	const uriFmt = "/api/v2/tailnet/%s/dns/preferences"
 
-	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), requestBody(preferences))
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnetPathEscaped), requestBody(preferences))
 	if err != nil {
 		return nil
 	}
@@ -726,7 +730,7 @@ type Device struct {
 func (c *Client) Devices(ctx context.Context) ([]Device, error) {
 	const uriFmt = "/api/v2/tailnet/%s/devices"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -836,7 +840,7 @@ func (c *Client) CreateKey(ctx context.Context, capabilities KeyCapabilities, op
 		}
 	}
 
-	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), requestBody(ckr))
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnetPathEscaped), requestBody(ckr))
 	if err != nil {
 		return Key{}, err
 	}
@@ -850,7 +854,7 @@ func (c *Client) CreateKey(ctx context.Context, capabilities KeyCapabilities, op
 func (c *Client) GetKey(ctx context.Context, id string) (Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys/%s"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet, id))
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnetPathEscaped, id))
 	if err != nil {
 		return Key{}, err
 	}
@@ -864,7 +868,7 @@ func (c *Client) GetKey(ctx context.Context, id string) (Key, error) {
 func (c *Client) Keys(ctx context.Context) ([]Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -881,7 +885,7 @@ func (c *Client) Keys(ctx context.Context) ([]Key, error) {
 func (c *Client) DeleteKey(ctx context.Context, id string) error {
 	const uriFmt = "/api/v2/tailnet/%s/keys/%s"
 
-	req, err := c.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, c.tailnet, id))
+	req, err := c.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, c.tailnetPathEscaped, id))
 	if err != nil {
 		return err
 	}
@@ -935,6 +939,161 @@ func (c *Client) SetDeviceIPv4Address(ctx context.Context, deviceID string, ipv4
 	}
 
 	return c.performRequest(req, nil)
+}
+
+const (
+	WebhookEmptyProviderType      WebhookProviderType = ""
+	WebhookSlackProviderType      WebhookProviderType = "slack"
+	WebhookMattermostProviderType WebhookProviderType = "mattermost"
+	WebhookGoogleChatProviderType WebhookProviderType = "googlechat"
+	WebhookDiscordProviderType    WebhookProviderType = "discord"
+)
+
+const (
+	WebhookNodeCreated                    WebhookSubscriptionType = "nodeCreated"
+	WebhookNodeNeedsApproval              WebhookSubscriptionType = "nodeNeedsApproval"
+	WebhookNodeApproved                   WebhookSubscriptionType = "nodeApproved"
+	WebhookNodeKeyExpiringInOneDay        WebhookSubscriptionType = "nodeKeyExpiringInOneDay"
+	WebhookNodeKeyExpired                 WebhookSubscriptionType = "nodeKeyExpired"
+	WebhookNodeDeleted                    WebhookSubscriptionType = "nodeDeleted"
+	WebhookPolicyUpdate                   WebhookSubscriptionType = "policyUpdate"
+	WebhookUserCreated                    WebhookSubscriptionType = "userCreated"
+	WebhookUserNeedsApproval              WebhookSubscriptionType = "userNeedsApproval"
+	WebhookUserSuspended                  WebhookSubscriptionType = "userSuspended"
+	WebhookUserRestored                   WebhookSubscriptionType = "userRestored"
+	WebhookUserDeleted                    WebhookSubscriptionType = "userDeleted"
+	WebhookUserApproved                   WebhookSubscriptionType = "userApproved"
+	WebhookUserRoleUpdated                WebhookSubscriptionType = "userRoleUpdated"
+	WebhookSubnetIPForwardingNotEnabled   WebhookSubscriptionType = "subnetIPForwardingNotEnabled"
+	WebhookExitNodeIPForwardingNotEnabled WebhookSubscriptionType = "exitNodeIPForwardingNotEnabled"
+)
+
+type (
+	// WebhookProviderType defines the provider type for a Webhook destination.
+	WebhookProviderType string
+
+	// WebhookSubscriptionType defines events in tailscale to subscribe a Webhook to.
+	WebhookSubscriptionType string
+
+	// Webhook type defines a webhook endpoint within a tailnet.
+	Webhook struct {
+		EndpointID       string                    `json:"endpointId"`
+		EndpointURL      string                    `json:"endpointUrl"`
+		ProviderType     WebhookProviderType       `json:"providerType"`
+		CreatorLoginName string                    `json:"creatorLoginName"`
+		Created          time.Time                 `json:"created"`
+		LastModified     time.Time                 `json:"lastModified"`
+		Subscriptions    []WebhookSubscriptionType `json:"subscriptions"`
+		// Secret is only populated on Webhook creation and after secret rotation.
+		Secret *string `json:"secret,omitempty"`
+	}
+
+	// CreateWebhookRequest type describes the configuration for creating a Webhook.
+	CreateWebhookRequest struct {
+		EndpointURL   string                    `json:"endpointUrl"`
+		ProviderType  WebhookProviderType       `json:"providerType"`
+		Subscriptions []WebhookSubscriptionType `json:"subscriptions"`
+	}
+)
+
+// CreateWebhook creates a new webhook with the specifications provided in the CreateWebhookRequest.
+// Returns a Webhook if successful.
+func (c *Client) CreateWebhook(ctx context.Context, request CreateWebhookRequest) (*Webhook, error) {
+	const uriFmt = "/api/v2/tailnet/%s/webhooks"
+
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnetPathEscaped), requestBody(request))
+	if err != nil {
+		return nil, err
+	}
+
+	var webhook Webhook
+	return &webhook, c.performRequest(req, &webhook)
+}
+
+// Webhooks lists the webhooks in a tailnet.
+func (c *Client) Webhooks(ctx context.Context) ([]Webhook, error) {
+	const uriFmt = "/api/v2/tailnet/%s/webhooks"
+
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnetPathEscaped))
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make(map[string][]Webhook)
+	if err = c.performRequest(req, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp["webhooks"], nil
+}
+
+// Webhook retrieves a specific webhook.
+func (c *Client) Webhook(ctx context.Context, endpointID string) (*Webhook, error) {
+	const uriFmt = "/api/v2/webhooks/%s"
+
+	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, endpointID))
+	if err != nil {
+		return nil, err
+	}
+
+	var webhook Webhook
+	return &webhook, c.performRequest(req, &webhook)
+}
+
+// UpdateWebhook updates an existing webhook's subscriptions.
+// Returns a Webhook on success.
+func (c *Client) UpdateWebhook(ctx context.Context, endpointID string, subscriptions []WebhookSubscriptionType) (*Webhook, error) {
+	const uriFmt = "/api/v2/webhooks/%s"
+
+	req, err := c.buildRequest(ctx, http.MethodPatch, fmt.Sprintf(uriFmt, endpointID), requestBody(map[string][]WebhookSubscriptionType{
+		"subscriptions": subscriptions,
+	}))
+	if err != nil {
+		return nil, err
+	}
+
+	var webhook Webhook
+	return &webhook, c.performRequest(req, &webhook)
+}
+
+// DeleteWebhook deletes a specific webhook.
+func (c *Client) DeleteWebhook(ctx context.Context, endpointID string) error {
+	const uriFmt = "/api/v2/webhooks/%s"
+
+	req, err := c.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, endpointID))
+	if err != nil {
+		return err
+	}
+
+	return c.performRequest(req, nil)
+}
+
+// TestWebhook queues a test event to be sent to a specific webhook.
+// Sending the test event is an asynchronous operation which will
+// typically happen a few seconds after using this method.
+func (c *Client) TestWebhook(ctx context.Context, endpointID string) error {
+	const uriFmt = "/api/v2/webhooks/%s/test"
+
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, endpointID))
+	if err != nil {
+		return err
+	}
+
+	return c.performRequest(req, nil)
+}
+
+// RotateWebhookSecret rotates the secret associated with a webhook.
+// A new secret will be generated and set on the returned Webhook.
+func (c *Client) RotateWebhookSecret(ctx context.Context, endpointID string) (*Webhook, error) {
+	const uriFmt = "/api/v2/webhooks/%s/rotate"
+
+	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, endpointID))
+	if err != nil {
+		return nil, err
+	}
+
+	var webhook Webhook
+	return &webhook, c.performRequest(req, &webhook)
 }
 
 // IsNotFound returns true if the provided error implementation is an APIError with a status of 404.
