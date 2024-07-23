@@ -125,6 +125,7 @@ func TestACL_Unmarshal(t *testing.T) {
 			Name:       "It should handle HuJSON ACLs",
 			ACLContent: huJSONACL,
 			UnmarshalFunc: func(b []byte, v interface{}) error {
+				b = append([]byte{}, b...)
 				b, err := hujson.Standardize(b)
 				if err != nil {
 					return err
