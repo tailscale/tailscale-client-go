@@ -25,6 +25,12 @@ type (
 		baseURL   *url.URL
 		tailnet   string
 		userAgent string // empty string means Go's default value.
+
+		// Specific domains
+		devices    *Devices
+		dns        *DNS
+		keys       *Keys
+		policyFile *PolicyFile
 	}
 
 	// APIError type describes an error as returned by the Tailscale API.
@@ -87,6 +93,10 @@ func NewClient(apiKey, tailnet string, options ...ClientOption) (*Client, error)
 		return nil, errors.New("no authentication credentials provided")
 	}
 
+	c.devices = &Devices{c}
+	c.dns = &DNS{c}
+	c.keys = &Keys{c}
+	c.policyFile = &PolicyFile{c}
 	return c, nil
 }
 

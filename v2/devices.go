@@ -8,6 +8,14 @@ import (
 	"time"
 )
 
+type Devices struct {
+	*Client
+}
+
+func (c *Client) Devices() *Devices {
+	return c.devices
+}
+
 type (
 	DeviceRoutes struct {
 		Advertised []string `json:"advertisedRoutes"`
@@ -17,7 +25,7 @@ type (
 
 // SetDeviceSubnetRoutes sets which subnet routes are enabled to be routed by a device by replacing the existing list
 // of subnet routes with the supplied routes. Routes can be enabled without a device advertising them (e.g. for preauth).
-func (c *Client) SetDeviceSubnetRoutes(ctx context.Context, deviceID string, routes []string) error {
+func (c *Devices) SetDeviceSubnetRoutes(ctx context.Context, deviceID string, routes []string) error {
 	const uriFmt = "/api/v2/device/%s/routes"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), requestBody(map[string][]string{
@@ -33,7 +41,7 @@ func (c *Client) SetDeviceSubnetRoutes(ctx context.Context, deviceID string, rou
 // DeviceSubnetRoutes Retrieves the list of subnet routes that a device is advertising, as well as those that are
 // enabled for it. Enabled routes are not necessarily advertised (e.g. for pre-enabling), and likewise, advertised
 // routes are not necessarily enabled.
-func (c *Client) DeviceSubnetRoutes(ctx context.Context, deviceID string) (*DeviceRoutes, error) {
+func (c *Devices) DeviceSubnetRoutes(ctx context.Context, deviceID string) (*DeviceRoutes, error) {
 	const uriFmt = "/api/v2/device/%s/routes"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, deviceID))
@@ -95,7 +103,7 @@ type Device struct {
 }
 
 // Devices lists the devices in a tailnet.
-func (c *Client) Devices(ctx context.Context) ([]Device, error) {
+func (c *Devices) Devices(ctx context.Context) ([]Device, error) {
 	const uriFmt = "/api/v2/tailnet/%s/devices"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
@@ -112,12 +120,12 @@ func (c *Client) Devices(ctx context.Context) ([]Device, error) {
 }
 
 // AuthorizeDevice marks the specified device identifier as authorized to join the tailnet.
-func (c *Client) AuthorizeDevice(ctx context.Context, deviceID string) error {
+func (c *Devices) AuthorizeDevice(ctx context.Context, deviceID string) error {
 	return c.SetDeviceAuthorized(ctx, deviceID, true)
 }
 
 // SetDeviceAuthorized marks the specified device as authorized or not.
-func (c *Client) SetDeviceAuthorized(ctx context.Context, deviceID string, authorized bool) error {
+func (c *Devices) SetDeviceAuthorized(ctx context.Context, deviceID string, authorized bool) error {
 	const uriFmt = "/api/v2/device/%s/authorized"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), requestBody(map[string]bool{
@@ -131,7 +139,7 @@ func (c *Client) SetDeviceAuthorized(ctx context.Context, deviceID string, autho
 }
 
 // DeleteDevice deletes the device given its deviceID.
-func (c *Client) DeleteDevice(ctx context.Context, deviceID string) error {
+func (c *Devices) DeleteDevice(ctx context.Context, deviceID string) error {
 	const uriFmt = "/api/v2/device/%s"
 	req, err := c.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, deviceID))
 	if err != nil {
@@ -142,7 +150,7 @@ func (c *Client) DeleteDevice(ctx context.Context, deviceID string) error {
 }
 
 // SetDeviceTags updates the tags of a target device.
-func (c *Client) SetDeviceTags(ctx context.Context, deviceID string, tags []string) error {
+func (c *Devices) SetDeviceTags(ctx context.Context, deviceID string, tags []string) error {
 	const uriFmt = "/api/v2/device/%s/tags"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), requestBody(map[string][]string{
@@ -164,7 +172,7 @@ type (
 )
 
 // SetDeviceKey updates the properties of a device's key.
-func (c *Client) SetDeviceKey(ctx context.Context, deviceID string, key DeviceKey) error {
+func (c *Devices) SetDeviceKey(ctx context.Context, deviceID string, key DeviceKey) error {
 	const uriFmt = "/api/v2/device/%s/key"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), requestBody(key))
@@ -176,7 +184,7 @@ func (c *Client) SetDeviceKey(ctx context.Context, deviceID string, key DeviceKe
 }
 
 // SetDeviceIPv4Address sets the Tailscale IPv4 address of the device.
-func (c *Client) SetDeviceIPv4Address(ctx context.Context, deviceID string, ipv4Address string) error {
+func (c *Devices) SetDeviceIPv4Address(ctx context.Context, deviceID string, ipv4Address string) error {
 	const uriFmt = "/api/v2/device/%s/ip"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), requestBody(map[string]string{

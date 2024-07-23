@@ -6,6 +6,14 @@ import (
 	"net/http"
 )
 
+type PolicyFile struct {
+	*Client
+}
+
+func (c *Client) PolicyFile() *PolicyFile {
+	return c.policyFile
+}
+
 type (
 	// ACL contains the schema for a tailnet policy file. More details: https://tailscale.com/kb/1018/acls/
 	ACL struct {
@@ -104,7 +112,7 @@ type (
 )
 
 // ACL retrieves the ACL that is currently set for the given tailnet.
-func (c *Client) ACL(ctx context.Context) (*ACL, error) {
+func (c *PolicyFile) ACL(ctx context.Context) (*ACL, error) {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
@@ -122,7 +130,7 @@ func (c *Client) ACL(ctx context.Context) (*ACL, error) {
 
 // RawACL retrieves the ACL that is currently set for the given tailnet
 // as a HuJSON string.
-func (c *Client) RawACL(ctx context.Context) (string, error) {
+func (c *PolicyFile) RawACL(ctx context.Context) (string, error) {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet), requestContentType("application/hujson"))
@@ -153,7 +161,7 @@ func WithETag(etag string) SetACLOption {
 
 // SetACL sets the ACL for the given tailnet. `acl` can either be an [ACL],
 // or a HuJSON string.
-func (c *Client) SetACL(ctx context.Context, acl any, opts ...SetACLOption) error {
+func (c *PolicyFile) SetACL(ctx context.Context, acl any, opts ...SetACLOption) error {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
 	p := &setACLParams{headers: make(map[string]string)}
@@ -183,7 +191,7 @@ func (c *Client) SetACL(ctx context.Context, acl any, opts ...SetACLOption) erro
 
 // ValidateACL validates the provided ACL via the API. `acl` can either be an [ACL],
 // or a HuJSON string.
-func (c *Client) ValidateACL(ctx context.Context, acl any) error {
+func (c *PolicyFile) ValidateACL(ctx context.Context, acl any) error {
 	const uriFmt = "/api/v2/tailnet/%s/acl/validate"
 
 	reqOpts := []requestOption{

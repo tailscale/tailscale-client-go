@@ -6,8 +6,16 @@ import (
 	"net/http"
 )
 
+type DNS struct {
+	*Client
+}
+
+func (c *Client) DNS() *DNS {
+	return c.dns
+}
+
 // SetDNSSearchPaths replaces the list of search paths with the list supplied by the user and returns an error otherwise.
-func (c *Client) SetDNSSearchPaths(ctx context.Context, searchPaths []string) error {
+func (c *DNS) SetDNSSearchPaths(ctx context.Context, searchPaths []string) error {
 	const uriFmt = "/api/v2/tailnet/%v/dns/searchpaths"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), requestBody(map[string][]string{
@@ -21,7 +29,7 @@ func (c *Client) SetDNSSearchPaths(ctx context.Context, searchPaths []string) er
 }
 
 // DNSSearchPaths retrieves the list of search paths that is currently set for the given tailnet.
-func (c *Client) DNSSearchPaths(ctx context.Context) ([]string, error) {
+func (c *DNS) DNSSearchPaths(ctx context.Context) ([]string, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/searchpaths"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
@@ -39,7 +47,7 @@ func (c *Client) DNSSearchPaths(ctx context.Context) ([]string, error) {
 
 // SetDNSNameservers replaces the list of DNS nameservers for the given tailnet with the list supplied by the user. Note
 // that changing the list of DNS nameservers may also affect the status of MagicDNS (if MagicDNS is on).
-func (c *Client) SetDNSNameservers(ctx context.Context, dns []string) error {
+func (c *DNS) SetDNSNameservers(ctx context.Context, dns []string) error {
 	const uriFmt = "/api/v2/tailnet/%v/dns/nameservers"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), requestBody(map[string][]string{
@@ -53,7 +61,7 @@ func (c *Client) SetDNSNameservers(ctx context.Context, dns []string) error {
 }
 
 // DNSNameservers lists the DNS nameservers for a tailnet
-func (c *Client) DNSNameservers(ctx context.Context) ([]string, error) {
+func (c *DNS) DNSNameservers(ctx context.Context) ([]string, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/nameservers"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
@@ -83,7 +91,7 @@ type SplitDnsResponse SplitDnsRequest
 // associated with that domain. Values provided for domains will overwrite the
 // current value associated with the domain. Domains not included in the request
 // will remain unchanged.
-func (c *Client) UpdateSplitDNS(ctx context.Context, request SplitDnsRequest) (SplitDnsResponse, error) {
+func (c *DNS) UpdateSplitDNS(ctx context.Context, request SplitDnsRequest) (SplitDnsResponse, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
 
 	req, err := c.buildRequest(ctx, http.MethodPatch, fmt.Sprintf(uriFmt, c.tailnet), requestBody(request))
@@ -104,7 +112,7 @@ func (c *Client) UpdateSplitDNS(ctx context.Context, request SplitDnsRequest) (S
 // data structure.
 //
 // Passing in an empty SplitDnsRequest will unset all split DNS mappings for the tailnet.
-func (c *Client) SetSplitDNS(ctx context.Context, request SplitDnsRequest) error {
+func (c *DNS) SetSplitDNS(ctx context.Context, request SplitDnsRequest) error {
 	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
 
 	req, err := c.buildRequest(ctx, http.MethodPut, fmt.Sprintf(uriFmt, c.tailnet), requestBody(request))
@@ -116,7 +124,7 @@ func (c *Client) SetSplitDNS(ctx context.Context, request SplitDnsRequest) error
 }
 
 // SplitDNS retrieves the split DNS configuration for a tailnet.
-func (c *Client) SplitDNS(ctx context.Context) (SplitDnsResponse, error) {
+func (c *DNS) SplitDNS(ctx context.Context) (SplitDnsResponse, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
@@ -138,7 +146,7 @@ type DNSPreferences struct {
 
 // DNSPreferences retrieves the DNS preferences that are currently set for the given tailnet. Supply the tailnet of
 // interest in the path.
-func (c *Client) DNSPreferences(ctx context.Context) (*DNSPreferences, error) {
+func (c *DNS) DNSPreferences(ctx context.Context) (*DNSPreferences, error) {
 	const uriFmt = "/api/v2/tailnet/%s/dns/preferences"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
@@ -156,7 +164,7 @@ func (c *Client) DNSPreferences(ctx context.Context) (*DNSPreferences, error) {
 
 // SetDNSPreferences replaces the DNS preferences for a tailnet, specifically, the MagicDNS setting. Note that MagicDNS
 // is dependent on DNS servers.
-func (c *Client) SetDNSPreferences(ctx context.Context, preferences DNSPreferences) error {
+func (c *DNS) SetDNSPreferences(ctx context.Context, preferences DNSPreferences) error {
 	const uriFmt = "/api/v2/tailnet/%s/dns/preferences"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), requestBody(preferences))
