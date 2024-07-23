@@ -67,9 +67,9 @@ func WithKeyDescription(desc string) CreateKeyOption {
 	}
 }
 
-// CreateKey creates a new authentication key with the capabilities selected via the KeyCapabilities type. Returns
+// Create creates a new authentication key with the capabilities selected via the KeyCapabilities type. Returns
 // the generated key if successful.
-func (c *Keys) CreateKey(ctx context.Context, capabilities KeyCapabilities, opts ...CreateKeyOption) (Key, error) {
+func (c *Keys) Create(ctx context.Context, capabilities KeyCapabilities, opts ...CreateKeyOption) (Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys"
 
 	ckr := &CreateKeyRequest{
@@ -91,9 +91,9 @@ func (c *Keys) CreateKey(ctx context.Context, capabilities KeyCapabilities, opts
 	return key, c.performRequest(req, &key)
 }
 
-// GetKey returns all information on a key whose identifier matches the one provided. This will not return the
+// Get returns all information on a key whose identifier matches the one provided. This will not return the
 // authentication key itself, just the metadata.
-func (c *Keys) GetKey(ctx context.Context, id string) (Key, error) {
+func (c *Keys) Get(ctx context.Context, id string) (Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys/%s"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet, id))
@@ -105,9 +105,9 @@ func (c *Keys) GetKey(ctx context.Context, id string) (Key, error) {
 	return key, c.performRequest(req, &key)
 }
 
-// Keys returns all keys within the tailnet. The only fields set for each key will be its identifier. The keys returned
+// List returns all keys within the tailnet. The only fields set for each key will be its identifier. The keys returned
 // are relative to the user that owns the API key used to authenticate the client.
-func (c *Keys) Keys(ctx context.Context) ([]Key, error) {
+func (c *Keys) List(ctx context.Context) ([]Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
@@ -123,8 +123,8 @@ func (c *Keys) Keys(ctx context.Context) ([]Key, error) {
 	return resp["keys"], nil
 }
 
-// DeleteKey removes an authentication key from the tailnet.
-func (c *Keys) DeleteKey(ctx context.Context, id string) error {
+// Delete removes an authentication key from the tailnet.
+func (c *Keys) Delete(ctx context.Context, id string) error {
 	const uriFmt = "/api/v2/tailnet/%s/keys/%s"
 
 	req, err := c.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, c.tailnet, id))

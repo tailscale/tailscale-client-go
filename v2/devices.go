@@ -23,9 +23,9 @@ type (
 	}
 )
 
-// SetDeviceSubnetRoutes sets which subnet routes are enabled to be routed by a device by replacing the existing list
+// SetSubnetRoutes sets which subnet routes are enabled to be routed by a device by replacing the existing list
 // of subnet routes with the supplied routes. Routes can be enabled without a device advertising them (e.g. for preauth).
-func (c *Devices) SetDeviceSubnetRoutes(ctx context.Context, deviceID string, routes []string) error {
+func (c *Devices) SetSubnetRoutes(ctx context.Context, deviceID string, routes []string) error {
 	const uriFmt = "/api/v2/device/%s/routes"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), requestBody(map[string][]string{
@@ -38,10 +38,10 @@ func (c *Devices) SetDeviceSubnetRoutes(ctx context.Context, deviceID string, ro
 	return c.performRequest(req, nil)
 }
 
-// DeviceSubnetRoutes Retrieves the list of subnet routes that a device is advertising, as well as those that are
+// SubnetRoutes Retrieves the list of subnet routes that a device is advertising, as well as those that are
 // enabled for it. Enabled routes are not necessarily advertised (e.g. for pre-enabling), and likewise, advertised
 // routes are not necessarily enabled.
-func (c *Devices) DeviceSubnetRoutes(ctx context.Context, deviceID string) (*DeviceRoutes, error) {
+func (c *Devices) SubnetRoutes(ctx context.Context, deviceID string) (*DeviceRoutes, error) {
 	const uriFmt = "/api/v2/device/%s/routes"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, deviceID))
@@ -102,8 +102,8 @@ type Device struct {
 	UpdateAvailable           bool     `json:"updateAvailable"`
 }
 
-// Devices lists the devices in a tailnet.
-func (c *Devices) Devices(ctx context.Context) ([]Device, error) {
+// List lists the devices in a tailnet.
+func (c *Devices) List(ctx context.Context) ([]Device, error) {
 	const uriFmt = "/api/v2/tailnet/%s/devices"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
@@ -119,13 +119,8 @@ func (c *Devices) Devices(ctx context.Context) ([]Device, error) {
 	return resp["devices"], nil
 }
 
-// AuthorizeDevice marks the specified device identifier as authorized to join the tailnet.
-func (c *Devices) AuthorizeDevice(ctx context.Context, deviceID string) error {
-	return c.SetDeviceAuthorized(ctx, deviceID, true)
-}
-
-// SetDeviceAuthorized marks the specified device as authorized or not.
-func (c *Devices) SetDeviceAuthorized(ctx context.Context, deviceID string, authorized bool) error {
+// SetAuthorized marks the specified device as authorized or not.
+func (c *Devices) SetAuthorized(ctx context.Context, deviceID string, authorized bool) error {
 	const uriFmt = "/api/v2/device/%s/authorized"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), requestBody(map[string]bool{
@@ -138,8 +133,8 @@ func (c *Devices) SetDeviceAuthorized(ctx context.Context, deviceID string, auth
 	return c.performRequest(req, nil)
 }
 
-// DeleteDevice deletes the device given its deviceID.
-func (c *Devices) DeleteDevice(ctx context.Context, deviceID string) error {
+// Delete deletes the device given its deviceID.
+func (c *Devices) Delete(ctx context.Context, deviceID string) error {
 	const uriFmt = "/api/v2/device/%s"
 	req, err := c.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, deviceID))
 	if err != nil {
@@ -149,8 +144,8 @@ func (c *Devices) DeleteDevice(ctx context.Context, deviceID string) error {
 	return c.performRequest(req, nil)
 }
 
-// SetDeviceTags updates the tags of a target device.
-func (c *Devices) SetDeviceTags(ctx context.Context, deviceID string, tags []string) error {
+// SetTags updates the tags of a target device.
+func (c *Devices) SetTags(ctx context.Context, deviceID string, tags []string) error {
 	const uriFmt = "/api/v2/device/%s/tags"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), requestBody(map[string][]string{
@@ -171,8 +166,8 @@ type (
 	}
 )
 
-// SetDeviceKey updates the properties of a device's key.
-func (c *Devices) SetDeviceKey(ctx context.Context, deviceID string, key DeviceKey) error {
+// SetKey updates the properties of a device's key.
+func (c *Devices) SetKey(ctx context.Context, deviceID string, key DeviceKey) error {
 	const uriFmt = "/api/v2/device/%s/key"
 
 	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, deviceID), requestBody(key))

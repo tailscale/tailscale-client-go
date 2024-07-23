@@ -111,8 +111,8 @@ type (
 	}
 )
 
-// ACL retrieves the ACL that is currently set for the given tailnet.
-func (c *PolicyFile) ACL(ctx context.Context) (*ACL, error) {
+// Get retrieves the Get that is currently set for the given tailnet.
+func (c *PolicyFile) Get(ctx context.Context) (*ACL, error) {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
@@ -128,9 +128,9 @@ func (c *PolicyFile) ACL(ctx context.Context) (*ACL, error) {
 	return &resp, nil
 }
 
-// RawACL retrieves the ACL that is currently set for the given tailnet
+// Raw retrieves the ACL that is currently set for the given tailnet
 // as a HuJSON string.
-func (c *PolicyFile) RawACL(ctx context.Context) (string, error) {
+func (c *PolicyFile) Raw(ctx context.Context) (string, error) {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
 	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet), requestContentType("application/hujson"))
@@ -159,9 +159,9 @@ func WithETag(etag string) SetACLOption {
 	}
 }
 
-// SetACL sets the ACL for the given tailnet. `acl` can either be an [ACL],
+// Set sets the ACL for the given tailnet. `acl` can either be an [ACL],
 // or a HuJSON string.
-func (c *PolicyFile) SetACL(ctx context.Context, acl any, opts ...SetACLOption) error {
+func (c *PolicyFile) Set(ctx context.Context, acl any, opts ...SetACLOption) error {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
 	p := &setACLParams{headers: make(map[string]string)}
@@ -189,9 +189,9 @@ func (c *PolicyFile) SetACL(ctx context.Context, acl any, opts ...SetACLOption) 
 	return c.performRequest(req, nil)
 }
 
-// ValidateACL validates the provided ACL via the API. `acl` can either be an [ACL],
+// Validate validates the provided ACL via the API. `acl` can either be an [ACL],
 // or a HuJSON string.
-func (c *PolicyFile) ValidateACL(ctx context.Context, acl any) error {
+func (c *PolicyFile) Validate(ctx context.Context, acl any) error {
 	const uriFmt = "/api/v2/tailnet/%s/acl/validate"
 
 	reqOpts := []requestOption{
