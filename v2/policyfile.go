@@ -6,11 +6,11 @@ import (
 	"net/http"
 )
 
-type PolicyFile struct {
+type PolicyFileResource struct {
 	*Client
 }
 
-func (c *Client) PolicyFile() *PolicyFile {
+func (c *Client) PolicyFile() *PolicyFileResource {
 	return c.policyFile
 }
 
@@ -112,16 +112,16 @@ type (
 )
 
 // Get retrieves the Get that is currently set for the given tailnet.
-func (c *PolicyFile) Get(ctx context.Context) (*ACL, error) {
+func (pfr *PolicyFileResource) Get(ctx context.Context) (*ACL, error) {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
+	req, err := pfr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, pfr.tailnet))
 	if err != nil {
 		return nil, err
 	}
 
 	var resp ACL
-	if err = c.performRequest(req, &resp); err != nil {
+	if err = pfr.performRequest(req, &resp); err != nil {
 		return nil, err
 	}
 
@@ -130,16 +130,16 @@ func (c *PolicyFile) Get(ctx context.Context) (*ACL, error) {
 
 // Raw retrieves the ACL that is currently set for the given tailnet
 // as a HuJSON string.
-func (c *PolicyFile) Raw(ctx context.Context) (string, error) {
+func (pfr *PolicyFileResource) Raw(ctx context.Context) (string, error) {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet), requestContentType("application/hujson"))
+	req, err := pfr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, pfr.tailnet), requestContentType("application/hujson"))
 	if err != nil {
 		return "", err
 	}
 
 	var resp []byte
-	if err = c.performRequest(req, &resp); err != nil {
+	if err = pfr.performRequest(req, &resp); err != nil {
 		return "", err
 	}
 
@@ -161,7 +161,7 @@ func WithETag(etag string) SetACLOption {
 
 // Set sets the ACL for the given tailnet. `acl` can either be an [ACL],
 // or a HuJSON string.
-func (c *PolicyFile) Set(ctx context.Context, acl any, opts ...SetACLOption) error {
+func (pfr *PolicyFileResource) Set(ctx context.Context, acl any, opts ...SetACLOption) error {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
 	p := &setACLParams{headers: make(map[string]string)}
@@ -181,17 +181,17 @@ func (c *PolicyFile) Set(ctx context.Context, acl any, opts ...SetACLOption) err
 		return fmt.Errorf("expected ACL content as a string or as ACL struct; got %T", v)
 	}
 
-	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), reqOpts...)
+	req, err := pfr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, pfr.tailnet), reqOpts...)
 	if err != nil {
 		return err
 	}
 
-	return c.performRequest(req, nil)
+	return pfr.performRequest(req, nil)
 }
 
 // Validate validates the provided ACL via the API. `acl` can either be an [ACL],
 // or a HuJSON string.
-func (c *PolicyFile) Validate(ctx context.Context, acl any) error {
+func (pfr *PolicyFileResource) Validate(ctx context.Context, acl any) error {
 	const uriFmt = "/api/v2/tailnet/%s/acl/validate"
 
 	reqOpts := []requestOption{
@@ -205,13 +205,13 @@ func (c *PolicyFile) Validate(ctx context.Context, acl any) error {
 		return fmt.Errorf("expected ACL content as a string or as ACL struct; got %T", v)
 	}
 
-	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), reqOpts...)
+	req, err := pfr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, pfr.tailnet), reqOpts...)
 	if err != nil {
 		return err
 	}
 
 	var response APIError
-	if err := c.performRequest(req, &response); err != nil {
+	if err := pfr.performRequest(req, &response); err != nil {
 		return err
 	}
 	if response.Message != "" {

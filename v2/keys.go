@@ -7,11 +7,11 @@ import (
 	"time"
 )
 
-type Keys struct {
+type KeysResource struct {
 	*Client
 }
 
-func (c *Client) Keys() *Keys {
+func (c *Client) Keys() *KeysResource {
 	return c.keys
 }
 
@@ -69,7 +69,7 @@ func WithKeyDescription(desc string) CreateKeyOption {
 
 // Create creates a new authentication key with the capabilities selected via the KeyCapabilities type. Returns
 // the generated key if successful.
-func (c *Keys) Create(ctx context.Context, capabilities KeyCapabilities, opts ...CreateKeyOption) (Key, error) {
+func (kr *KeysResource) Create(ctx context.Context, capabilities KeyCapabilities, opts ...CreateKeyOption) (Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys"
 
 	ckr := &CreateKeyRequest{
@@ -82,41 +82,41 @@ func (c *Keys) Create(ctx context.Context, capabilities KeyCapabilities, opts ..
 		}
 	}
 
-	req, err := c.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, c.tailnet), requestBody(ckr))
+	req, err := kr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, kr.tailnet), requestBody(ckr))
 	if err != nil {
 		return Key{}, err
 	}
 
 	var key Key
-	return key, c.performRequest(req, &key)
+	return key, kr.performRequest(req, &key)
 }
 
 // Get returns all information on a key whose identifier matches the one provided. This will not return the
 // authentication key itself, just the metadata.
-func (c *Keys) Get(ctx context.Context, id string) (Key, error) {
+func (kr *KeysResource) Get(ctx context.Context, id string) (Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys/%s"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet, id))
+	req, err := kr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, kr.tailnet, id))
 	if err != nil {
 		return Key{}, err
 	}
 
 	var key Key
-	return key, c.performRequest(req, &key)
+	return key, kr.performRequest(req, &key)
 }
 
 // List returns all keys within the tailnet. The only fields set for each key will be its identifier. The keys returned
 // are relative to the user that owns the API key used to authenticate the client.
-func (c *Keys) List(ctx context.Context) ([]Key, error) {
+func (kr *KeysResource) List(ctx context.Context) ([]Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys"
 
-	req, err := c.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, c.tailnet))
+	req, err := kr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, kr.tailnet))
 	if err != nil {
 		return nil, err
 	}
 
 	resp := make(map[string][]Key)
-	if err = c.performRequest(req, &resp); err != nil {
+	if err = kr.performRequest(req, &resp); err != nil {
 		return nil, err
 	}
 
@@ -124,13 +124,13 @@ func (c *Keys) List(ctx context.Context) ([]Key, error) {
 }
 
 // Delete removes an authentication key from the tailnet.
-func (c *Keys) Delete(ctx context.Context, id string) error {
+func (kr *KeysResource) Delete(ctx context.Context, id string) error {
 	const uriFmt = "/api/v2/tailnet/%s/keys/%s"
 
-	req, err := c.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, c.tailnet, id))
+	req, err := kr.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, kr.tailnet, id))
 	if err != nil {
 		return err
 	}
 
-	return c.performRequest(req, nil)
+	return kr.performRequest(req, nil)
 }
