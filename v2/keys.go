@@ -11,10 +11,6 @@ type KeysResource struct {
 	*Client
 }
 
-func (c *Client) Keys() *KeysResource {
-	return c.keys
-}
-
 type (
 	// KeyCapabilities type describes the capabilities of an authentication key.
 	KeyCapabilities struct {

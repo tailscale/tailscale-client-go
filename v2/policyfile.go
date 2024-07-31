@@ -10,10 +10,6 @@ type PolicyFileResource struct {
 	*Client
 }
 
-func (c *Client) PolicyFile() *PolicyFileResource {
-	return c.policyFile
-}
-
 type (
 	// ACL contains the schema for a tailnet policy file. More details: https://tailscale.com/kb/1018/acls/
 	ACL struct {

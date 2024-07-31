@@ -12,10 +12,6 @@ type DevicesResource struct {
 	*Client
 }
 
-func (c *Client) Devices() *DevicesResource {
-	return c.devices
-}
-
 type (
 	DeviceRoutes struct {
 		Advertised []string `json:"advertisedRoutes"`

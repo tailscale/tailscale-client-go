@@ -263,7 +263,7 @@ func TestClient_SetACL(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, client.PolicyFile().Set(context.Background(), expectedACL))
+	assert.NoError(t, client.PolicyFile.Set(context.Background(), expectedACL))
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/acl", server.Path)
 	assert.Equal(t, "", server.Header.Get("If-Match"))
@@ -279,7 +279,7 @@ func TestClient_SetACL_HuJSON(t *testing.T) {
 	client, server := NewTestHarness(t)
 	server.ResponseCode = http.StatusOK
 
-	assert.NoError(t, client.PolicyFile().Set(context.Background(), string(huJSONACL)))
+	assert.NoError(t, client.PolicyFile.Set(context.Background(), string(huJSONACL)))
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/acl", server.Path)
 	assert.Equal(t, "", server.Header.Get("If-Match"))
@@ -302,7 +302,7 @@ func TestClient_SetACLWithETag(t *testing.T) {
 		},
 	}
 
-	assert.NoError(t, client.PolicyFile().Set(context.Background(), expectedACL, tailscale.WithETag("test-etag")))
+	assert.NoError(t, client.PolicyFile.Set(context.Background(), expectedACL, tailscale.WithETag("test-etag")))
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/acl", server.Path)
 	assert.Equal(t, `"test-etag"`, server.Header.Get("If-Match"))
@@ -352,7 +352,7 @@ func TestClient_ACL(t *testing.T) {
 		},
 	}
 
-	acl, err := client.PolicyFile().Get(context.Background())
+	acl, err := client.PolicyFile.Get(context.Background())
 	assert.NoError(t, err)
 	assert.EqualValues(t, acl, server.ResponseBody)
 	assert.EqualValues(t, http.MethodGet, server.Method)
@@ -368,7 +368,7 @@ func TestClient_RawACL(t *testing.T) {
 	server.ResponseCode = http.StatusOK
 	server.ResponseBody = huJSONACL
 
-	acl, err := client.PolicyFile().Raw(context.Background())
+	acl, err := client.PolicyFile.Raw(context.Background())
 	assert.NoError(t, err)
 	assert.EqualValues(t, string(huJSONACL), acl)
 	assert.EqualValues(t, http.MethodGet, server.Method)
@@ -418,7 +418,7 @@ func TestClient_ValidateACL(t *testing.T) {
 	server.ResponseCode = http.StatusOK
 	server.ResponseBody = acl
 
-	err := client.PolicyFile().Validate(context.Background(), acl)
+	err := client.PolicyFile.Validate(context.Background(), acl)
 	assert.NoError(t, err)
 	assert.EqualValues(t, server.ResponseBody, acl)
 	assert.EqualValues(t, http.MethodPost, server.Method)
@@ -448,7 +448,7 @@ func TestClient_ValidateACL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server.ResponseCode = tt.responseCode
 			server.ResponseBody = tt.responseBody
-			err := client.PolicyFile().Validate(context.Background(), acl)
+			err := client.PolicyFile.Validate(context.Background(), acl)
 			assert.ErrorContains(t, err, tt.wantErr)
 		})
 	}
@@ -462,7 +462,7 @@ func TestClient_ValidateACL_HuJSON(t *testing.T) {
 	server.ResponseCode = http.StatusOK
 	server.ResponseBody = huJSONACL
 
-	err := client.PolicyFile().Validate(context.Background(), string(huJSONACL))
+	err := client.PolicyFile.Validate(context.Background(), string(huJSONACL))
 	assert.NoError(t, err)
 	assert.EqualValues(t, server.ResponseBody, huJSONACL)
 	assert.EqualValues(t, http.MethodPost, server.Method)

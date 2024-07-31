@@ -10,10 +10,6 @@ type DNSResource struct {
 	*Client
 }
 
-func (c *Client) DNS() *DNSResource {
-	return c.dns
-}
-
 // SetSearchPaths replaces the list of search paths with the list supplied by the user and returns an error otherwise.
 func (dr *DNSResource) SetSearchPaths(ctx context.Context, searchPaths []string) error {
 	const uriFmt = "/api/v2/tailnet/%v/dns/searchpaths"
