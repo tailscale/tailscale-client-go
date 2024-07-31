@@ -111,7 +111,7 @@ type (
 func (pfr *PolicyFileResource) Get(ctx context.Context) (*ACL, error) {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
-	req, err := pfr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, pfr.tailnet))
+	req, err := pfr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, pfr.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func (pfr *PolicyFileResource) Get(ctx context.Context) (*ACL, error) {
 func (pfr *PolicyFileResource) Raw(ctx context.Context) (string, error) {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
 
-	req, err := pfr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, pfr.tailnet), requestContentType("application/hujson"))
+	req, err := pfr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, pfr.tailnetPathEscaped), requestContentType("application/hujson"))
 	if err != nil {
 		return "", err
 	}
@@ -177,7 +177,7 @@ func (pfr *PolicyFileResource) Set(ctx context.Context, acl any, opts ...SetACLO
 		return fmt.Errorf("expected ACL content as a string or as ACL struct; got %T", v)
 	}
 
-	req, err := pfr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, pfr.tailnet), reqOpts...)
+	req, err := pfr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, pfr.tailnetPathEscaped), reqOpts...)
 	if err != nil {
 		return err
 	}
@@ -201,7 +201,7 @@ func (pfr *PolicyFileResource) Validate(ctx context.Context, acl any) error {
 		return fmt.Errorf("expected ACL content as a string or as ACL struct; got %T", v)
 	}
 
-	req, err := pfr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, pfr.tailnet), reqOpts...)
+	req, err := pfr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, pfr.tailnetPathEscaped), reqOpts...)
 	if err != nil {
 		return err
 	}

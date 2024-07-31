@@ -102,7 +102,7 @@ type Device struct {
 func (dr *DevicesResource) List(ctx context.Context) ([]Device, error) {
 	const uriFmt = "/api/v2/tailnet/%s/devices"
 
-	req, err := dr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, dr.tailnet))
+	req, err := dr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, dr.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}

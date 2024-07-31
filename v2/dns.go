@@ -14,7 +14,7 @@ type DNSResource struct {
 func (dr *DNSResource) SetSearchPaths(ctx context.Context, searchPaths []string) error {
 	const uriFmt = "/api/v2/tailnet/%v/dns/searchpaths"
 
-	req, err := dr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, dr.tailnet), requestBody(map[string][]string{
+	req, err := dr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, dr.tailnetPathEscaped), requestBody(map[string][]string{
 		"searchPaths": searchPaths,
 	}))
 	if err != nil {
@@ -28,7 +28,7 @@ func (dr *DNSResource) SetSearchPaths(ctx context.Context, searchPaths []string)
 func (dr *DNSResource) SearchPaths(ctx context.Context) ([]string, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/searchpaths"
 
-	req, err := dr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, dr.tailnet))
+	req, err := dr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, dr.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (dr *DNSResource) SearchPaths(ctx context.Context) ([]string, error) {
 func (dr *DNSResource) SetNameservers(ctx context.Context, dns []string) error {
 	const uriFmt = "/api/v2/tailnet/%v/dns/nameservers"
 
-	req, err := dr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, dr.tailnet), requestBody(map[string][]string{
+	req, err := dr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, dr.tailnetPathEscaped), requestBody(map[string][]string{
 		"dns": dns,
 	}))
 	if err != nil {
@@ -60,7 +60,7 @@ func (dr *DNSResource) SetNameservers(ctx context.Context, dns []string) error {
 func (dr *DNSResource) Nameservers(ctx context.Context) ([]string, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/nameservers"
 
-	req, err := dr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, dr.tailnet))
+	req, err := dr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, dr.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ type SplitDnsResponse SplitDnsRequest
 func (dr *DNSResource) UpdateSplitDNS(ctx context.Context, request SplitDnsRequest) (SplitDnsResponse, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
 
-	req, err := dr.buildRequest(ctx, http.MethodPatch, fmt.Sprintf(uriFmt, dr.tailnet), requestBody(request))
+	req, err := dr.buildRequest(ctx, http.MethodPatch, fmt.Sprintf(uriFmt, dr.tailnetPathEscaped), requestBody(request))
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +111,7 @@ func (dr *DNSResource) UpdateSplitDNS(ctx context.Context, request SplitDnsReque
 func (dr *DNSResource) SetSplitDNS(ctx context.Context, request SplitDnsRequest) error {
 	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
 
-	req, err := dr.buildRequest(ctx, http.MethodPut, fmt.Sprintf(uriFmt, dr.tailnet), requestBody(request))
+	req, err := dr.buildRequest(ctx, http.MethodPut, fmt.Sprintf(uriFmt, dr.tailnetPathEscaped), requestBody(request))
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func (dr *DNSResource) SetSplitDNS(ctx context.Context, request SplitDnsRequest)
 func (dr *DNSResource) SplitDNS(ctx context.Context) (SplitDnsResponse, error) {
 	const uriFmt = "/api/v2/tailnet/%v/dns/split-dns"
 
-	req, err := dr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, dr.tailnet))
+	req, err := dr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, dr.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +145,7 @@ type DNSPreferences struct {
 func (dr *DNSResource) Preferences(ctx context.Context) (*DNSPreferences, error) {
 	const uriFmt = "/api/v2/tailnet/%s/dns/preferences"
 
-	req, err := dr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, dr.tailnet))
+	req, err := dr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, dr.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +163,7 @@ func (dr *DNSResource) Preferences(ctx context.Context) (*DNSPreferences, error)
 func (dr *DNSResource) SetPreferences(ctx context.Context, preferences DNSPreferences) error {
 	const uriFmt = "/api/v2/tailnet/%s/dns/preferences"
 
-	req, err := dr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, dr.tailnet), requestBody(preferences))
+	req, err := dr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, dr.tailnetPathEscaped), requestBody(preferences))
 	if err != nil {
 		return nil
 	}

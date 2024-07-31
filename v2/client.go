@@ -20,17 +20,20 @@ import (
 type (
 	// Client type is used to perform actions against the Tailscale API.
 	Client struct {
-		apiKey    string
-		http      *http.Client
-		baseURL   *url.URL
-		tailnet   string
-		userAgent string // empty string means Go's default value.
+		apiKey  string
+		http    *http.Client
+		baseURL *url.URL
+		// tailnetPathEscaped is the value of tailnet passed to url.PathEscape.
+		// This value should be used when formatting paths that have tailnet as a segment.
+		tailnetPathEscaped string
+		userAgent          string // empty string means Go's default value.
 
 		// Specific resources
 		Devices    *DevicesResource
 		DNS        *DNSResource
 		Keys       *KeysResource
 		PolicyFile *PolicyFileResource
+		Webhooks   *WebhooksResource
 	}
 
 	// APIError type describes an error as returned by the Tailscale API.
@@ -72,9 +75,9 @@ func NewClient(apiKey, tailnet string, options ...ClientOption) (*Client, error)
 	}
 
 	c := &Client{
-		baseURL:   u,
-		tailnet:   tailnet,
-		userAgent: defaultUserAgent,
+		baseURL:            u,
+		tailnetPathEscaped: url.PathEscape(tailnet),
+		userAgent:          defaultUserAgent,
 	}
 
 	if apiKey != "" {
@@ -97,6 +100,7 @@ func NewClient(apiKey, tailnet string, options ...ClientOption) (*Client, error)
 	c.DNS = &DNSResource{c}
 	c.Keys = &KeysResource{c}
 	c.PolicyFile = &PolicyFileResource{c}
+	c.Webhooks = &WebhooksResource{c}
 	return c, nil
 }
 

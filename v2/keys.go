@@ -78,7 +78,7 @@ func (kr *KeysResource) Create(ctx context.Context, capabilities KeyCapabilities
 		}
 	}
 
-	req, err := kr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, kr.tailnet), requestBody(ckr))
+	req, err := kr.buildRequest(ctx, http.MethodPost, fmt.Sprintf(uriFmt, kr.tailnetPathEscaped), requestBody(ckr))
 	if err != nil {
 		return Key{}, err
 	}
@@ -92,7 +92,7 @@ func (kr *KeysResource) Create(ctx context.Context, capabilities KeyCapabilities
 func (kr *KeysResource) Get(ctx context.Context, id string) (Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys/%s"
 
-	req, err := kr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, kr.tailnet, id))
+	req, err := kr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, kr.tailnetPathEscaped, id))
 	if err != nil {
 		return Key{}, err
 	}
@@ -106,7 +106,7 @@ func (kr *KeysResource) Get(ctx context.Context, id string) (Key, error) {
 func (kr *KeysResource) List(ctx context.Context) ([]Key, error) {
 	const uriFmt = "/api/v2/tailnet/%s/keys"
 
-	req, err := kr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, kr.tailnet))
+	req, err := kr.buildRequest(ctx, http.MethodGet, fmt.Sprintf(uriFmt, kr.tailnetPathEscaped))
 	if err != nil {
 		return nil, err
 	}
@@ -123,7 +123,7 @@ func (kr *KeysResource) List(ctx context.Context) ([]Key, error) {
 func (kr *KeysResource) Delete(ctx context.Context, id string) error {
 	const uriFmt = "/api/v2/tailnet/%s/keys/%s"
 
-	req, err := kr.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, kr.tailnet, id))
+	req, err := kr.buildRequest(ctx, http.MethodDelete, fmt.Sprintf(uriFmt, kr.tailnetPathEscaped, id))
 	if err != nil {
 		return err
 	}
