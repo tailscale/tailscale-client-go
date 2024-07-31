@@ -42,6 +42,7 @@ type (
 		devices    *DevicesResource
 		dns        *DNSResource
 		keys       *KeysResource
+		logging    *LoggingResource
 		policyFile *PolicyFileResource
 		webhooks   *WebhooksResource
 	}
@@ -99,6 +100,7 @@ func (c *Client) init() {
 		c.devices = &DevicesResource{c}
 		c.dns = &DNSResource{c}
 		c.keys = &KeysResource{c}
+		c.logging = &LoggingResource{c}
 		c.policyFile = &PolicyFileResource{c}
 		c.webhooks = &WebhooksResource{c}
 	})
@@ -136,6 +138,11 @@ func (c *Client) DNS() *DNSResource {
 func (c *Client) Keys() *KeysResource {
 	c.init()
 	return c.keys
+}
+
+func (c *Client) Logging() *LoggingResource {
+	c.init()
+	return c.logging
 }
 
 func (c *Client) PolicyFile() *PolicyFileResource {
