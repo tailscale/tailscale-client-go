@@ -29,6 +29,7 @@ type (
 		userAgent          string // empty string means Go's default value.
 
 		// Specific resources
+		Contacts   *ContactsResource
 		Devices    *DevicesResource
 		DNS        *DNSResource
 		Keys       *KeysResource
@@ -96,6 +97,7 @@ func NewClient(apiKey, tailnet string, options ...ClientOption) (*Client, error)
 		return nil, errors.New("no authentication credentials provided")
 	}
 
+	c.Contacts = &ContactsResource{c}
 	c.Devices = &DevicesResource{c}
 	c.DNS = &DNSResource{c}
 	c.Keys = &KeysResource{c}
