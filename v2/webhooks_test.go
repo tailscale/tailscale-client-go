@@ -35,7 +35,7 @@ func TestClient_CreateWebhook(t *testing.T) {
 	}
 	server.ResponseBody = expectedWebhook
 
-	webhook, err := client.Webhooks.Create(context.Background(), req)
+	webhook, err := client.Webhooks().Create(context.Background(), req)
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/webhooks", server.Path)
@@ -72,7 +72,7 @@ func TestClient_Webhooks(t *testing.T) {
 	}
 	server.ResponseBody = expectedWebhooks
 
-	actualWebhooks, err := client.Webhooks.List(context.Background())
+	actualWebhooks, err := client.Webhooks().List(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodGet, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/webhooks", server.Path)
@@ -96,7 +96,7 @@ func TestClient_Webhook(t *testing.T) {
 	}
 	server.ResponseBody = expectedWebhook
 
-	actualWebhook, err := client.Webhooks.Get(context.Background(), "54321")
+	actualWebhook, err := client.Webhooks().Get(context.Background(), "54321")
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodGet, server.Method)
 	assert.Equal(t, "/api/v2/webhooks/54321", server.Path)
@@ -122,7 +122,7 @@ func TestClient_UpdateWebhook(t *testing.T) {
 	}
 	server.ResponseBody = expectedWebhook
 
-	actualWebhook, err := client.Webhooks.Update(context.Background(), "54321", subscriptions)
+	actualWebhook, err := client.Webhooks().Update(context.Background(), "54321", subscriptions)
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPatch, server.Method)
 	assert.Equal(t, "/api/v2/webhooks/54321", server.Path)
@@ -135,7 +135,7 @@ func TestClient_DeleteWebhook(t *testing.T) {
 	client, server := NewTestHarness(t)
 	server.ResponseCode = http.StatusOK
 
-	err := client.Webhooks.Delete(context.Background(), "54321")
+	err := client.Webhooks().Delete(context.Background(), "54321")
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodDelete, server.Method)
 	assert.Equal(t, "/api/v2/webhooks/54321", server.Path)
@@ -147,7 +147,7 @@ func TestClient_TestWebhook(t *testing.T) {
 	client, server := NewTestHarness(t)
 	server.ResponseCode = http.StatusAccepted
 
-	err := client.Webhooks.Test(context.Background(), "54321")
+	err := client.Webhooks().Test(context.Background(), "54321")
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/webhooks/54321/test", server.Path)
@@ -172,7 +172,7 @@ func TestClient_RotateWebhookSecret(t *testing.T) {
 	}
 	server.ResponseBody = expectedWebhook
 
-	actualWebhook, err := client.Webhooks.RotateSecret(context.Background(), "54321")
+	actualWebhook, err := client.Webhooks().RotateSecret(context.Background(), "54321")
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/webhooks/54321/rotate", server.Path)

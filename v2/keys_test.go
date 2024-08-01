@@ -34,7 +34,7 @@ func TestClient_CreateKey(t *testing.T) {
 
 	server.ResponseBody = expected
 
-	actual, err := client.Keys.Create(context.Background(), capabilities)
+	actual, err := client.Keys().Create(context.Background(), capabilities)
 	assert.NoError(t, err)
 	assert.EqualValues(t, expected, actual)
 	assert.Equal(t, http.MethodPost, server.Method)
@@ -70,7 +70,7 @@ func TestClient_CreateKeyWithExpirySeconds(t *testing.T) {
 
 	server.ResponseBody = expected
 
-	actual, err := client.Keys.Create(context.Background(), capabilities, tailscale.WithKeyExpiry(1440*time.Second))
+	actual, err := client.Keys().Create(context.Background(), capabilities, tailscale.WithKeyExpiry(1440*time.Second))
 	assert.NoError(t, err)
 	assert.EqualValues(t, expected, actual)
 	assert.Equal(t, http.MethodPost, server.Method)
@@ -106,7 +106,7 @@ func TestClient_CreateKeyWithDescription(t *testing.T) {
 
 	server.ResponseBody = expected
 
-	actual, err := client.Keys.Create(context.Background(), capabilities, tailscale.WithKeyDescription("key description"))
+	actual, err := client.Keys().Create(context.Background(), capabilities, tailscale.WithKeyDescription("key description"))
 	assert.NoError(t, err)
 	assert.EqualValues(t, expected, actual)
 	assert.Equal(t, http.MethodPost, server.Method)
@@ -141,7 +141,7 @@ func TestClient_GetKey(t *testing.T) {
 
 	server.ResponseBody = expected
 
-	actual, err := client.Keys.Get(context.Background(), expected.ID)
+	actual, err := client.Keys().Get(context.Background(), expected.ID)
 	assert.NoError(t, err)
 	assert.EqualValues(t, expected, actual)
 	assert.Equal(t, http.MethodGet, server.Method)
@@ -163,7 +163,7 @@ func TestClient_Keys(t *testing.T) {
 		"keys": expected,
 	}
 
-	actual, err := client.Keys.List(context.Background())
+	actual, err := client.Keys().List(context.Background())
 	assert.NoError(t, err)
 	assert.EqualValues(t, expected, actual)
 	assert.Equal(t, http.MethodGet, server.Method)
@@ -178,7 +178,7 @@ func TestClient_DeleteKey(t *testing.T) {
 
 	const keyID = "test"
 
-	assert.NoError(t, client.Keys.Delete(context.Background(), keyID))
+	assert.NoError(t, client.Keys().Delete(context.Background(), keyID))
 	assert.Equal(t, http.MethodDelete, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/keys/"+keyID, server.Path)
 }
@@ -190,6 +190,6 @@ func TestIsNotFound(t *testing.T) {
 	server.ResponseCode = http.StatusNotFound
 	server.ResponseBody = tailscale.APIError{Message: "error"}
 
-	_, err := client.Keys.Get(context.Background(), "test")
+	_, err := client.Keys().Get(context.Background(), "test")
 	assert.True(t, tailscale.IsNotFound(err))
 }

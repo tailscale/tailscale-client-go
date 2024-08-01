@@ -8,6 +8,8 @@
 A client implementation for the [Tailscale](https://tailscale.com) HTTP API.
 For more details, please see [API documentation](https://github.com/tailscale/tailscale/blob/main/api.md).
 
+A [V2](v2) is currently under active development, but has not yet been released. Use at your own risk.
+
 # Example
 
 ```go

@@ -1,5 +1,7 @@
 // Package tailscale contains a basic implementation of a client for the Tailscale HTTP api. Documentation is here:
 // https://github.com/tailscale/tailscale/blob/main/api.md
+//
+// WARNING - this v2 implementation is under active development, use at your own risk.
 package tailscale
 
 import (
@@ -11,30 +13,38 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/tailscale/hujson"
-	"golang.org/x/oauth2/clientcredentials"
 )
 
 type (
 	// Client type is used to perform actions against the Tailscale API.
 	Client struct {
-		apiKey  string
-		http    *http.Client
-		baseURL *url.URL
+		// BaseURL is the base URL for accessing the Tailscale API server. Defaults to https://api.tailscale.com.
+		BaseURL *url.URL
+		// UserAgent configures the User-Agent HTTP header for requests, defaults to "tailscale-client-go"
+		UserAgent string
+		// APIKey allows specifying an APIKey to use for authentication.
+		APIKey string
+		// Tailnet allows specifying a specific Tailnet by name, to which this Client will connect by default.
+		Tailnet string
+
+		http *http.Client
 		// tailnetPathEscaped is the value of tailnet passed to url.PathEscape.
 		// This value should be used when formatting paths that have tailnet as a segment.
 		tailnetPathEscaped string
-		userAgent          string // empty string means Go's default value.
+
+		initOnce sync.Once
 
 		// Specific resources
-		Contacts   *ContactsResource
-		Devices    *DevicesResource
-		DNS        *DNSResource
-		Keys       *KeysResource
-		PolicyFile *PolicyFileResource
-		Webhooks   *WebhooksResource
+		contacts   *ContactsResource
+		devices    *DevicesResource
+		dns        *DNSResource
+		keys       *KeysResource
+		policyFile *PolicyFileResource
+		webhooks   *WebhooksResource
 	}
 
 	// APIError type describes an error as returned by the Tailscale API.
@@ -49,12 +59,18 @@ type (
 		User   string   `json:"user"`
 		Errors []string `json:"errors"`
 	}
-
-	// ClientOption type is a function that is used to modify a Client.
-	ClientOption func(c *Client) error
 )
 
-const baseURL = "https://api.tailscale.com"
+var defaultBaseURL *url.URL
+
+func init() {
+	var err error
+	defaultBaseURL, err = url.Parse("https://api.tailscale.com")
+	if err != nil {
+		panic(fmt.Errorf("failed to parse baseURL: %w", err))
+	}
+}
+
 const defaultContentType = "application/json"
 const defaultHttpClientTimeout = time.Minute
 const defaultUserAgent = "tailscale-client-go"
@@ -69,84 +85,53 @@ const defaultUserAgent = "tailscale-client-go"
 //	tailnet,
 //	tailscale.WithOAuthClientCredentials(oauthClientID, oauthClientSecret, oauthScopes),
 //	)
-func NewClient(apiKey, tailnet string, options ...ClientOption) (*Client, error) {
-	u, err := url.Parse(baseURL)
-	if err != nil {
-		return nil, err
-	}
-
-	c := &Client{
-		baseURL:            u,
-		tailnetPathEscaped: url.PathEscape(tailnet),
-		userAgent:          defaultUserAgent,
-	}
-
-	if apiKey != "" {
-		c.apiKey = apiKey
+func (c *Client) init() {
+	c.initOnce.Do(func() {
+		if c.BaseURL == nil {
+			c.BaseURL = defaultBaseURL
+		}
+		c.tailnetPathEscaped = url.PathEscape(c.Tailnet)
+		if c.UserAgent == "" {
+			c.UserAgent = defaultUserAgent
+		}
 		c.http = &http.Client{Timeout: defaultHttpClientTimeout}
-	}
-
-	for _, option := range options {
-		if err = option(c); err != nil {
-			return nil, err
-		}
-	}
-
-	// apiKey or WithOAuthClientCredentials will initialize the http client. Fail here if both are not set.
-	if c.apiKey == "" && c.http == nil {
-		return nil, errors.New("no authentication credentials provided")
-	}
-
-	c.Contacts = &ContactsResource{c}
-	c.Devices = &DevicesResource{c}
-	c.DNS = &DNSResource{c}
-	c.Keys = &KeysResource{c}
-	c.PolicyFile = &PolicyFileResource{c}
-	c.Webhooks = &WebhooksResource{c}
-	return c, nil
+		c.contacts = &ContactsResource{c}
+		c.devices = &DevicesResource{c}
+		c.dns = &DNSResource{c}
+		c.keys = &KeysResource{c}
+		c.policyFile = &PolicyFileResource{c}
+		c.webhooks = &WebhooksResource{c}
+	})
 }
 
-// WithBaseURL sets a custom baseURL for the Tailscale API, this is primarily used for testing purposes.
-func WithBaseURL(baseURL string) ClientOption {
-	return func(c *Client) error {
-		u, err := url.Parse(baseURL)
-		if err != nil {
-			return err
-		}
-
-		c.baseURL = u
-		return nil
-	}
+func (c *Client) Contacts() *ContactsResource {
+	c.init()
+	return c.contacts
 }
 
-// WithOAuthClientCredentials sets the OAuth Client Credentials to use for the Tailscale API.
-func WithOAuthClientCredentials(clientID, clientSecret string, scopes []string) ClientOption {
-	return func(c *Client) error {
-		relTokenURL, err := url.Parse("/api/v2/oauth/token")
-		if err != nil {
-			return err
-		}
-		oauthConfig := clientcredentials.Config{
-			ClientID:     clientID,
-			ClientSecret: clientSecret,
-			TokenURL:     c.baseURL.ResolveReference(relTokenURL).String(),
-			Scopes:       scopes,
-		}
-
-		// use context.Background() here, since this is used to refresh the token in the future
-		c.http = oauthConfig.Client(context.Background())
-		c.http.Timeout = defaultHttpClientTimeout
-		return nil
-	}
+func (c *Client) Devices() *DevicesResource {
+	c.init()
+	return c.devices
 }
 
-// WithUserAgent sets a custom User-Agent header in HTTP requests.
-// Passing an empty string will make the client use Go's default value.
-func WithUserAgent(ua string) ClientOption {
-	return func(c *Client) error {
-		c.userAgent = ua
-		return nil
-	}
+func (c *Client) DNS() *DNSResource {
+	c.init()
+	return c.dns
+}
+
+func (c *Client) Keys() *KeysResource {
+	c.init()
+	return c.keys
+}
+
+func (c *Client) PolicyFile() *PolicyFileResource {
+	c.init()
+	return c.policyFile
+}
+
+func (c *Client) Webhooks() *WebhooksResource {
+	c.init()
+	return c.webhooks
 }
 
 type requestParams struct {
@@ -183,7 +168,7 @@ func (c *Client) buildRequest(ctx context.Context, method, uri string, opts ...r
 		opt(rof)
 	}
 
-	u, err := c.baseURL.Parse(uri)
+	u, err := c.BaseURL.Parse(uri)
 	if err != nil {
 		return nil, err
 	}
@@ -208,8 +193,8 @@ func (c *Client) buildRequest(ctx context.Context, method, uri string, opts ...r
 		return nil, err
 	}
 
-	if c.userAgent != "" {
-		req.Header.Set("User-Agent", c.userAgent)
+	if c.UserAgent != "" {
+		req.Header.Set("User-Agent", c.UserAgent)
 	}
 
 	for k, v := range rof.headers {
@@ -224,8 +209,8 @@ func (c *Client) buildRequest(ctx context.Context, method, uri string, opts ...r
 	}
 
 	// c.apiKey will not be set on the client was configured with WithOAuthClientCredentials()
-	if c.apiKey != "" {
-		req.SetBasicAuth(c.apiKey, "")
+	if c.APIKey != "" {
+		req.SetBasicAuth(c.APIKey, "")
 	}
 
 	return req, nil

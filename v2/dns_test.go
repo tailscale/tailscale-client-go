@@ -21,7 +21,7 @@ func TestClient_DNSNameservers(t *testing.T) {
 	}
 
 	server.ResponseBody = expectedNameservers
-	nameservers, err := client.DNS.Nameservers(context.Background())
+	nameservers, err := client.DNS().Nameservers(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodGet, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/nameservers", server.Path)
@@ -37,7 +37,7 @@ func TestClient_DNSPreferences(t *testing.T) {
 		MagicDNS: true,
 	}
 
-	preferences, err := client.DNS.Preferences(context.Background())
+	preferences, err := client.DNS().Preferences(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodGet, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/preferences", server.Path)
@@ -56,7 +56,7 @@ func TestClient_DNSSearchPaths(t *testing.T) {
 
 	server.ResponseBody = expectedPaths
 
-	paths, err := client.DNS.SearchPaths(context.Background())
+	paths, err := client.DNS().SearchPaths(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodGet, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/searchpaths", server.Path)
@@ -74,7 +74,7 @@ func TestClient_SplitDNS(t *testing.T) {
 	}
 
 	server.ResponseBody = expectedNameservers
-	nameservers, err := client.DNS.SplitDNS(context.Background())
+	nameservers, err := client.DNS().SplitDNS(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodGet, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/split-dns", server.Path)
@@ -89,7 +89,7 @@ func TestClient_SetDNSNameservers(t *testing.T) {
 
 	nameservers := []string{"127.0.0.1"}
 
-	assert.NoError(t, client.DNS.SetNameservers(context.Background(), nameservers))
+	assert.NoError(t, client.DNS().SetNameservers(context.Background(), nameservers))
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/nameservers", server.Path)
 
@@ -108,7 +108,7 @@ func TestClient_SetDNSPreferences(t *testing.T) {
 		MagicDNS: true,
 	}
 
-	assert.NoError(t, client.DNS.SetPreferences(context.Background(), preferences))
+	assert.NoError(t, client.DNS().SetPreferences(context.Background(), preferences))
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/preferences", server.Path)
 
@@ -125,7 +125,7 @@ func TestClient_SetDNSSearchPaths(t *testing.T) {
 
 	paths := []string{"test"}
 
-	assert.NoError(t, client.DNS.SetSearchPaths(context.Background(), paths))
+	assert.NoError(t, client.DNS().SetSearchPaths(context.Background(), paths))
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/searchpaths", server.Path)
 
@@ -150,7 +150,7 @@ func TestClient_UpdateSplitDNS(t *testing.T) {
 	}
 	server.ResponseBody = expectedNameservers
 
-	resp, err := client.DNS.UpdateSplitDNS(context.Background(), request)
+	resp, err := client.DNS().UpdateSplitDNS(context.Background(), request)
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPatch, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/split-dns", server.Path)
@@ -172,7 +172,7 @@ func TestClient_SetSplitDNS(t *testing.T) {
 		"example.com": nameservers,
 	}
 
-	assert.NoError(t, client.DNS.SetSplitDNS(context.Background(), request))
+	assert.NoError(t, client.DNS().SetSplitDNS(context.Background(), request))
 	assert.Equal(t, http.MethodPut, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/split-dns", server.Path)
 

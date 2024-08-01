@@ -26,7 +26,7 @@ func TestClient_SetDeviceSubnetRoutes(t *testing.T) {
 	const deviceID = "test"
 	routes := []string{"127.0.0.1"}
 
-	assert.NoError(t, client.Devices.SetSubnetRoutes(context.Background(), deviceID, routes))
+	assert.NoError(t, client.Devices().SetSubnetRoutes(context.Background(), deviceID, routes))
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/device/test/routes", server.Path)
 
@@ -69,7 +69,7 @@ func TestClient_Devices(t *testing.T) {
 	server.ResponseCode = http.StatusOK
 	server.ResponseBody = expectedDevices
 
-	actualDevices, err := client.Devices.List(context.Background())
+	actualDevices, err := client.Devices().List(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodGet, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/devices", server.Path)
@@ -160,7 +160,7 @@ func TestClient_DeleteDevice(t *testing.T) {
 	ctx := context.Background()
 
 	deviceID := "deviceTestId"
-	assert.NoError(t, client.Devices.Delete(ctx, deviceID))
+	assert.NoError(t, client.Devices().Delete(ctx, deviceID))
 	assert.Equal(t, http.MethodDelete, server.Method)
 	assert.Equal(t, "/api/v2/device/deviceTestId", server.Path)
 }
@@ -177,7 +177,7 @@ func TestClient_DeviceSubnetRoutes(t *testing.T) {
 
 	const deviceID = "test"
 
-	routes, err := client.Devices.SubnetRoutes(context.Background(), deviceID)
+	routes, err := client.Devices().SubnetRoutes(context.Background(), deviceID)
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodGet, server.Method)
 	assert.Equal(t, "/api/v2/device/test/routes", server.Path)
@@ -192,7 +192,7 @@ func TestClient_AuthorizeDevice(t *testing.T) {
 
 	const deviceID = "test"
 
-	assert.NoError(t, client.Devices.SetAuthorized(context.Background(), deviceID, true))
+	assert.NoError(t, client.Devices().SetAuthorized(context.Background(), deviceID, true))
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.Equal(t, "/api/v2/device/test/authorized", server.Path)
 
@@ -210,7 +210,7 @@ func TestClient_SetDeviceAuthorized(t *testing.T) {
 	const deviceID = "test"
 
 	for _, value := range []bool{true, false} {
-		assert.NoError(t, client.Devices.SetAuthorized(context.Background(), deviceID, value))
+		assert.NoError(t, client.Devices().SetAuthorized(context.Background(), deviceID, value))
 		assert.Equal(t, http.MethodPost, server.Method)
 		assert.Equal(t, "/api/v2/device/test/authorized", server.Path)
 
@@ -229,7 +229,7 @@ func TestClient_SetDeviceTags(t *testing.T) {
 	const deviceID = "test"
 	tags := []string{"a:b", "b:c"}
 
-	assert.NoError(t, client.Devices.SetTags(context.Background(), deviceID, tags))
+	assert.NoError(t, client.Devices().SetTags(context.Background(), deviceID, tags))
 	assert.EqualValues(t, http.MethodPost, server.Method)
 	assert.EqualValues(t, "/api/v2/device/"+deviceID+"/tags", server.Path)
 
@@ -249,7 +249,7 @@ func TestClient_SetDeviceKey(t *testing.T) {
 		KeyExpiryDisabled: true,
 	}
 
-	assert.NoError(t, client.Devices.SetKey(context.Background(), deviceID, expected))
+	assert.NoError(t, client.Devices().SetKey(context.Background(), deviceID, expected))
 
 	assert.EqualValues(t, http.MethodPost, server.Method)
 	assert.EqualValues(t, "/api/v2/device/"+deviceID+"/key", server.Path)
@@ -268,7 +268,7 @@ func TestClient_SetDeviceIPv4Address(t *testing.T) {
 	const deviceID = "test"
 	address := "100.64.0.1"
 
-	assert.NoError(t, client.Devices.SetDeviceIPv4Address(context.Background(), deviceID, address))
+	assert.NoError(t, client.Devices().SetDeviceIPv4Address(context.Background(), deviceID, address))
 	assert.Equal(t, http.MethodPost, server.Method)
 	assert.EqualValues(t, "/api/v2/device/"+deviceID+"/ip", server.Path)
 }
@@ -279,18 +279,15 @@ func TestClient_UserAgent(t *testing.T) {
 	server.ResponseCode = http.StatusOK
 
 	// Check the default user-agent.
-	assert.NoError(t, client.Devices.SetAuthorized(context.Background(), "test", true))
+	assert.NoError(t, client.Devices().SetAuthorized(context.Background(), "test", true))
 	assert.Equal(t, "tailscale-client-go", server.Header.Get("User-Agent"))
 
 	// Check a custom user-agent.
-	client, err := tailscale.NewClient("fake key", "", tailscale.WithBaseURL(server.BaseURL), tailscale.WithUserAgent("custom-user-agent"))
-	assert.NoError(t, err)
-	assert.NoError(t, client.Devices.SetAuthorized(context.Background(), "test", true))
+	client = &tailscale.Client{
+		APIKey:    "fake key",
+		BaseURL:   server.BaseURL,
+		UserAgent: "custom-user-agent",
+	}
+	assert.NoError(t, client.Devices().SetAuthorized(context.Background(), "test", true))
 	assert.Equal(t, "custom-user-agent", server.Header.Get("User-Agent"))
-
-	// Overriding with an empty string uses runtime's default value.
-	client, err = tailscale.NewClient("fake key", "", tailscale.WithBaseURL(server.BaseURL), tailscale.WithUserAgent(""))
-	assert.NoError(t, err)
-	assert.NoError(t, client.Devices.SetAuthorized(context.Background(), "test", true))
-	assert.Contains(t, server.Header.Get("User-Agent"), "Go-http-client")
 }

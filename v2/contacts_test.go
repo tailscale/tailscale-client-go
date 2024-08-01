@@ -34,7 +34,7 @@ func TestClient_Contacts(t *testing.T) {
 	}
 	server.ResponseBody = expectedContacts
 
-	actualContacts, err := client.Contacts.Get(context.Background())
+	actualContacts, err := client.Contacts().Get(context.Background())
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodGet, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/contacts", server.Path)
@@ -52,7 +52,7 @@ func TestClient_UpdateContact(t *testing.T) {
 	updateRequest := tailscale.UpdateContactRequest{
 		Email: &email,
 	}
-	err := client.Contacts.Update(context.Background(), tailscale.ContactAccount, updateRequest)
+	err := client.Contacts().Update(context.Background(), tailscale.ContactAccount, updateRequest)
 	assert.NoError(t, err)
 	assert.Equal(t, http.MethodPatch, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/contacts/account", server.Path)
