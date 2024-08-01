@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/tailscale/hujson"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 type (
@@ -31,6 +32,7 @@ type (
 		// Tailnet allows specifying a specific Tailnet by name, to which this Client will connect by default.
 		Tailnet string
 
+		// http is the http client to use for requests to the API server. If specified, this supercedes the above configuration.
 		http *http.Client
 		// tailnetPathEscaped is the value of tailnet passed to url.PathEscape.
 		// This value should be used when formatting paths that have tailnet as a segment.
@@ -62,12 +64,18 @@ type (
 )
 
 var defaultBaseURL *url.URL
+var oauthRelTokenURL *url.URL
 
 func init() {
 	var err error
 	defaultBaseURL, err = url.Parse("https://api.tailscale.com")
 	if err != nil {
-		panic(fmt.Errorf("failed to parse baseURL: %w", err))
+		panic(fmt.Errorf("failed to parse defaultBaseURL: %w", err))
+	}
+
+	oauthRelTokenURL, err = url.Parse("/api/v2/oauth/token")
+	if err != nil {
+		panic(fmt.Errorf("failed to parse oauthRelTokenURL: %s", err))
 	}
 }
 
@@ -78,13 +86,7 @@ const defaultUserAgent = "tailscale-client-go"
 // NewClient returns a new instance of the Client type that will perform operations against a chosen tailnet and will
 // provide the apiKey for authorization. Additional options can be provided, see ClientOption for more details.
 //
-// To use OAuth Client credentials pass an empty string as apiKey and use WithOAuthClientCredentials() as below:
-//
-//	client, err := tailscale.NewClient(
-//	"",
-//	tailnet,
-//	tailscale.WithOAuthClientCredentials(oauthClientID, oauthClientSecret, oauthScopes),
-//	)
+// To use OAuth Client credentials, call [UseOAuth].
 func (c *Client) init() {
 	c.initOnce.Do(func() {
 		if c.BaseURL == nil {
@@ -94,7 +96,9 @@ func (c *Client) init() {
 		if c.UserAgent == "" {
 			c.UserAgent = defaultUserAgent
 		}
-		c.http = &http.Client{Timeout: defaultHttpClientTimeout}
+		if c.http == nil {
+			c.http = &http.Client{Timeout: defaultHttpClientTimeout}
+		}
 		c.contacts = &ContactsResource{c}
 		c.devices = &DevicesResource{c}
 		c.dns = &DNSResource{c}
@@ -102,6 +106,20 @@ func (c *Client) init() {
 		c.policyFile = &PolicyFileResource{c}
 		c.webhooks = &WebhooksResource{c}
 	})
+}
+
+// UseOAuth configures the client to use the specified OAuth credentials.
+func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
+	oauthConfig := clientcredentials.Config{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		TokenURL:     c.BaseURL.ResolveReference(oauthRelTokenURL).String(),
+		Scopes:       scopes,
+	}
+
+	// use context.Background() here, since this is used to refresh the token in the future
+	c.http = oauthConfig.Client(context.Background())
+	c.http.Timeout = defaultHttpClientTimeout
 }
 
 func (c *Client) Contacts() *ContactsResource {
