@@ -34,11 +34,11 @@ type (
 
 		// http is the http client to use for requests to the API server. If specified, this supercedes the above configuration.
 		http *http.Client
-		// tailnetPathEscaped is the value of tailnet passed to url.PathEscape.
-		// This value should be used when formatting paths that have tailnet as a segment.
-		tailnetPathEscaped string
 
 		initOnce sync.Once
+
+		// Specific resources
+		devices *DevicesResource
 	}
 
 	// APIError type describes an error as returned by the Tailscale API.
@@ -84,13 +84,13 @@ func (c *Client) init() {
 		if c.BaseURL == nil {
 			c.BaseURL = defaultBaseURL
 		}
-		c.tailnetPathEscaped = url.PathEscape(c.Tailnet)
 		if c.UserAgent == "" {
 			c.UserAgent = defaultUserAgent
 		}
 		if c.http == nil {
 			c.http = &http.Client{Timeout: defaultHttpClientTimeout}
 		}
+		c.devices = &DevicesResource{c}
 	})
 }
 
@@ -106,6 +106,11 @@ func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
 	// use context.Background() here, since this is used to refresh the token in the future
 	c.http = oauthConfig.Client(context.Background())
 	c.http.Timeout = defaultHttpClientTimeout
+}
+
+func (c *Client) Devices() *DevicesResource {
+	c.init()
+	return c.devices
 }
 
 type requestParams struct {
@@ -134,17 +139,24 @@ func requestContentType(ct string) requestOption {
 	}
 }
 
-func (c *Client) buildRequest(ctx context.Context, method, uri string, opts ...requestOption) (*http.Request, error) {
+// buildURL builds a url to /api/v2/... using the given pathElements. It
+// url escapes each path element, so the caller doesn't need to worry about
+// that.
+func (c *Client) buildURL(pathElements ...any) *url.URL {
+	elem := make([]string, 1, len(pathElements)+1)
+	elem[0] = "/api/v2"
+	for _, pathElement := range pathElements {
+		elem = append(elem, fmt.Sprint(pathElement))
+	}
+	return c.BaseURL.JoinPath(elem...)
+}
+
+func (c *Client) buildRequest(ctx context.Context, method string, uri *url.URL, opts ...requestOption) (*http.Request, error) {
 	rof := &requestParams{
 		contentType: defaultContentType,
 	}
 	for _, opt := range opts {
 		opt(rof)
-	}
-
-	u, err := c.BaseURL.Parse(uri)
-	if err != nil {
-		return nil, err
 	}
 
 	var bodyBytes []byte
@@ -155,6 +167,7 @@ func (c *Client) buildRequest(ctx context.Context, method, uri string, opts ...r
 		case []byte:
 			bodyBytes = body
 		default:
+			var err error
 			bodyBytes, err = json.MarshalIndent(rof.body, "", " ")
 			if err != nil {
 				return nil, err
@@ -162,7 +175,7 @@ func (c *Client) buildRequest(ctx context.Context, method, uri string, opts ...r
 		}
 	}
 
-	req, err := http.NewRequestWithContext(ctx, method, u.String(), bytes.NewBuffer(bodyBytes))
+	req, err := http.NewRequestWithContext(ctx, method, uri.String(), bytes.NewBuffer(bodyBytes))
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +195,6 @@ func (c *Client) buildRequest(ctx context.Context, method, uri string, opts ...r
 		req.Header.Set("Content-Type", rof.contentType)
 	}
 
-	// c.apiKey will not be set on the client was configured with WithOAuthClientCredentials()
 	if c.APIKey != "" {
 		req.SetBasicAuth(c.APIKey, "")
 	}
@@ -190,7 +202,7 @@ func (c *Client) buildRequest(ctx context.Context, method, uri string, opts ...r
 	return req, nil
 }
 
-func (c *Client) performRequest(req *http.Request, out interface{}) error {
+func (c *Client) do(req *http.Request, out interface{}) error {
 	res, err := c.http.Do(req)
 	if err != nil {
 		return err
@@ -229,7 +241,7 @@ func (c *Client) performRequest(req *http.Request, out interface{}) error {
 
 	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
 		var apiErr APIError
-		if err = json.Unmarshal(body, &apiErr); err != nil {
+		if err := json.Unmarshal(body, &apiErr); err != nil {
 			return err
 		}
 
