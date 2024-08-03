@@ -76,7 +76,7 @@ func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, e
 
 // List lists the devices in a tailnet.
 func (dr *DevicesResource) List(ctx context.Context) ([]Device, error) {
-	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildURL("tailnet", dr.Tailnet, "devices"))
+	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildTailnetURL("devices"))
 	if err != nil {
 		return nil, err
 	}
