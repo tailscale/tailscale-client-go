@@ -1,4 +1,4 @@
-package tailscale
+package tsclient
 
 import (
 	_ "embed"

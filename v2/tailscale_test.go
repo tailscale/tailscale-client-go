@@ -1,4 +1,4 @@
-package tailscale_test
+package tsclient_test
 
 import (
 	"bytes"
@@ -11,8 +11,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/tailscale/tailscale-client-go/v2"
+	tsclient "github.com/tailscale/tailscale-client-go/v2"
 )
 
 type TestServer struct {
@@ -29,7 +28,7 @@ type TestServer struct {
 	ResponseBody interface{}
 }
 
-func NewTestHarness(t *testing.T) (*tailscale.Client, *TestServer) {
+func NewTestHarness(t *testing.T) (*tsclient.Client, *TestServer) {
 	t.Helper()
 
 	testServer := &TestServer{
@@ -58,7 +57,7 @@ func NewTestHarness(t *testing.T) (*tailscale.Client, *TestServer) {
 	baseURL := fmt.Sprintf("http://localhost:%v", listener.Addr().(*net.TCPAddr).Port)
 	testServer.BaseURL, err = url.Parse(baseURL)
 	assert.NoError(t, err)
-	client := &tailscale.Client{
+	client := &tsclient.Client{
 		BaseURL: testServer.BaseURL,
 		APIKey:  "not a real key",
 		Tailnet: "example.com",

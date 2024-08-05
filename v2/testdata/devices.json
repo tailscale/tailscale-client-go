@@ -16,11 +16,11 @@
       "keyExpiryDisabled": true,
       "lastSeen": "2022-04-15T13:24:40Z",
       "machineKey": "",
-      "name": "hello.tailscale.com",
+      "name": "hello.example.com",
       "nodeKey": "nodekey:30dc3c061ac8b33fdc6d88a4a67b053b01b56930d78cae0cf7a164411d424c0d",
       "os": "linux",
       "updateAvailable": false,
-      "user": "services@tailscale.com"
+      "user": "services@example.com"
     },
     {
       "addresses": [
