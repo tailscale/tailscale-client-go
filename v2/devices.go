@@ -1,4 +1,4 @@
-package tailscale
+package tsclient
 
 import (
 	"context"
@@ -143,7 +143,7 @@ func (dr *DevicesResource) SetKey(ctx context.Context, deviceID string, key Devi
 }
 
 // SetDeviceIPv4Address sets the Tailscale IPv4 address of the device.
-func (dr *DevicesResource) SetDeviceIPv4Address(ctx context.Context, deviceID string, ipv4Address string) error {
+func (dr *DevicesResource) SetIPv4Address(ctx context.Context, deviceID string, ipv4Address string) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "ip"), requestBody(map[string]string{
 		"ipv4": ipv4Address,
 	}))

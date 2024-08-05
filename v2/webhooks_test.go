@@ -1,4 +1,4 @@
-package tailscale_test
+package tsclient_test
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/tailscale/tailscale-client-go/v2"
+	tsclient "github.com/tailscale/tailscale-client-go/v2"
 )
 
 func TestClient_CreateWebhook(t *testing.T) {
@@ -16,14 +16,14 @@ func TestClient_CreateWebhook(t *testing.T) {
 	client, server := NewTestHarness(t)
 	server.ResponseCode = http.StatusOK
 
-	req := tailscale.CreateWebhookRequest{
+	req := tsclient.CreateWebhookRequest{
 		EndpointURL:   "https://example.com/my/endpoint",
-		ProviderType:  tailscale.WebhookDiscordProviderType,
-		Subscriptions: []tailscale.WebhookSubscriptionType{tailscale.WebhookNodeCreated, tailscale.WebhookNodeApproved},
+		ProviderType:  tsclient.WebhookDiscordProviderType,
+		Subscriptions: []tsclient.WebhookSubscriptionType{tsclient.WebhookNodeCreated, tsclient.WebhookNodeApproved},
 	}
 
 	expectedSecret := "my-secret"
-	expectedWebhook := &tailscale.Webhook{
+	expectedWebhook := &tsclient.Webhook{
 		EndpointID:       "12345",
 		EndpointURL:      req.EndpointURL,
 		ProviderType:     req.ProviderType,
@@ -48,7 +48,7 @@ func TestClient_Webhooks(t *testing.T) {
 	client, server := NewTestHarness(t)
 	server.ResponseCode = http.StatusOK
 
-	expectedWebhooks := map[string][]tailscale.Webhook{
+	expectedWebhooks := map[string][]tsclient.Webhook{
 		"webhooks": {
 			{
 				EndpointID:       "12345",
@@ -57,7 +57,7 @@ func TestClient_Webhooks(t *testing.T) {
 				CreatorLoginName: "pretend@example.com",
 				Created:          time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC),
 				LastModified:     time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC),
-				Subscriptions:    []tailscale.WebhookSubscriptionType{tailscale.WebhookNodeCreated, tailscale.WebhookNodeApproved},
+				Subscriptions:    []tsclient.WebhookSubscriptionType{tsclient.WebhookNodeCreated, tsclient.WebhookNodeApproved},
 			},
 			{
 				EndpointID:       "54321",
@@ -66,7 +66,7 @@ func TestClient_Webhooks(t *testing.T) {
 				CreatorLoginName: "pretend2@example.com",
 				Created:          time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC),
 				LastModified:     time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC),
-				Subscriptions:    []tailscale.WebhookSubscriptionType{tailscale.WebhookNodeApproved},
+				Subscriptions:    []tsclient.WebhookSubscriptionType{tsclient.WebhookNodeApproved},
 			},
 		},
 	}
@@ -85,14 +85,14 @@ func TestClient_Webhook(t *testing.T) {
 	client, server := NewTestHarness(t)
 	server.ResponseCode = http.StatusOK
 
-	expectedWebhook := &tailscale.Webhook{
+	expectedWebhook := &tsclient.Webhook{
 		EndpointID:       "54321",
 		EndpointURL:      "https://example.com/my/endpoint/other",
 		ProviderType:     "slack",
 		CreatorLoginName: "pretend2@example.com",
 		Created:          time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC),
 		LastModified:     time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC),
-		Subscriptions:    []tailscale.WebhookSubscriptionType{tailscale.WebhookNodeApproved},
+		Subscriptions:    []tsclient.WebhookSubscriptionType{tsclient.WebhookNodeApproved},
 	}
 	server.ResponseBody = expectedWebhook
 
@@ -109,9 +109,9 @@ func TestClient_UpdateWebhook(t *testing.T) {
 	client, server := NewTestHarness(t)
 	server.ResponseCode = http.StatusOK
 
-	subscriptions := []tailscale.WebhookSubscriptionType{tailscale.WebhookNodeCreated, tailscale.WebhookNodeApproved, tailscale.WebhookNodeNeedsApproval}
+	subscriptions := []tsclient.WebhookSubscriptionType{tsclient.WebhookNodeCreated, tsclient.WebhookNodeApproved, tsclient.WebhookNodeNeedsApproval}
 
-	expectedWebhook := &tailscale.Webhook{
+	expectedWebhook := &tsclient.Webhook{
 		EndpointID:       "54321",
 		EndpointURL:      "https://example.com/my/endpoint/other",
 		ProviderType:     "slack",
@@ -160,14 +160,14 @@ func TestClient_RotateWebhookSecret(t *testing.T) {
 	server.ResponseCode = http.StatusOK
 
 	expectedSecret := "my-new-secret"
-	expectedWebhook := &tailscale.Webhook{
+	expectedWebhook := &tsclient.Webhook{
 		EndpointID:       "54321",
 		EndpointURL:      "https://example.com/my/endpoint/other",
 		ProviderType:     "slack",
 		CreatorLoginName: "pretend2@example.com",
 		Created:          time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC),
 		LastModified:     time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC),
-		Subscriptions:    []tailscale.WebhookSubscriptionType{tailscale.WebhookNodeApproved},
+		Subscriptions:    []tsclient.WebhookSubscriptionType{tsclient.WebhookNodeApproved},
 		Secret:           &expectedSecret,
 	}
 	server.ResponseBody = expectedWebhook
