@@ -38,6 +38,7 @@ type (
 		initOnce sync.Once
 
 		// Specific resources
+		contacts *ContactsResource
 		devices  *DevicesResource
 		webhooks *WebhooksResource
 	}
@@ -91,6 +92,7 @@ func (c *Client) init() {
 		if c.http == nil {
 			c.http = &http.Client{Timeout: defaultHttpClientTimeout}
 		}
+		c.contacts = &ContactsResource{c}
 		c.devices = &DevicesResource{c}
 		c.webhooks = &WebhooksResource{c}
 	})
@@ -108,6 +110,11 @@ func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
 	// use context.Background() here, since this is used to refresh the token in the future
 	c.http = oauthConfig.Client(context.Background())
 	c.http.Timeout = defaultHttpClientTimeout
+}
+
+func (c *Client) Contacts() *ContactsResource {
+	c.init()
+	return c.contacts
 }
 
 func (c *Client) Devices() *DevicesResource {
