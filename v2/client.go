@@ -38,7 +38,8 @@ type (
 		initOnce sync.Once
 
 		// Specific resources
-		devices *DevicesResource
+		devices  *DevicesResource
+		webhooks *WebhooksResource
 	}
 
 	// APIError type describes an error as returned by the Tailscale API.
@@ -91,6 +92,7 @@ func (c *Client) init() {
 			c.http = &http.Client{Timeout: defaultHttpClientTimeout}
 		}
 		c.devices = &DevicesResource{c}
+		c.webhooks = &WebhooksResource{c}
 	})
 }
 
@@ -111,6 +113,11 @@ func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
 func (c *Client) Devices() *DevicesResource {
 	c.init()
 	return c.devices
+}
+
+func (c *Client) Webhooks() *WebhooksResource {
+	c.init()
+	return c.webhooks
 }
 
 type requestParams struct {
@@ -139,16 +146,27 @@ func requestContentType(ct string) requestOption {
 	}
 }
 
-// buildURL builds a url to /api/v2/... using the given pathElements. It
-// url escapes each path element, so the caller doesn't need to worry about
-// that.
+// buildURL builds a url to /api/v2/... using the given pathElements.
+// It url escapes each path element, so the caller doesn't need to worry about that.
 func (c *Client) buildURL(pathElements ...any) *url.URL {
 	elem := make([]string, 1, len(pathElements)+1)
 	elem[0] = "/api/v2"
 	for _, pathElement := range pathElements {
-		elem = append(elem, fmt.Sprint(pathElement))
+		elem = append(elem, url.PathEscape(fmt.Sprint(pathElement)))
 	}
 	return c.BaseURL.JoinPath(elem...)
+}
+
+// buildTailnetURL builds a url to /api/v2/tailnet/<tailnet>/... using the given pathElements.
+// It url escapes each path element, so the caller doesn't need to worry about that.
+func (c *Client) buildTailnetURL(pathElements ...any) *url.URL {
+	allElements := make([]any, 2, len(pathElements)+2)
+	allElements[0] = "tailnet"
+	allElements[1] = url.PathEscape(c.Tailnet)
+	for _, element := range pathElements {
+		allElements = append(allElements, element)
+	}
+	return c.buildURL(allElements...)
 }
 
 func (c *Client) buildRequest(ctx context.Context, method string, uri *url.URL, opts ...requestOption) (*http.Request, error) {
