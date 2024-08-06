@@ -169,10 +169,8 @@ func (c *Client) buildURL(pathElements ...any) *url.URL {
 func (c *Client) buildTailnetURL(pathElements ...any) *url.URL {
 	allElements := make([]any, 2, len(pathElements)+2)
 	allElements[0] = "tailnet"
-	allElements[1] = url.PathEscape(c.Tailnet)
-	for _, element := range pathElements {
-		allElements = append(allElements, element)
-	}
+	allElements[1] = c.Tailnet
+	allElements = append(allElements, pathElements...)
 	return c.buildURL(allElements...)
 }
 
