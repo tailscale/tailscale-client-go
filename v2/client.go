@@ -40,6 +40,7 @@ type (
 		// Specific resources
 		contacts   *ContactsResource
 		devices    *DevicesResource
+		dns        *DNSResource
 		keys       *KeysResource
 		policyFile *PolicyFileResource
 		webhooks   *WebhooksResource
@@ -96,6 +97,7 @@ func (c *Client) init() {
 		}
 		c.contacts = &ContactsResource{c}
 		c.devices = &DevicesResource{c}
+		c.dns = &DNSResource{c}
 		c.keys = &KeysResource{c}
 		c.policyFile = &PolicyFileResource{c}
 		c.webhooks = &WebhooksResource{c}
@@ -124,6 +126,11 @@ func (c *Client) Contacts() *ContactsResource {
 func (c *Client) Devices() *DevicesResource {
 	c.init()
 	return c.devices
+}
+
+func (c *Client) DNS() *DNSResource {
+	c.init()
+	return c.dns
 }
 
 func (c *Client) Keys() *KeysResource {
