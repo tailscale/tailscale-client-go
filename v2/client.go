@@ -1,5 +1,5 @@
 // Package tsclient contains a basic implementation of a client for the Tailscale HTTP api. Documentation is here:
-// https://github.com/tailscale/tailscale/blob/main/api.md
+// https://tailscale.com/api
 //
 // WARNING - this v2 implementation is under active development, use at your own risk.
 package tsclient
@@ -79,7 +79,7 @@ const defaultContentType = "application/json"
 const defaultHttpClientTimeout = time.Minute
 const defaultUserAgent = "tailscale-client-go"
 
-// NewClient returns a new instance of the Client type that will perform operations against a chosen tailnet and will
+// init returns a new instance of the Client type that will perform operations against a chosen tailnet and will
 // provide the apiKey for authorization. Additional options can be provided, see ClientOption for more details.
 //
 // To use OAuth Client credentials, call [UseOAuth].
@@ -205,7 +205,7 @@ func (c *Client) buildRequest(ctx context.Context, method string, uri *url.URL, 
 			bodyBytes = body
 		default:
 			var err error
-			bodyBytes, err = json.MarshalIndent(rof.body, "", " ")
+			bodyBytes, err = json.Marshal(rof.body)
 			if err != nil {
 				return nil, err
 			}
@@ -276,7 +276,7 @@ func (c *Client) do(req *http.Request, out interface{}) error {
 		return json.Unmarshal(body, out)
 	}
 
-	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
+	if res.StatusCode >= http.StatusBadRequest {
 		var apiErr APIError
 		if err := json.Unmarshal(body, &apiErr); err != nil {
 			return err
