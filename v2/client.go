@@ -38,10 +38,11 @@ type (
 		initOnce sync.Once
 
 		// Specific resources
-		contacts *ContactsResource
-		devices  *DevicesResource
-		keys     *KeysResource
-		webhooks *WebhooksResource
+		contacts   *ContactsResource
+		devices    *DevicesResource
+		keys       *KeysResource
+		policyFile *PolicyFileResource
+		webhooks   *WebhooksResource
 	}
 
 	// APIError type describes an error as returned by the Tailscale API.
@@ -96,6 +97,7 @@ func (c *Client) init() {
 		c.contacts = &ContactsResource{c}
 		c.devices = &DevicesResource{c}
 		c.keys = &KeysResource{c}
+		c.policyFile = &PolicyFileResource{c}
 		c.webhooks = &WebhooksResource{c}
 	})
 }
@@ -127,6 +129,11 @@ func (c *Client) Devices() *DevicesResource {
 func (c *Client) Keys() *KeysResource {
 	c.init()
 	return c.keys
+}
+
+func (c *Client) PolicyFile() *PolicyFileResource {
+	c.init()
+	return c.policyFile
 }
 
 func (c *Client) Webhooks() *WebhooksResource {
