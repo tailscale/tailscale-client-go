@@ -38,13 +38,14 @@ type (
 		initOnce sync.Once
 
 		// Specific resources
-		contacts   *ContactsResource
-		devices    *DevicesResource
-		dns        *DNSResource
-		keys       *KeysResource
-		logging    *LoggingResource
-		policyFile *PolicyFileResource
-		webhooks   *WebhooksResource
+		contacts      *ContactsResource
+		devicePosture *DevicePostureResource
+		devices       *DevicesResource
+		dns           *DNSResource
+		keys          *KeysResource
+		logging       *LoggingResource
+		policyFile    *PolicyFileResource
+		webhooks      *WebhooksResource
 	}
 
 	// APIError type describes an error as returned by the Tailscale API.
@@ -97,6 +98,7 @@ func (c *Client) init() {
 			c.http = &http.Client{Timeout: defaultHttpClientTimeout}
 		}
 		c.contacts = &ContactsResource{c}
+		c.devicePosture = &DevicePostureResource{c}
 		c.devices = &DevicesResource{c}
 		c.dns = &DNSResource{c}
 		c.keys = &KeysResource{c}
@@ -123,6 +125,11 @@ func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
 func (c *Client) Contacts() *ContactsResource {
 	c.init()
 	return c.contacts
+}
+
+func (c *Client) DevicePosture() *DevicePostureResource {
+	c.init()
+	return c.devicePosture
 }
 
 func (c *Client) Devices() *DevicesResource {
@@ -351,4 +358,10 @@ func (d *Duration) UnmarshalText(b []byte) error {
 	}
 	*d = Duration(pd)
 	return nil
+}
+
+// PointerTo returns a pointer to the given value.
+// Pointers are used in PATCH requests to distinguish between specified and unspecified values.
+func PointerTo[T any](value T) *T {
+	return &value
 }
