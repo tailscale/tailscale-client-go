@@ -21,6 +21,7 @@ type TestServer struct {
 
 	Method string
 	Path   string
+	Query  url.Values
 	Body   *bytes.Buffer
 	Header http.Header
 
@@ -69,6 +70,7 @@ func NewTestHarness(t *testing.T) (*tsclient.Client, *TestServer) {
 func (t *TestServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t.Method = r.Method
 	t.Path = r.URL.Path
+	t.Query = r.URL.Query()
 	t.Header = r.Header
 
 	t.Body = bytes.NewBuffer([]byte{})
