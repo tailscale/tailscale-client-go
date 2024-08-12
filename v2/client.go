@@ -45,6 +45,7 @@ type (
 		keys          *KeysResource
 		logging       *LoggingResource
 		policyFile    *PolicyFileResource
+		users         *UsersResource
 		webhooks      *WebhooksResource
 	}
 
@@ -104,6 +105,7 @@ func (c *Client) init() {
 		c.keys = &KeysResource{c}
 		c.logging = &LoggingResource{c}
 		c.policyFile = &PolicyFileResource{c}
+		c.users = &UsersResource{c}
 		c.webhooks = &WebhooksResource{c}
 	})
 }
@@ -155,6 +157,11 @@ func (c *Client) Logging() *LoggingResource {
 func (c *Client) PolicyFile() *PolicyFileResource {
 	c.init()
 	return c.policyFile
+}
+
+func (c *Client) Users() *UsersResource {
+	c.init()
+	return c.users
 }
 
 func (c *Client) Webhooks() *WebhooksResource {
