@@ -92,6 +92,28 @@ func TestClient_DevicePosture_DeleteIntegration(t *testing.T) {
 	assert.Equal(t, "/api/v2/posture/integrations/1", server.Path)
 }
 
+func TestClient_DevicePosture_GetIntegration(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	resp := &tsclient.PostureIntegration{
+		ID:       "1",
+		Provider: tsclient.PostureIntegrationProviderIntune,
+		CloudID:  "cloudid1",
+		ClientID: "clientid1",
+		TenantID: "tenantid1",
+	}
+	server.ResponseBody = resp
+
+	actualResp, err := client.DevicePosture().GetIntegration(context.Background(), "1")
+	assert.NoError(t, err)
+	assert.Equal(t, http.MethodGet, server.Method)
+	assert.Equal(t, "/api/v2/posture/integrations/1", server.Path)
+	assert.Equal(t, resp, actualResp)
+}
+
 func TestClient_DevicePosture_ListIntegrations(t *testing.T) {
 	t.Parallel()
 

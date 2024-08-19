@@ -97,3 +97,14 @@ func (pr *DevicePostureResource) DeleteIntegration(ctx context.Context, id strin
 
 	return pr.do(req, nil)
 }
+
+// GetIntegration gets the PostureIntegration identified by id.
+func (pr *DevicePostureResource) GetIntegration(ctx context.Context, id string) (*PostureIntegration, error) {
+	req, err := pr.buildRequest(ctx, http.MethodGet, pr.buildURL("posture", "integrations", id))
+	if err != nil {
+		return nil, err
+	}
+
+	var resp PostureIntegration
+	return &resp, pr.do(req, &resp)
+}
