@@ -69,7 +69,7 @@ func TestClient_SplitDNS(t *testing.T) {
 	client, server := NewTestHarness(t)
 	server.ResponseCode = http.StatusOK
 
-	expectedNameservers := &tsclient.SplitDnsResponse{
+	expectedNameservers := tsclient.SplitDNSResponse{
 		"example.com": {"1.1.1.1", "1.2.3.4"},
 	}
 
@@ -141,11 +141,11 @@ func TestClient_UpdateSplitDNS(t *testing.T) {
 	server.ResponseCode = http.StatusOK
 
 	nameservers := []string{"1.1.2.1", "3.3.3.4"}
-	request := tsclient.SplitDnsRequest{
+	request := tsclient.SplitDNSRequest{
 		"example.com": nameservers,
 	}
 
-	expectedNameservers := &tsclient.SplitDnsResponse{
+	expectedNameservers := tsclient.SplitDNSResponse{
 		"example.com": nameservers,
 	}
 	server.ResponseBody = expectedNameservers
@@ -155,7 +155,7 @@ func TestClient_UpdateSplitDNS(t *testing.T) {
 	assert.Equal(t, http.MethodPatch, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/split-dns", server.Path)
 
-	body := make(tsclient.SplitDnsResponse)
+	body := make(tsclient.SplitDNSResponse)
 	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &body))
 	assert.EqualValues(t, nameservers, body["example.com"])
 	assert.EqualValues(t, expectedNameservers, resp)
@@ -168,7 +168,7 @@ func TestClient_SetSplitDNS(t *testing.T) {
 	server.ResponseCode = http.StatusOK
 
 	nameservers := []string{"1.1.2.1", "3.3.3.4"}
-	request := tsclient.SplitDnsRequest{
+	request := tsclient.SplitDNSRequest{
 		"example.com": nameservers,
 	}
 
@@ -176,7 +176,7 @@ func TestClient_SetSplitDNS(t *testing.T) {
 	assert.Equal(t, http.MethodPut, server.Method)
 	assert.Equal(t, "/api/v2/tailnet/example.com/dns/split-dns", server.Path)
 
-	body := make(tsclient.SplitDnsResponse)
+	body := make(tsclient.SplitDNSResponse)
 	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &body))
 	assert.EqualValues(t, nameservers, body["example.com"])
 }

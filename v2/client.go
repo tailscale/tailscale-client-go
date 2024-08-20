@@ -1,7 +1,7 @@
 // Package tsclient contains a basic implementation of a client for the Tailscale HTTP api. Documentation is here:
 // https://tailscale.com/api
 //
-// WARNING - this v2 implementation is under active development, use at your own risk.
+// WARNING - this v2 implementation is under active development, use at your own risk and expect breaking changes.
 package tsclient
 
 import (
