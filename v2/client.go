@@ -32,8 +32,10 @@ type (
 		// Tailnet allows specifying a specific Tailnet by name, to which this Client will connect by default.
 		Tailnet string
 
-		// http is the http client to use for requests to the API server. If specified, this supercedes the above configuration.
-		http *http.Client
+		// HTTP is the [http.Client] to use for requests to the API server.
+		// If not specified, a new [http.Client] with a Timeout of 1 minute will be used.
+		// This will be ignored if using [Client.UseOAuth].
+		HTTP *http.Client
 
 		initOnce sync.Once
 
@@ -96,8 +98,8 @@ func (c *Client) init() {
 		if c.UserAgent == "" {
 			c.UserAgent = defaultUserAgent
 		}
-		if c.http == nil {
-			c.http = &http.Client{Timeout: defaultHttpClientTimeout}
+		if c.HTTP == nil {
+			c.HTTP = &http.Client{Timeout: defaultHttpClientTimeout}
 		}
 		c.contacts = &ContactsResource{c}
 		c.devicePosture = &DevicePostureResource{c}
@@ -113,6 +115,7 @@ func (c *Client) init() {
 }
 
 // UseOAuth configures the client to use the specified OAuth credentials.
+// If [Client.HTTP] was previously specified, this replaces it.
 func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
 	oauthConfig := clientcredentials.Config{
 		ClientID:     clientID,
@@ -122,8 +125,8 @@ func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
 	}
 
 	// use context.Background() here, since this is used to refresh the token in the future
-	c.http = oauthConfig.Client(context.Background())
-	c.http.Timeout = defaultHttpClientTimeout
+	c.HTTP = oauthConfig.Client(context.Background())
+	c.HTTP.Timeout = defaultHttpClientTimeout
 }
 
 func (c *Client) Contacts() *ContactsResource {
@@ -275,7 +278,7 @@ func (c *Client) buildRequest(ctx context.Context, method string, uri *url.URL, 
 }
 
 func (c *Client) do(req *http.Request, out interface{}) error {
-	res, err := c.http.Do(req)
+	res, err := c.HTTP.Do(req)
 	if err != nil {
 		return err
 	}
