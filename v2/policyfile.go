@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// PolicyFileResource provides access to https://tailscale.com/api#tag/policyfile.
 type PolicyFileResource struct {
 	*Client
 }
@@ -107,7 +108,7 @@ type (
 	}
 )
 
-// Get retrieves the ACL that is currently set for the given tailnet.
+// Get retrieves the [ACL] that is currently set for the tailnet.
 func (pr *PolicyFileResource) Get(ctx context.Context) (*ACL, error) {
 	req, err := pr.buildRequest(ctx, http.MethodGet, pr.buildTailnetURL("acl"))
 	if err != nil {
@@ -118,8 +119,7 @@ func (pr *PolicyFileResource) Get(ctx context.Context) (*ACL, error) {
 	return &resp, pr.do(req, &resp)
 }
 
-// Raw retrieves the ACL that is currently set for the given tailnet
-// as a HuJSON string.
+// Raw retrieves the [ACL] that is currently set for the tailnet as a HuJSON string.
 func (pr *PolicyFileResource) Raw(ctx context.Context) (string, error) {
 	req, err := pr.buildRequest(ctx, http.MethodGet, pr.buildTailnetURL("acl"), requestContentType("application/hujson"))
 	if err != nil {
@@ -134,9 +134,8 @@ func (pr *PolicyFileResource) Raw(ctx context.Context) (string, error) {
 	return string(resp), nil
 }
 
-// Set sets the ACL for the given tailnet. `acl` can either be an [ACL],
-// or a HuJSON string. etag is an optional value that, if supplied, will be used in the
-// `If-Match` HTTP request header.
+// Set sets the [ACL] for the tailnet. acl can either be an [ACL], or a HuJSON string.
+// etag is an optional value that, if supplied, will be used in the "If-Match" HTTP request header.
 func (pr *PolicyFileResource) Set(ctx context.Context, acl any, etag string) error {
 	headers := make(map[string]string)
 	if etag != "" {
@@ -163,8 +162,7 @@ func (pr *PolicyFileResource) Set(ctx context.Context, acl any, etag string) err
 	return pr.do(req, nil)
 }
 
-// Validate validates the provided ACL via the API. `acl` can either be an [ACL],
-// or a HuJSON string.
+// Validate validates the provided ACL via the API. acl can either be an [ACL], or a HuJSON string.
 func (pr *PolicyFileResource) Validate(ctx context.Context, acl any) error {
 	reqOpts := []requestOption{
 		requestBody(acl),

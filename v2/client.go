@@ -1,7 +1,5 @@
 // Package tsclient contains a basic implementation of a client for the Tailscale HTTP api. Documentation is here:
 // https://tailscale.com/api
-//
-// WARNING - this v2 implementation is under active development, use at your own risk and expect breaking changes.
 package tsclient
 
 import (
@@ -21,11 +19,11 @@ import (
 )
 
 type (
-	// Client type is used to perform actions against the Tailscale API.
+	// Client is used to perform actions against the Tailscale API.
 	Client struct {
 		// BaseURL is the base URL for accessing the Tailscale API server. Defaults to https://api.tailscale.com.
 		BaseURL *url.URL
-		// UserAgent configures the User-Agent HTTP header for requests, defaults to "tailscale-client-go"
+		// UserAgent configures the User-Agent HTTP header for requests. Defaults to "tailscale-client-go".
 		UserAgent string
 		// APIKey allows specifying an APIKey to use for authentication.
 		APIKey string
@@ -34,7 +32,7 @@ type (
 
 		// HTTP is the [http.Client] to use for requests to the API server.
 		// If not specified, a new [http.Client] with a Timeout of 1 minute will be used.
-		// This will be ignored if using [Client.UseOAuth].
+		// This will be ignored if using [Client].UseOAuth.
 		HTTP *http.Client
 
 		initOnce sync.Once
@@ -66,6 +64,10 @@ type (
 	}
 )
 
+const defaultContentType = "application/json"
+const defaultHttpClientTimeout = time.Minute
+const defaultUserAgent = "tailscale-client-go"
+
 var defaultBaseURL *url.URL
 var oauthRelTokenURL *url.URL
 
@@ -82,14 +84,10 @@ func init() {
 	}
 }
 
-const defaultContentType = "application/json"
-const defaultHttpClientTimeout = time.Minute
-const defaultUserAgent = "tailscale-client-go"
-
 // init returns a new instance of the Client type that will perform operations against a chosen tailnet and will
-// provide the apiKey for authorization. Additional options can be provided, see ClientOption for more details.
+// provide the apiKey for authorization.
 //
-// To use OAuth Client credentials, call [UseOAuth].
+// To use OAuth Client credentials, call [Client].UseOAuth.
 func (c *Client) init() {
 	c.initOnce.Do(func() {
 		if c.BaseURL == nil {
@@ -115,7 +113,7 @@ func (c *Client) init() {
 }
 
 // UseOAuth configures the client to use the specified OAuth credentials.
-// If [Client.HTTP] was previously specified, this replaces it.
+// If [Client].HTTP was previously specified, this replaces it.
 func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
 	oauthConfig := clientcredentials.Config{
 		ClientID:     clientID,
@@ -129,51 +127,61 @@ func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
 	c.HTTP.Timeout = defaultHttpClientTimeout
 }
 
+// Contacts() provides access to https://tailscale.com/api#tag/contacts.
 func (c *Client) Contacts() *ContactsResource {
 	c.init()
 	return c.contacts
 }
 
+// DevicePosture provides access to https://tailscale.com/api#tag/deviceposture.
 func (c *Client) DevicePosture() *DevicePostureResource {
 	c.init()
 	return c.devicePosture
 }
 
+// Devices provides access to https://tailscale.com/api#tag/devices.
 func (c *Client) Devices() *DevicesResource {
 	c.init()
 	return c.devices
 }
 
+// DNS provides access to https://tailscale.com/api#tag/dns.
 func (c *Client) DNS() *DNSResource {
 	c.init()
 	return c.dns
 }
 
+// Keys provides access to https://tailscale.com/api#tag/keys.
 func (c *Client) Keys() *KeysResource {
 	c.init()
 	return c.keys
 }
 
+// Logging provides access to https://tailscale.com/api#tag/logging.
 func (c *Client) Logging() *LoggingResource {
 	c.init()
 	return c.logging
 }
 
+// PolicyFile provides access to https://tailscale.com/api#tag/policyfile.
 func (c *Client) PolicyFile() *PolicyFileResource {
 	c.init()
 	return c.policyFile
 }
 
+// TailnetSettings provides access to https://tailscale.com/api#tag/tailnetsettings.
 func (c *Client) TailnetSettings() *TailnetSettingsResource {
 	c.init()
 	return c.tailnetSettings
 }
 
+// Users provides access to https://tailscale.com/api#tag/users.
 func (c *Client) Users() *UsersResource {
 	c.init()
 	return c.users
 }
 
+// Webhooks provides access to https://tailscale.com/api#tag/webhooks.
 func (c *Client) Webhooks() *WebhooksResource {
 	c.init()
 	return c.webhooks
@@ -341,8 +349,8 @@ func IsNotFound(err error) bool {
 	return false
 }
 
-// ErrorData returns the contents of the APIError.Data field from the provided error if it is of type APIError. Returns
-// a nil slice if the given error is not of type APIError.
+// ErrorData returns the contents of the [APIError].Data field from the provided error if it is of type [APIError].
+// Returns a nil slice if the given error is not of type [APIError].
 func ErrorData(err error) []APIErrorData {
 	var apiErr APIError
 	if errors.As(err, &apiErr) {
@@ -352,7 +360,7 @@ func ErrorData(err error) []APIErrorData {
 	return nil
 }
 
-// Duration type wraps a time.Duration, allowing it to be JSON marshalled as a string like "20h" rather than
+// Duration wraps a [time.Duration], allowing it to be JSON marshalled as a string like "20h" rather than
 // a numeric value.
 type Duration time.Duration
 

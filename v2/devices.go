@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// DevicesResource provides access to https://tailscale.com/api#tag/devices.
 type DevicesResource struct {
 	*Client
 }
@@ -63,7 +64,7 @@ type Device struct {
 	UpdateAvailable           bool     `json:"updateAvailable"`
 }
 
-// Get gets a single device
+// Get gets the [Device] identified by deviceID.
 func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildURL("device", deviceID))
 	if err != nil {
@@ -74,7 +75,7 @@ func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, e
 	return &result, dr.do(req, &result)
 }
 
-// List lists the devices in a tailnet.
+// List lists every [Device] in the tailnet.
 func (dr *DevicesResource) List(ctx context.Context) ([]Device, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildTailnetURL("devices"))
 	if err != nil {
@@ -102,7 +103,7 @@ func (dr *DevicesResource) SetAuthorized(ctx context.Context, deviceID string, a
 	return dr.do(req, nil)
 }
 
-// Delete deletes the device given its deviceID.
+// Delete deletes the device identified by deviceID.
 func (dr *DevicesResource) Delete(ctx context.Context, deviceID string) error {
 	req, err := dr.buildRequest(ctx, http.MethodDelete, dr.buildURL("device", deviceID))
 	if err != nil {
@@ -112,7 +113,7 @@ func (dr *DevicesResource) Delete(ctx context.Context, deviceID string) error {
 	return dr.do(req, nil)
 }
 
-// SetTags updates the tags of a target device.
+// SetTags updates the tags of the device identified by deviceID.
 func (dr *DevicesResource) SetTags(ctx context.Context, deviceID string, tags []string) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "tags"), requestBody(map[string][]string{
 		"tags": tags,

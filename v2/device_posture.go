@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// DevicePostureResource provides access to https://tailscale.com/api#tag/deviceposture.
 type DevicePostureResource struct {
 	*Client
 }
@@ -50,7 +51,7 @@ type (
 	}
 )
 
-// List lists all configured [PostureIntegration]s.
+// List lists every configured [PostureIntegration].
 func (pr *DevicePostureResource) ListIntegrations(ctx context.Context) ([]PostureIntegration, error) {
 	req, err := pr.buildRequest(ctx, http.MethodGet, pr.buildTailnetURL("posture", "integrations"))
 	if err != nil {
@@ -88,7 +89,7 @@ func (pr *DevicePostureResource) UpdateIntegration(ctx context.Context, id strin
 	return &resp, pr.do(req, &resp)
 }
 
-// DeleteIntegration deletes the PostureIntegration identified by id.
+// DeleteIntegration deletes the posture integration identified by id.
 func (pr *DevicePostureResource) DeleteIntegration(ctx context.Context, id string) error {
 	req, err := pr.buildRequest(ctx, http.MethodDelete, pr.buildURL("posture", "integrations", id))
 	if err != nil {
@@ -98,7 +99,7 @@ func (pr *DevicePostureResource) DeleteIntegration(ctx context.Context, id strin
 	return pr.do(req, nil)
 }
 
-// GetIntegration gets the PostureIntegration identified by id.
+// GetIntegration gets the posture integration identified by id.
 func (pr *DevicePostureResource) GetIntegration(ctx context.Context, id string) (*PostureIntegration, error) {
 	req, err := pr.buildRequest(ctx, http.MethodGet, pr.buildURL("posture", "integrations", id))
 	if err != nil {

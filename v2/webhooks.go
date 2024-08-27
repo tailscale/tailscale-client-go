@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+// WebhooksResource provides access to https://tailscale.com/api#tag/webhooks.
+type WebhooksResource struct {
+	*Client
+}
+
 const (
 	WebhookEmptyProviderType      WebhookProviderType = ""
 	WebhookSlackProviderType      WebhookProviderType = "slack"
@@ -61,12 +66,8 @@ type (
 	}
 )
 
-type WebhooksResource struct {
-	*Client
-}
-
-// Create creates a new webhook with the specifications provided in the CreateWebhookRequest.
-// Returns a Webhook if successful.
+// Create creates a new [Webhook] with the specifications provided in the [CreateWebhookRequest].
+// Returns the created [Webhook] if successful.
 func (wr *WebhooksResource) Create(ctx context.Context, request CreateWebhookRequest) (*Webhook, error) {
 	req, err := wr.buildRequest(ctx, http.MethodPost, wr.buildTailnetURL("webhooks"), requestBody(request))
 	if err != nil {
@@ -77,7 +78,7 @@ func (wr *WebhooksResource) Create(ctx context.Context, request CreateWebhookReq
 	return &webhook, wr.do(req, &webhook)
 }
 
-// List lists the webhooks in a tailnet.
+// List lists every [Webhook] in the tailnet.
 func (wr *WebhooksResource) List(ctx context.Context) ([]Webhook, error) {
 	req, err := wr.buildRequest(ctx, http.MethodGet, wr.buildTailnetURL("webhooks"))
 	if err != nil {
@@ -92,7 +93,7 @@ func (wr *WebhooksResource) List(ctx context.Context) ([]Webhook, error) {
 	return resp["webhooks"], nil
 }
 
-// Get retrieves a specific webhook.
+// Get retrieves a specific [Webhook].
 func (wr *WebhooksResource) Get(ctx context.Context, endpointID string) (*Webhook, error) {
 	req, err := wr.buildRequest(ctx, http.MethodGet, wr.buildURL("webhooks", endpointID))
 	if err != nil {
@@ -103,8 +104,7 @@ func (wr *WebhooksResource) Get(ctx context.Context, endpointID string) (*Webhoo
 	return &webhook, wr.do(req, &webhook)
 }
 
-// Update updates an existing webhook's subscriptions.
-// Returns a Webhook on success.
+// Update updates an existing webhook's subscriptions. Returns the updated [Webhook] on success.
 func (wr *WebhooksResource) Update(ctx context.Context, endpointID string, subscriptions []WebhookSubscriptionType) (*Webhook, error) {
 	req, err := wr.buildRequest(ctx, http.MethodPatch, wr.buildURL("webhooks", endpointID), requestBody(map[string][]WebhookSubscriptionType{
 		"subscriptions": subscriptions,
@@ -140,7 +140,7 @@ func (wr *WebhooksResource) Test(ctx context.Context, endpointID string) error {
 }
 
 // RotateSecret rotates the secret associated with a webhook.
-// A new secret will be generated and set on the returned Webhook.
+// A new secret will be generated and set on the returned [Webhook].
 func (wr *WebhooksResource) RotateSecret(ctx context.Context, endpointID string) (*Webhook, error) {
 	req, err := wr.buildRequest(ctx, http.MethodPost, wr.buildURL("webhooks", endpointID, "rotate"))
 	if err != nil {

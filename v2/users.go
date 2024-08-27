@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+// UsersResource provides access to https://tailscale.com/api#tag/users.
+type UsersResource struct {
+	*Client
+}
+
 const (
 	UserTypeMember UserType = "member"
 	UserTypeShared UserType = "shared"
@@ -56,11 +61,7 @@ type (
 	}
 )
 
-type UsersResource struct {
-	*Client
-}
-
-// List lists all [User]s of a tailnet. If userType and/or role are provided,
+// List lists every [User] of the tailnet. If userType and/or role are provided,
 // the list of users will be filtered by those.
 func (ur *UsersResource) List(ctx context.Context, userType *UserType, role *UserRole) ([]User, error) {
 	u := ur.buildTailnetURL("users")
