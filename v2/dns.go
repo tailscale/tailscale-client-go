@@ -5,6 +5,7 @@ import (
 	"net/http"
 )
 
+// DNSResource provides access to https://tailscale.com/api#tag/dns.
 type DNSResource struct {
 	*Client
 }
@@ -61,7 +62,7 @@ func (dr *DNSResource) SetNameservers(ctx context.Context, dns []string) error {
 	return dr.do(req, nil)
 }
 
-// Nameservers lists the DNS nameservers for a tailnet
+// Nameservers lists the DNS nameservers for the tailnet
 func (dr *DNSResource) Nameservers(ctx context.Context) ([]string, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildTailnetURL("dns", "nameservers"))
 	if err != nil {
@@ -76,7 +77,7 @@ func (dr *DNSResource) Nameservers(ctx context.Context) ([]string, error) {
 	return resp["dns"], nil
 }
 
-// UpdateSplitDNS updates the split DNS settings for a tailnet using the
+// UpdateSplitDNS updates the split DNS settings for the tailnet using the
 // provided [SplitDNSRequest] object. This is a PATCH operation that performs
 // partial updates of the underlying data structure.
 //
@@ -97,7 +98,7 @@ func (dr *DNSResource) UpdateSplitDNS(ctx context.Context, request SplitDNSReque
 	return resp, nil
 }
 
-// SetSplitDNS sets the split DNS settings for a tailnet using the provided
+// SetSplitDNS sets the split DNS settings for the tailnet using the provided
 // [SplitDNSRequest] object. This is a PUT operation that fully replaces the underlying
 // data structure.
 //
@@ -111,7 +112,7 @@ func (dr *DNSResource) SetSplitDNS(ctx context.Context, request SplitDNSRequest)
 	return dr.do(req, nil)
 }
 
-// SplitDNS retrieves the split DNS configuration for a tailnet.
+// SplitDNS retrieves the split DNS configuration for the tailnet.
 func (dr *DNSResource) SplitDNS(ctx context.Context) (SplitDNSResponse, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildTailnetURL("dns", "split-dns"))
 	if err != nil {
@@ -125,8 +126,7 @@ func (dr *DNSResource) SplitDNS(ctx context.Context) (SplitDNSResponse, error) {
 	return resp, nil
 }
 
-// Preferences retrieves the DNS preferences that are currently set for the given tailnet. Supply the tailnet of
-// interest in the path.
+// Preferences retrieves the DNS preferences that are currently set for the given tailnet.
 func (dr *DNSResource) Preferences(ctx context.Context) (*DNSPreferences, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildTailnetURL("dns", "preferences"))
 	if err != nil {
@@ -137,7 +137,7 @@ func (dr *DNSResource) Preferences(ctx context.Context) (*DNSPreferences, error)
 	return &resp, dr.do(req, &resp)
 }
 
-// SetPreferences replaces the DNS preferences for a tailnet, specifically, the MagicDNS setting. Note that MagicDNS
+// SetPreferences replaces the DNS preferences for the tailnet, specifically, the MagicDNS setting. Note that MagicDNS
 // is dependent on DNS servers.
 func (dr *DNSResource) SetPreferences(ctx context.Context, preferences DNSPreferences) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildTailnetURL("dns", "preferences"), requestBody(preferences))

@@ -4,11 +4,12 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/tailscale/tailscale-client-go)](https://goreportcard.com/report/github.com/tailscale/tailscale-client-go)
 ![Github Actions](https://github.com/tailscale/tailscale-client-go/actions/workflows/ci.yml/badge.svg?branch=master)
 
+DEPRECATED - V1 is no longer being maintained. The [V2 SDK](v2) provides a more complete wrapper around the V2 [Tailscale API](https://tailscale.com/api).
+
+---
 
 A client implementation for the [Tailscale](https://tailscale.com) HTTP API.
 For more details, please see [API documentation](https://github.com/tailscale/tailscale/blob/main/api.md).
-
-A [V2](v2) implementation of the client is under active development, use at your own risk and expect breaking changes.
 
 # Example
 

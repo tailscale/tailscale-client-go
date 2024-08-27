@@ -6,12 +6,13 @@ import (
 	"time"
 )
 
+// KeysResource provides access to https://tailscale.com/api#tag/keys.
 type KeysResource struct {
 	*Client
 }
 
 type (
-	// KeyCapabilities type describes the capabilities of an authentication key.
+	// KeyCapabilities describes the capabilities of an authentication key.
 	KeyCapabilities struct {
 		Devices struct {
 			Create struct {
@@ -23,14 +24,14 @@ type (
 		} `json:"devices"`
 	}
 
-	// CreateKeyRequest type describes the definition of an authentication key to create.
+	// CreateKeyRequest describes the definition of an authentication key to create.
 	CreateKeyRequest struct {
 		Capabilities  KeyCapabilities `json:"capabilities"`
 		ExpirySeconds int64           `json:"expirySeconds"`
 		Description   string          `json:"description"`
 	}
 
-	// Key type describes an authentication key within the tailnet.
+	// Key describes an authentication key within the tailnet.
 	Key struct {
 		ID           string          `json:"id"`
 		Key          string          `json:"key"`
@@ -43,7 +44,7 @@ type (
 	}
 )
 
-// Create creates a new authentication key. Returns the generated key if successful.
+// Create creates a new authentication key. Returns the generated [Key] if successful.
 func (kr *KeysResource) Create(ctx context.Context, ckr CreateKeyRequest) (*Key, error) {
 	req, err := kr.buildRequest(ctx, http.MethodPost, kr.buildTailnetURL("keys"), requestBody(ckr))
 	if err != nil {
@@ -54,7 +55,7 @@ func (kr *KeysResource) Create(ctx context.Context, ckr CreateKeyRequest) (*Key,
 	return &key, kr.do(req, &key)
 }
 
-// Get returns all information on a key whose identifier matches the one provided. This will not return the
+// Get returns all information on a [Key] whose identifier matches the one provided. This will not return the
 // authentication key itself, just the metadata.
 func (kr *KeysResource) Get(ctx context.Context, id string) (*Key, error) {
 	req, err := kr.buildRequest(ctx, http.MethodGet, kr.buildTailnetURL("keys", id))
@@ -66,8 +67,8 @@ func (kr *KeysResource) Get(ctx context.Context, id string) (*Key, error) {
 	return &key, kr.do(req, &key)
 }
 
-// List returns all keys within the tailnet. The only fields set for each key will be its identifier. The keys returned
-// are relative to the user that owns the API key used to authenticate the client.
+// List returns every [Key] within the tailnet. The only fields set for each [Key] will be its identifier.
+// The keys returned are relative to the user that owns the API key used to authenticate the client.
 func (kr *KeysResource) List(ctx context.Context) ([]Key, error) {
 	req, err := kr.buildRequest(ctx, http.MethodGet, kr.buildTailnetURL("keys"))
 	if err != nil {

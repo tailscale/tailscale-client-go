@@ -537,14 +537,14 @@ type setACLParams struct {
 type SetACLOption func(p *setACLParams)
 
 // WithETag allows passing an ETag value with Set ACL API call that
-// will be used in the `If-Match` HTTP request header.
+// will be used in the "If-Match" HTTP request header.
 func WithETag(etag string) SetACLOption {
 	return func(p *setACLParams) {
 		p.headers["If-Match"] = fmt.Sprintf("%q", etag)
 	}
 }
 
-// SetACL sets the ACL for the given tailnet. `acl` can either be an [ACL],
+// SetACL sets the ACL for the given tailnet. "acl" can either be an [ACL],
 // or a HuJSON string.
 func (c *Client) SetACL(ctx context.Context, acl any, opts ...SetACLOption) error {
 	const uriFmt = "/api/v2/tailnet/%s/acl"
@@ -574,7 +574,7 @@ func (c *Client) SetACL(ctx context.Context, acl any, opts ...SetACLOption) erro
 	return c.performRequest(req, nil)
 }
 
-// ValidateACL validates the provided ACL via the API. `acl` can either be an [ACL],
+// ValidateACL validates the provided ACL via the API. "acl" can either be an [ACL],
 // or a HuJSON string.
 func (c *Client) ValidateACL(ctx context.Context, acl any) error {
 	const uriFmt = "/api/v2/tailnet/%s/acl/validate"

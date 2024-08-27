@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// TailnetSettingsResource provides an API to view/control settings for a tailnet.
+// TailnetSettingsResource provides access to https://tailscale.com/api#tag/tailnetsettings.
 type TailnetSettingsResource struct {
 	*Client
 }
@@ -52,7 +52,7 @@ const (
 	RoleAllowedToJoinExternalTailnetsMember RoleAllowedToJoinExternalTailnets = "member"
 )
 
-// Get retrieves the current TailnetSettings.
+// Get retrieves the current [TailnetSettings].
 // See https://tailscale.com/api#tag/tailnetsettings/GET/tailnet/{tailnet}/settings.
 func (tsr *TailnetSettingsResource) Get(ctx context.Context) (*TailnetSettings, error) {
 	req, err := tsr.buildRequest(ctx, http.MethodGet, tsr.buildTailnetURL("settings"))
