@@ -29,7 +29,7 @@ type TestServer struct {
 	ResponseBody interface{}
 }
 
-func NewTestHarness(t *testing.T) (*tsclient.Client, *TestServer) {
+func NewTestHarness(t *testing.T) (*tsclient.TailnetClient, *TestServer) {
 	t.Helper()
 
 	testServer := &TestServer{
@@ -61,10 +61,9 @@ func NewTestHarness(t *testing.T) (*tsclient.Client, *TestServer) {
 	client := &tsclient.Client{
 		BaseURL: testServer.BaseURL,
 		APIKey:  "not a real key",
-		Tailnet: "example.com",
 	}
 
-	return client, testServer
+	return client.ForTailnet("example.com"), testServer
 }
 
 func (t *TestServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {

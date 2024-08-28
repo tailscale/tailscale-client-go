@@ -6,9 +6,9 @@ import (
 	"time"
 )
 
-// UsersResource provides access to https://tailscale.com/api#tag/users.
-type UsersResource struct {
-	*Client
+// TailnetUsersResource provides access to https://tailscale.com/api#tag/users.
+type TailnetUsersResource struct {
+	*TailnetClient
 }
 
 const (
@@ -63,7 +63,7 @@ type (
 
 // List lists every [User] of the tailnet. If userType and/or role are provided,
 // the list of users will be filtered by those.
-func (ur *UsersResource) List(ctx context.Context, userType *UserType, role *UserRole) ([]User, error) {
+func (ur *TailnetUsersResource) List(ctx context.Context, userType *UserType, role *UserRole) ([]User, error) {
 	u := ur.buildTailnetURL("users")
 	q := u.Query()
 	if userType != nil {
@@ -88,7 +88,7 @@ func (ur *UsersResource) List(ctx context.Context, userType *UserType, role *Use
 }
 
 // Get retrieves the [User] identified by the given id.
-func (ur *UsersResource) Get(ctx context.Context, id string) (*User, error) {
+func (ur *TailnetUsersResource) Get(ctx context.Context, id string) (*User, error) {
 	req, err := ur.buildRequest(ctx, http.MethodGet, ur.buildURL("users", id))
 	if err != nil {
 		return nil, err

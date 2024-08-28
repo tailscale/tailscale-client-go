@@ -7,7 +7,7 @@ import (
 
 // TailnetSettingsResource provides access to https://tailscale.com/api#tag/tailnetsettings.
 type TailnetSettingsResource struct {
-	*Client
+	*TailnetClient
 }
 
 type (

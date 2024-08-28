@@ -6,9 +6,9 @@ import (
 	"net/http"
 )
 
-// PolicyFileResource provides access to https://tailscale.com/api#tag/policyfile.
-type PolicyFileResource struct {
-	*Client
+// TailnetPolicyFileResource provides access to https://tailscale.com/api#tag/policyfile.
+type TailnetPolicyFileResource struct {
+	*TailnetClient
 }
 
 type (
@@ -109,7 +109,7 @@ type (
 )
 
 // Get retrieves the [ACL] that is currently set for the tailnet.
-func (pr *PolicyFileResource) Get(ctx context.Context) (*ACL, error) {
+func (pr *TailnetPolicyFileResource) Get(ctx context.Context) (*ACL, error) {
 	req, err := pr.buildRequest(ctx, http.MethodGet, pr.buildTailnetURL("acl"))
 	if err != nil {
 		return nil, err
@@ -120,7 +120,7 @@ func (pr *PolicyFileResource) Get(ctx context.Context) (*ACL, error) {
 }
 
 // Raw retrieves the [ACL] that is currently set for the tailnet as a HuJSON string.
-func (pr *PolicyFileResource) Raw(ctx context.Context) (string, error) {
+func (pr *TailnetPolicyFileResource) Raw(ctx context.Context) (string, error) {
 	req, err := pr.buildRequest(ctx, http.MethodGet, pr.buildTailnetURL("acl"), requestContentType("application/hujson"))
 	if err != nil {
 		return "", err
@@ -136,7 +136,7 @@ func (pr *PolicyFileResource) Raw(ctx context.Context) (string, error) {
 
 // Set sets the [ACL] for the tailnet. acl can either be an [ACL], or a HuJSON string.
 // etag is an optional value that, if supplied, will be used in the "If-Match" HTTP request header.
-func (pr *PolicyFileResource) Set(ctx context.Context, acl any, etag string) error {
+func (pr *TailnetPolicyFileResource) Set(ctx context.Context, acl any, etag string) error {
 	headers := make(map[string]string)
 	if etag != "" {
 		headers["If-Match"] = fmt.Sprintf("%q", etag)
@@ -163,7 +163,7 @@ func (pr *PolicyFileResource) Set(ctx context.Context, acl any, etag string) err
 }
 
 // Validate validates the provided ACL via the API. acl can either be an [ACL], or a HuJSON string.
-func (pr *PolicyFileResource) Validate(ctx context.Context, acl any) error {
+func (pr *TailnetPolicyFileResource) Validate(ctx context.Context, acl any) error {
 	reqOpts := []requestOption{
 		requestBody(acl),
 	}

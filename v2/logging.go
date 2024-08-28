@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-// LoggingResource provides access to https://tailscale.com/api#tag/logging.
-type LoggingResource struct {
-	*Client
+// TailnetLoggingResource provides access to https://tailscale.com/api#tag/logging.
+type TailnetLoggingResource struct {
+	*TailnetClient
 }
 
 const (
@@ -49,7 +49,7 @@ type (
 )
 
 // LogstreamConfiguration retrieves the tailnet's [LogstreamConfiguration] for the given [LogType].
-func (lr *LoggingResource) LogstreamConfiguration(ctx context.Context, logType LogType) (*LogstreamConfiguration, error) {
+func (lr *TailnetLoggingResource) LogstreamConfiguration(ctx context.Context, logType LogType) (*LogstreamConfiguration, error) {
 	req, err := lr.buildRequest(ctx, http.MethodGet, lr.buildTailnetURL("logging", logType, "stream"))
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (lr *LoggingResource) LogstreamConfiguration(ctx context.Context, logType L
 }
 
 // SetLogstreamConfiguration sets the tailnet's [LogstreamConfiguration] for the given [LogType].
-func (lr *LoggingResource) SetLogstreamConfiguration(ctx context.Context, logType LogType, request SetLogstreamConfigurationRequest) error {
+func (lr *TailnetLoggingResource) SetLogstreamConfiguration(ctx context.Context, logType LogType, request SetLogstreamConfigurationRequest) error {
 	req, err := lr.buildRequest(ctx, http.MethodPut, lr.buildTailnetURL("logging", logType, "stream"), requestBody(request))
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (lr *LoggingResource) SetLogstreamConfiguration(ctx context.Context, logTyp
 }
 
 // DeleteLogstreamConfiguration deletes the tailnet's [LogstreamConfiguration] for the given [LogType].
-func (lr *LoggingResource) DeleteLogstreamConfiguration(ctx context.Context, logType LogType) error {
+func (lr *TailnetLoggingResource) DeleteLogstreamConfiguration(ctx context.Context, logType LogType) error {
 	req, err := lr.buildRequest(ctx, http.MethodDelete, lr.buildTailnetURL("logging", logType, "stream"))
 	if err != nil {
 		return err

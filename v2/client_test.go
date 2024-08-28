@@ -42,9 +42,8 @@ func Test_BuildTailnetURL(t *testing.T) {
 
 	c := &Client{
 		BaseURL: base,
-		Tailnet: "tn/with/slashes",
 	}
-	actual := c.buildTailnetURL("component/with/slashes")
+	actual := c.ForTailnet("tn/with/slashes").buildTailnetURL("component/with/slashes")
 	expected, err := url.Parse("http://example.com/api/v2/tailnet/tn%2Fwith%2Fslashes/component%2Fwith%2Fslashes")
 	require.NoError(t, err)
 	assert.EqualValues(t, expected.String(), actual.String())

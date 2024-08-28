@@ -24,10 +24,10 @@ func main() {
 	apiKey := os.Getenv("TAILSCALE_API_KEY")
 	tailnet := os.Getenv("TAILSCALE_TAILNET")
 
-	&tsclient.Client{
+	c := &tsclient.Client{
 		APIKey:    apiKey,
-		Tailnet:   tailnet,
 	}
+	client := c.ForTailnet(tailnet)
 
 	devices, err := client.Devices().List(context.Background())
 }
@@ -51,11 +51,11 @@ func main() {
 	tailnet := os.Getenv("TAILSCALE_OAUTH_CLIENT_SECRET")
 	oauthScopes := []string{"all:write"}
 
-	&tsclient.Client{
+	c := &tsclient.Client{
 		APIKey:    apiKey,
-		Tailnet:   tailnet,
 	}
-	clientV2.UseOAuth(oauthClientID, oauthClientSecret, oauthScopes)
+	c.UseOAuth(oauthClientID, oauthClientSecret, oauthScopes)
+	client := c.ForTailnet(tailnet)
 
 	devices, err := client.Devices().List(context.Background())
 }

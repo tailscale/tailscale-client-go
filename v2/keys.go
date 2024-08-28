@@ -6,9 +6,9 @@ import (
 	"time"
 )
 
-// KeysResource provides access to https://tailscale.com/api#tag/keys.
-type KeysResource struct {
-	*Client
+// TailnetKeysResource provides access to https://tailscale.com/api#tag/keys.
+type TailnetKeysResource struct {
+	*TailnetClient
 }
 
 type (
@@ -45,7 +45,7 @@ type (
 )
 
 // Create creates a new authentication key. Returns the generated [Key] if successful.
-func (kr *KeysResource) Create(ctx context.Context, ckr CreateKeyRequest) (*Key, error) {
+func (kr *TailnetKeysResource) Create(ctx context.Context, ckr CreateKeyRequest) (*Key, error) {
 	req, err := kr.buildRequest(ctx, http.MethodPost, kr.buildTailnetURL("keys"), requestBody(ckr))
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (kr *KeysResource) Create(ctx context.Context, ckr CreateKeyRequest) (*Key,
 
 // Get returns all information on a [Key] whose identifier matches the one provided. This will not return the
 // authentication key itself, just the metadata.
-func (kr *KeysResource) Get(ctx context.Context, id string) (*Key, error) {
+func (kr *TailnetKeysResource) Get(ctx context.Context, id string) (*Key, error) {
 	req, err := kr.buildRequest(ctx, http.MethodGet, kr.buildTailnetURL("keys", id))
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func (kr *KeysResource) Get(ctx context.Context, id string) (*Key, error) {
 
 // List returns every [Key] within the tailnet. The only fields set for each [Key] will be its identifier.
 // The keys returned are relative to the user that owns the API key used to authenticate the client.
-func (kr *KeysResource) List(ctx context.Context) ([]Key, error) {
+func (kr *TailnetKeysResource) List(ctx context.Context) ([]Key, error) {
 	req, err := kr.buildRequest(ctx, http.MethodGet, kr.buildTailnetURL("keys"))
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (kr *KeysResource) List(ctx context.Context) ([]Key, error) {
 }
 
 // Delete removes an authentication key from the tailnet.
-func (kr *KeysResource) Delete(ctx context.Context, id string) error {
+func (kr *TailnetKeysResource) Delete(ctx context.Context, id string) error {
 	req, err := kr.buildRequest(ctx, http.MethodDelete, kr.buildTailnetURL("keys", id))
 	if err != nil {
 		return err

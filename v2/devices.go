@@ -7,9 +7,9 @@ import (
 	"time"
 )
 
-// DevicesResource provides access to https://tailscale.com/api#tag/devices.
-type DevicesResource struct {
-	*Client
+// TailnetDevicesResource provides access to https://tailscale.com/api#tag/devices.
+type TailnetDevicesResource struct {
+	*TailnetClient
 }
 
 type (
@@ -65,7 +65,7 @@ type Device struct {
 }
 
 // Get gets the [Device] identified by deviceID.
-func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, error) {
+func (dr *TailnetDevicesResource) Get(ctx context.Context, deviceID string) (*Device, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildURL("device", deviceID))
 	if err != nil {
 		return nil, err
@@ -76,7 +76,7 @@ func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, e
 }
 
 // List lists every [Device] in the tailnet.
-func (dr *DevicesResource) List(ctx context.Context) ([]Device, error) {
+func (dr *TailnetDevicesResource) List(ctx context.Context) ([]Device, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildTailnetURL("devices"))
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (dr *DevicesResource) List(ctx context.Context) ([]Device, error) {
 }
 
 // SetAuthorized marks the specified device as authorized or not.
-func (dr *DevicesResource) SetAuthorized(ctx context.Context, deviceID string, authorized bool) error {
+func (dr *TailnetDevicesResource) SetAuthorized(ctx context.Context, deviceID string, authorized bool) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "authorized"), requestBody(map[string]bool{
 		"authorized": authorized,
 	}))
@@ -104,7 +104,7 @@ func (dr *DevicesResource) SetAuthorized(ctx context.Context, deviceID string, a
 }
 
 // Delete deletes the device identified by deviceID.
-func (dr *DevicesResource) Delete(ctx context.Context, deviceID string) error {
+func (dr *TailnetDevicesResource) Delete(ctx context.Context, deviceID string) error {
 	req, err := dr.buildRequest(ctx, http.MethodDelete, dr.buildURL("device", deviceID))
 	if err != nil {
 		return err
@@ -114,7 +114,7 @@ func (dr *DevicesResource) Delete(ctx context.Context, deviceID string) error {
 }
 
 // SetTags updates the tags of the device identified by deviceID.
-func (dr *DevicesResource) SetTags(ctx context.Context, deviceID string, tags []string) error {
+func (dr *TailnetDevicesResource) SetTags(ctx context.Context, deviceID string, tags []string) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "tags"), requestBody(map[string][]string{
 		"tags": tags,
 	}))
@@ -134,7 +134,7 @@ type (
 )
 
 // SetKey updates the properties of a device's key.
-func (dr *DevicesResource) SetKey(ctx context.Context, deviceID string, key DeviceKey) error {
+func (dr *TailnetDevicesResource) SetKey(ctx context.Context, deviceID string, key DeviceKey) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "key"), requestBody(key))
 	if err != nil {
 		return err
@@ -144,7 +144,7 @@ func (dr *DevicesResource) SetKey(ctx context.Context, deviceID string, key Devi
 }
 
 // SetDeviceIPv4Address sets the Tailscale IPv4 address of the device.
-func (dr *DevicesResource) SetIPv4Address(ctx context.Context, deviceID string, ipv4Address string) error {
+func (dr *TailnetDevicesResource) SetIPv4Address(ctx context.Context, deviceID string, ipv4Address string) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "ip"), requestBody(map[string]string{
 		"ipv4": ipv4Address,
 	}))
@@ -157,7 +157,7 @@ func (dr *DevicesResource) SetIPv4Address(ctx context.Context, deviceID string, 
 
 // SetSubnetRoutes sets which subnet routes are enabled to be routed by a device by replacing the existing list
 // of subnet routes with the supplied routes. Routes can be enabled without a device advertising them (e.g. for preauth).
-func (dr *DevicesResource) SetSubnetRoutes(ctx context.Context, deviceID string, routes []string) error {
+func (dr *TailnetDevicesResource) SetSubnetRoutes(ctx context.Context, deviceID string, routes []string) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "routes"), requestBody(map[string][]string{
 		"routes": routes,
 	}))
@@ -171,7 +171,7 @@ func (dr *DevicesResource) SetSubnetRoutes(ctx context.Context, deviceID string,
 // SubnetRoutes Retrieves the list of subnet routes that a device is advertising, as well as those that are
 // enabled for it. Enabled routes are not necessarily advertised (e.g. for pre-enabling), and likewise, advertised
 // routes are not necessarily enabled.
-func (dr *DevicesResource) SubnetRoutes(ctx context.Context, deviceID string) (*DeviceRoutes, error) {
+func (dr *TailnetDevicesResource) SubnetRoutes(ctx context.Context, deviceID string) (*DeviceRoutes, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildURL("device", deviceID, "routes"))
 	if err != nil {
 		return nil, err

@@ -303,11 +303,11 @@ func TestClient_UserAgent(t *testing.T) {
 	assert.Equal(t, "tailscale-client-go", server.Header.Get("User-Agent"))
 
 	// Check a custom user-agent.
-	client = &tsclient.Client{
+	client = (&tsclient.Client{
 		APIKey:    "fake key",
 		BaseURL:   server.BaseURL,
 		UserAgent: "custom-user-agent",
-	}
+	}).ForTailnet("example.com")
 	assert.NoError(t, client.Devices().SetAuthorized(context.Background(), "test", true))
 	assert.Equal(t, "custom-user-agent", server.Header.Get("User-Agent"))
 }

@@ -27,27 +27,33 @@ type (
 		UserAgent string
 		// APIKey allows specifying an APIKey to use for authentication.
 		APIKey string
-		// Tailnet allows specifying a specific Tailnet by name, to which this Client will connect by default.
-		Tailnet string
 
 		// HTTP is the [http.Client] to use for requests to the API server.
 		// If not specified, a new [http.Client] with a Timeout of 1 minute will be used.
 		// This will be ignored if using [Client].UseOAuth.
 		HTTP *http.Client
+	}
+
+	// TailnetClient is a [Client] that operates on a specific tailnet.
+	TailnetClient struct {
+		*Client
+
+		// tailnet allows specifying a specific tailnet by name, to which this Client will connect by default.
+		tailnet string
 
 		initOnce sync.Once
 
 		// Specific resources
-		contacts        *ContactsResource
-		devicePosture   *DevicePostureResource
-		devices         *DevicesResource
-		dns             *DNSResource
-		keys            *KeysResource
-		logging         *LoggingResource
-		policyFile      *PolicyFileResource
+		contacts        *TailnetContactsResource
+		devicePosture   *TailnetDevicePostureResource
+		devices         *TailnetDevicesResource
+		dns             *TailnetDNSResource
+		keys            *TailnetKeysResource
+		logging         *TailnetLoggingResource
+		policyFile      *TailnetPolicyFileResource
 		tailnetSettings *TailnetSettingsResource
-		users           *UsersResource
-		webhooks        *WebhooksResource
+		users           *TailnetUsersResource
+		webhooks        *TailnetWebhooksResource
 	}
 
 	// APIError type describes an error as returned by the Tailscale API.
@@ -84,11 +90,16 @@ func init() {
 	}
 }
 
+// ForTailnet returns a client that operates on the specified tailnet.
+func (c *Client) ForTailnet(tailnet string) *TailnetClient {
+	return &TailnetClient{Client: c, tailnet: tailnet}
+}
+
 // init returns a new instance of the Client type that will perform operations against a chosen tailnet and will
 // provide the apiKey for authorization.
 //
 // To use OAuth Client credentials, call [Client].UseOAuth.
-func (c *Client) init() {
+func (c *TailnetClient) init() {
 	c.initOnce.Do(func() {
 		if c.BaseURL == nil {
 			c.BaseURL = defaultBaseURL
@@ -99,16 +110,16 @@ func (c *Client) init() {
 		if c.HTTP == nil {
 			c.HTTP = &http.Client{Timeout: defaultHttpClientTimeout}
 		}
-		c.contacts = &ContactsResource{c}
-		c.devicePosture = &DevicePostureResource{c}
-		c.devices = &DevicesResource{c}
-		c.dns = &DNSResource{c}
-		c.keys = &KeysResource{c}
-		c.logging = &LoggingResource{c}
-		c.policyFile = &PolicyFileResource{c}
+		c.contacts = &TailnetContactsResource{c}
+		c.devicePosture = &TailnetDevicePostureResource{c}
+		c.devices = &TailnetDevicesResource{c}
+		c.dns = &TailnetDNSResource{c}
+		c.keys = &TailnetKeysResource{c}
+		c.logging = &TailnetLoggingResource{c}
+		c.policyFile = &TailnetPolicyFileResource{c}
 		c.tailnetSettings = &TailnetSettingsResource{c}
-		c.users = &UsersResource{c}
-		c.webhooks = &WebhooksResource{c}
+		c.users = &TailnetUsersResource{c}
+		c.webhooks = &TailnetWebhooksResource{c}
 	})
 }
 
@@ -128,61 +139,61 @@ func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
 }
 
 // Contacts() provides access to https://tailscale.com/api#tag/contacts.
-func (c *Client) Contacts() *ContactsResource {
+func (c *TailnetClient) Contacts() *TailnetContactsResource {
 	c.init()
 	return c.contacts
 }
 
 // DevicePosture provides access to https://tailscale.com/api#tag/deviceposture.
-func (c *Client) DevicePosture() *DevicePostureResource {
+func (c *TailnetClient) DevicePosture() *TailnetDevicePostureResource {
 	c.init()
 	return c.devicePosture
 }
 
 // Devices provides access to https://tailscale.com/api#tag/devices.
-func (c *Client) Devices() *DevicesResource {
+func (c *TailnetClient) Devices() *TailnetDevicesResource {
 	c.init()
 	return c.devices
 }
 
 // DNS provides access to https://tailscale.com/api#tag/dns.
-func (c *Client) DNS() *DNSResource {
+func (c *TailnetClient) DNS() *TailnetDNSResource {
 	c.init()
 	return c.dns
 }
 
 // Keys provides access to https://tailscale.com/api#tag/keys.
-func (c *Client) Keys() *KeysResource {
+func (c *TailnetClient) Keys() *TailnetKeysResource {
 	c.init()
 	return c.keys
 }
 
 // Logging provides access to https://tailscale.com/api#tag/logging.
-func (c *Client) Logging() *LoggingResource {
+func (c *TailnetClient) Logging() *TailnetLoggingResource {
 	c.init()
 	return c.logging
 }
 
 // PolicyFile provides access to https://tailscale.com/api#tag/policyfile.
-func (c *Client) PolicyFile() *PolicyFileResource {
+func (c *TailnetClient) PolicyFile() *TailnetPolicyFileResource {
 	c.init()
 	return c.policyFile
 }
 
 // TailnetSettings provides access to https://tailscale.com/api#tag/tailnetsettings.
-func (c *Client) TailnetSettings() *TailnetSettingsResource {
+func (c *TailnetClient) TailnetSettings() *TailnetSettingsResource {
 	c.init()
 	return c.tailnetSettings
 }
 
 // Users provides access to https://tailscale.com/api#tag/users.
-func (c *Client) Users() *UsersResource {
+func (c *TailnetClient) Users() *TailnetUsersResource {
 	c.init()
 	return c.users
 }
 
 // Webhooks provides access to https://tailscale.com/api#tag/webhooks.
-func (c *Client) Webhooks() *WebhooksResource {
+func (c *TailnetClient) Webhooks() *TailnetWebhooksResource {
 	c.init()
 	return c.webhooks
 }
@@ -215,7 +226,7 @@ func requestContentType(ct string) requestOption {
 
 // buildURL builds a url to /api/v2/... using the given pathElements.
 // It url escapes each path element, so the caller doesn't need to worry about that.
-func (c *Client) buildURL(pathElements ...any) *url.URL {
+func (c *TailnetClient) buildURL(pathElements ...any) *url.URL {
 	elem := make([]string, 1, len(pathElements)+1)
 	elem[0] = "/api/v2"
 	for _, pathElement := range pathElements {
@@ -226,15 +237,15 @@ func (c *Client) buildURL(pathElements ...any) *url.URL {
 
 // buildTailnetURL builds a url to /api/v2/tailnet/<tailnet>/... using the given pathElements.
 // It url escapes each path element, so the caller doesn't need to worry about that.
-func (c *Client) buildTailnetURL(pathElements ...any) *url.URL {
+func (c *TailnetClient) buildTailnetURL(pathElements ...any) *url.URL {
 	allElements := make([]any, 2, len(pathElements)+2)
 	allElements[0] = "tailnet"
-	allElements[1] = c.Tailnet
+	allElements[1] = c.tailnet
 	allElements = append(allElements, pathElements...)
 	return c.buildURL(allElements...)
 }
 
-func (c *Client) buildRequest(ctx context.Context, method string, uri *url.URL, opts ...requestOption) (*http.Request, error) {
+func (c *TailnetClient) buildRequest(ctx context.Context, method string, uri *url.URL, opts ...requestOption) (*http.Request, error) {
 	rof := &requestParams{
 		contentType: defaultContentType,
 	}
@@ -285,7 +296,7 @@ func (c *Client) buildRequest(ctx context.Context, method string, uri *url.URL, 
 	return req, nil
 }
 
-func (c *Client) do(req *http.Request, out interface{}) error {
+func (c *TailnetClient) do(req *http.Request, out interface{}) error {
 	res, err := c.HTTP.Do(req)
 	if err != nil {
 		return err

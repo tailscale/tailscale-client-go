@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-// ContactsResource provides access to https://tailscale.com/api#tag/contacts.
-type ContactsResource struct {
-	*Client
+// TailnetContactsResource provides access to https://tailscale.com/api#tag/contacts.
+type TailnetContactsResource struct {
+	*TailnetClient
 }
 
 const (
@@ -43,7 +43,7 @@ type (
 )
 
 // Get retieves the [Contacts] for the tailnet.
-func (cr *ContactsResource) Get(ctx context.Context) (*Contacts, error) {
+func (cr *TailnetContactsResource) Get(ctx context.Context) (*Contacts, error) {
 	req, err := cr.buildRequest(ctx, http.MethodGet, cr.buildTailnetURL("contacts"))
 	if err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (cr *ContactsResource) Get(ctx context.Context) (*Contacts, error) {
 
 // Update updates the email for the specified [ContactType] within the tailnet.
 // If the email address changes, the system will send a verification email to confirm the change.
-func (cr *ContactsResource) Update(ctx context.Context, contactType ContactType, contact UpdateContactRequest) error {
+func (cr *TailnetContactsResource) Update(ctx context.Context, contactType ContactType, contact UpdateContactRequest) error {
 	req, err := cr.buildRequest(ctx, http.MethodPatch, cr.buildTailnetURL("contacts", contactType), requestBody(contact))
 	if err != nil {
 		return err

@@ -5,9 +5,9 @@ import (
 	"net/http"
 )
 
-// DevicePostureResource provides access to https://tailscale.com/api#tag/deviceposture.
-type DevicePostureResource struct {
-	*Client
+// TailnetDevicePostureResource provides access to https://tailscale.com/api#tag/deviceposture.
+type TailnetDevicePostureResource struct {
+	*TailnetClient
 }
 
 const (
@@ -52,7 +52,7 @@ type (
 )
 
 // List lists every configured [PostureIntegration].
-func (pr *DevicePostureResource) ListIntegrations(ctx context.Context) ([]PostureIntegration, error) {
+func (pr *TailnetDevicePostureResource) ListIntegrations(ctx context.Context) ([]PostureIntegration, error) {
 	req, err := pr.buildRequest(ctx, http.MethodGet, pr.buildTailnetURL("posture", "integrations"))
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (pr *DevicePostureResource) ListIntegrations(ctx context.Context) ([]Postur
 }
 
 // CreateIntegration creates a new posture integration, returning the resulting [PostureIntegration].
-func (pr *DevicePostureResource) CreateIntegration(ctx context.Context, intg CreatePostureIntegrationRequest) (*PostureIntegration, error) {
+func (pr *TailnetDevicePostureResource) CreateIntegration(ctx context.Context, intg CreatePostureIntegrationRequest) (*PostureIntegration, error) {
 	req, err := pr.buildRequest(ctx, http.MethodPost, pr.buildTailnetURL("posture", "integrations"), requestBody(intg))
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (pr *DevicePostureResource) CreateIntegration(ctx context.Context, intg Cre
 }
 
 // UpdateIntegration updates the existing posture integration identified by id, returning the resulting [PostureIntegration].
-func (pr *DevicePostureResource) UpdateIntegration(ctx context.Context, id string, intg UpdatePostureIntegrationRequest) (*PostureIntegration, error) {
+func (pr *TailnetDevicePostureResource) UpdateIntegration(ctx context.Context, id string, intg UpdatePostureIntegrationRequest) (*PostureIntegration, error) {
 	req, err := pr.buildRequest(ctx, http.MethodPatch, pr.buildURL("posture", "integrations", id), requestBody(intg))
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func (pr *DevicePostureResource) UpdateIntegration(ctx context.Context, id strin
 }
 
 // DeleteIntegration deletes the posture integration identified by id.
-func (pr *DevicePostureResource) DeleteIntegration(ctx context.Context, id string) error {
+func (pr *TailnetDevicePostureResource) DeleteIntegration(ctx context.Context, id string) error {
 	req, err := pr.buildRequest(ctx, http.MethodDelete, pr.buildURL("posture", "integrations", id))
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func (pr *DevicePostureResource) DeleteIntegration(ctx context.Context, id strin
 }
 
 // GetIntegration gets the posture integration identified by id.
-func (pr *DevicePostureResource) GetIntegration(ctx context.Context, id string) (*PostureIntegration, error) {
+func (pr *TailnetDevicePostureResource) GetIntegration(ctx context.Context, id string) (*PostureIntegration, error) {
 	req, err := pr.buildRequest(ctx, http.MethodGet, pr.buildURL("posture", "integrations", id))
 	if err != nil {
 		return nil, err
