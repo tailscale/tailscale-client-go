@@ -1,39 +1,17 @@
 # tailscale-client-go
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/tailscale/tailscale-client-go.svg)](https://pkg.go.dev/github.com/tailscale/tailscale-client-go)
-[![Go Report Card](https://goreportcard.com/badge/github.com/tailscale/tailscale-client-go)](https://goreportcard.com/report/github.com/tailscale/tailscale-client-go)
-![Github Actions](https://github.com/tailscale/tailscale-client-go/actions/workflows/ci.yml/badge.svg?branch=master)
+A Go client implementation for the [Tailscale API](https://tailscale.com/api).
 
-DEPRECATED - V1 is no longer being maintained. The [V2 SDK](v2) provides a more complete wrapper around the V2 [Tailscale API](https://tailscale.com/api).
+## Current Version
 
----
+ * [V2](https://github.com/tailscale/tailscale-client-go/tree/main/v2#readme): `import "github.com/tailscale/tailscale-client-go/v2"`
 
-A client implementation for the [Tailscale](https://tailscale.com) HTTP API.
-For more details, please see [API documentation](https://github.com/tailscale/tailscale/blob/main/api.md).
+   [![Go Reference](https://pkg.go.dev/badge/github.com/tailscale/tailscale-client-go.svg)](https://pkg.go.dev/github.com/tailscale/tailscale-client-go/v2)
 
-# Example
+## Old versions
 
-```go
-package main
+* V1: `import "github.com/tailscale/tailscale-client-go"`
 
-import (
-	"context"
-	"log"
-	"os"
+   Deprecated, no longer maintained.
 
-	"github.com/tailscale/tailscale-client-go/tailscale"
-)
-
-func main() {
-	apiKey := os.Getenv("TAILSCALE_API_KEY")
-	tailnet := os.Getenv("TAILSCALE_TAILNET")
-
-	client, err := tailscale.NewClient(apiKey, tailnet)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	// List all your devices
-	devices, err := client.Devices(context.Background())
-}
-```
+   [![Go Reference](https://pkg.go.dev/badge/github.com/tailscale/tailscale-client-go.svg)](https://pkg.go.dev/github.com/tailscale/tailscale-client-go)
