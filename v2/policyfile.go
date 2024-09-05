@@ -115,8 +115,7 @@ func (pr *PolicyFileResource) Get(ctx context.Context) (*ACL, error) {
 		return nil, err
 	}
 
-	var resp ACL
-	return &resp, pr.do(req, &resp)
+	return body[ACL](pr, req)
 }
 
 // Raw retrieves the [ACL] that is currently set for the tailnet as a HuJSON string.

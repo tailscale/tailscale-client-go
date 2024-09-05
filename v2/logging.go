@@ -55,8 +55,7 @@ func (lr *LoggingResource) LogstreamConfiguration(ctx context.Context, logType L
 		return nil, err
 	}
 
-	var logStream LogstreamConfiguration
-	return &logStream, lr.do(req, &logStream)
+	return body[LogstreamConfiguration](lr, req)
 }
 
 // SetLogstreamConfiguration sets the tailnet's [LogstreamConfiguration] for the given [LogType].

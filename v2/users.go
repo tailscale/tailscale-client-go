@@ -94,6 +94,5 @@ func (ur *UsersResource) Get(ctx context.Context, id string) (*User, error) {
 		return nil, err
 	}
 
-	var resp User
-	return &resp, ur.do(req, &resp)
+	return body[User](ur, req)
 }

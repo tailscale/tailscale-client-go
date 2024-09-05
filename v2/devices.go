@@ -71,8 +71,7 @@ func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, e
 		return nil, err
 	}
 
-	var result Device
-	return &result, dr.do(req, &result)
+	return body[Device](dr, req)
 }
 
 // List lists every [Device] in the tailnet.
@@ -177,6 +176,5 @@ func (dr *DevicesResource) SubnetRoutes(ctx context.Context, deviceID string) (*
 		return nil, err
 	}
 
-	var result DeviceRoutes
-	return &result, dr.do(req, &result)
+	return body[DeviceRoutes](dr, req)
 }

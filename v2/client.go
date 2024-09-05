@@ -285,7 +285,27 @@ func (c *Client) buildRequest(ctx context.Context, method string, uri *url.URL, 
 	return req, nil
 }
 
-func (c *Client) do(req *http.Request, out interface{}) error {
+// doer is a resource type (such as *ContactsResource) with a do method that
+// sends an HTTP request and decodes its body into out.
+//
+// Concretely, the do method will usually be (*Client).do, as all the Resource
+// types embed a *Client.
+type doer interface {
+	do(req *http.Request, out any) error
+}
+
+// body calls resource.do, passing a *T to do, and returns
+// exactly one non-zero value depending on the result of do.
+func body[T any](resource doer, req *http.Request) (*T, error) {
+	var v T
+	err := resource.do(req, &v)
+	if err != nil {
+		return nil, err
+	}
+	return &v, nil
+}
+
+func (c *Client) do(req *http.Request, out any) error {
 	res, err := c.HTTP.Do(req)
 	if err != nil {
 		return err

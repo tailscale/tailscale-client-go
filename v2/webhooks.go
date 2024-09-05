@@ -74,8 +74,7 @@ func (wr *WebhooksResource) Create(ctx context.Context, request CreateWebhookReq
 		return nil, err
 	}
 
-	var webhook Webhook
-	return &webhook, wr.do(req, &webhook)
+	return body[Webhook](wr, req)
 }
 
 // List lists every [Webhook] in the tailnet.
@@ -100,8 +99,7 @@ func (wr *WebhooksResource) Get(ctx context.Context, endpointID string) (*Webhoo
 		return nil, err
 	}
 
-	var webhook Webhook
-	return &webhook, wr.do(req, &webhook)
+	return body[Webhook](wr, req)
 }
 
 // Update updates an existing webhook's subscriptions. Returns the updated [Webhook] on success.
@@ -113,8 +111,7 @@ func (wr *WebhooksResource) Update(ctx context.Context, endpointID string, subsc
 		return nil, err
 	}
 
-	var webhook Webhook
-	return &webhook, wr.do(req, &webhook)
+	return body[Webhook](wr, req)
 }
 
 // Delete deletes a specific webhook.
@@ -147,6 +144,5 @@ func (wr *WebhooksResource) RotateSecret(ctx context.Context, endpointID string)
 		return nil, err
 	}
 
-	var webhook Webhook
-	return &webhook, wr.do(req, &webhook)
+	return body[Webhook](wr, req)
 }
