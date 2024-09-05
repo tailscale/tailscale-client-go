@@ -49,8 +49,7 @@ func (cr *ContactsResource) Get(ctx context.Context) (*Contacts, error) {
 		return nil, err
 	}
 
-	var contacts Contacts
-	return &contacts, cr.do(req, &contacts)
+	return body[Contacts](cr, req)
 }
 
 // Update updates the email for the specified [ContactType] within the tailnet.

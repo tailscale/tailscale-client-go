@@ -74,8 +74,7 @@ func (pr *DevicePostureResource) CreateIntegration(ctx context.Context, intg Cre
 		return nil, err
 	}
 
-	var resp PostureIntegration
-	return &resp, pr.do(req, &resp)
+	return body[PostureIntegration](pr, req)
 }
 
 // UpdateIntegration updates the existing posture integration identified by id, returning the resulting [PostureIntegration].
@@ -85,8 +84,7 @@ func (pr *DevicePostureResource) UpdateIntegration(ctx context.Context, id strin
 		return nil, err
 	}
 
-	var resp PostureIntegration
-	return &resp, pr.do(req, &resp)
+	return body[PostureIntegration](pr, req)
 }
 
 // DeleteIntegration deletes the posture integration identified by id.
@@ -106,6 +104,5 @@ func (pr *DevicePostureResource) GetIntegration(ctx context.Context, id string) 
 		return nil, err
 	}
 
-	var resp PostureIntegration
-	return &resp, pr.do(req, &resp)
+	return body[PostureIntegration](pr, req)
 }

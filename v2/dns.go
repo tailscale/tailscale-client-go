@@ -133,8 +133,7 @@ func (dr *DNSResource) Preferences(ctx context.Context) (*DNSPreferences, error)
 		return nil, err
 	}
 
-	var resp DNSPreferences
-	return &resp, dr.do(req, &resp)
+	return body[DNSPreferences](dr, req)
 }
 
 // SetPreferences replaces the DNS preferences for the tailnet, specifically, the MagicDNS setting. Note that MagicDNS

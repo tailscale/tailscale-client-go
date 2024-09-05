@@ -51,8 +51,7 @@ func (kr *KeysResource) Create(ctx context.Context, ckr CreateKeyRequest) (*Key,
 		return nil, err
 	}
 
-	var key Key
-	return &key, kr.do(req, &key)
+	return body[Key](kr, req)
 }
 
 // Get returns all information on a [Key] whose identifier matches the one provided. This will not return the
@@ -63,8 +62,7 @@ func (kr *KeysResource) Get(ctx context.Context, id string) (*Key, error) {
 		return nil, err
 	}
 
-	var key Key
-	return &key, kr.do(req, &key)
+	return body[Key](kr, req)
 }
 
 // List returns every [Key] within the tailnet. The only fields set for each [Key] will be its identifier.

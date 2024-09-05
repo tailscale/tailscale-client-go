@@ -60,8 +60,7 @@ func (tsr *TailnetSettingsResource) Get(ctx context.Context) (*TailnetSettings, 
 		return nil, err
 	}
 
-	var resp TailnetSettings
-	return &resp, tsr.do(req, &resp)
+	return body[TailnetSettings](tsr, req)
 }
 
 // Update updates the tailnet settings.
