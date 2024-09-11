@@ -115,6 +115,7 @@ func (c *Client) init() {
 // UseOAuth configures the client to use the specified OAuth credentials.
 // If [Client].HTTP was previously specified, this replaces it.
 func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
+	c.init()
 	oauthConfig := clientcredentials.Config{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
