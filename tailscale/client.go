@@ -1,3 +1,6 @@
+// Copyright (c) David Bond, Tailscale Inc, & Contributors
+// SPDX-License-Identifier: MIT
+
 // Package tailscale contains a basic implementation of a client for the Tailscale HTTP api. Documentation is here:
 // https://github.com/tailscale/tailscale/blob/main/api.md
 package tailscale

@@ -1,3 +1,6 @@
+// Copyright (c) David Bond, Tailscale Inc, & Contributors
+// SPDX-License-Identifier: MIT
+
 # tailscale-client-go/v2
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/tailscale/tailscale-client-go/v2.svg)](https://pkg.go.dev/github.com/tailscale/tailscale-client-go/v2)
