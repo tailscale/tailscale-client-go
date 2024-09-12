@@ -18,7 +18,6 @@ import (
 	"time"
 
 	"github.com/tailscale/hujson"
-	"golang.org/x/oauth2/clientcredentials"
 )
 
 type (
@@ -29,13 +28,13 @@ type (
 		// UserAgent configures the User-Agent HTTP header for requests. Defaults to "tailscale-client-go".
 		UserAgent string
 		// APIKey allows specifying an APIKey to use for authentication.
+		// To use OAuth Client credentials, construct an [http.Client] using [OAuthConfig] and specify that below.
 		APIKey string
 		// Tailnet allows specifying a specific Tailnet by name, to which this Client will connect by default.
 		Tailnet string
 
 		// HTTP is the [http.Client] to use for requests to the API server.
 		// If not specified, a new [http.Client] with a Timeout of 1 minute will be used.
-		// This will be ignored if using [Client].UseOAuth.
 		HTTP *http.Client
 
 		initOnce sync.Once
@@ -72,7 +71,6 @@ const defaultHttpClientTimeout = time.Minute
 const defaultUserAgent = "tailscale-client-go"
 
 var defaultBaseURL *url.URL
-var oauthRelTokenURL *url.URL
 
 func init() {
 	var err error
@@ -80,17 +78,10 @@ func init() {
 	if err != nil {
 		panic(fmt.Errorf("failed to parse defaultBaseURL: %w", err))
 	}
-
-	oauthRelTokenURL, err = url.Parse("/api/v2/oauth/token")
-	if err != nil {
-		panic(fmt.Errorf("failed to parse oauthRelTokenURL: %s", err))
-	}
 }
 
 // init returns a new instance of the Client type that will perform operations against a chosen tailnet and will
 // provide the apiKey for authorization.
-//
-// To use OAuth Client credentials, call [Client].UseOAuth.
 func (c *Client) init() {
 	c.initOnce.Do(func() {
 		if c.BaseURL == nil {
@@ -113,21 +104,6 @@ func (c *Client) init() {
 		c.users = &UsersResource{c}
 		c.webhooks = &WebhooksResource{c}
 	})
-}
-
-// UseOAuth configures the client to use the specified OAuth credentials.
-// If [Client].HTTP was previously specified, this replaces it.
-func (c *Client) UseOAuth(clientID, clientSecret string, scopes []string) {
-	oauthConfig := clientcredentials.Config{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-		TokenURL:     c.BaseURL.ResolveReference(oauthRelTokenURL).String(),
-		Scopes:       scopes,
-	}
-
-	// use context.Background() here, since this is used to refresh the token in the future
-	c.HTTP = oauthConfig.Client(context.Background())
-	c.HTTP.Timeout = defaultHttpClientTimeout
 }
 
 // Contacts() provides access to https://tailscale.com/api#tag/contacts.
