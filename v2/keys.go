@@ -44,6 +44,7 @@ type (
 		Revoked      time.Time       `json:"revoked"`
 		Invalid      bool            `json:"invalid"`
 		Capabilities KeyCapabilities `json:"capabilities"`
+		UserID       string          `json:"userId"`
 	}
 )
 
@@ -70,8 +71,14 @@ func (kr *KeysResource) Get(ctx context.Context, id string) (*Key, error) {
 
 // List returns every [Key] within the tailnet. The only fields set for each [Key] will be its identifier.
 // The keys returned are relative to the user that owns the API key used to authenticate the client.
-func (kr *KeysResource) List(ctx context.Context) ([]Key, error) {
-	req, err := kr.buildRequest(ctx, http.MethodGet, kr.buildTailnetURL("keys"))
+//
+// Specify all to list both user and tailnet level keys.
+func (kr *KeysResource) List(ctx context.Context, all bool) ([]Key, error) {
+	url := kr.buildTailnetURL("keys")
+	if all {
+		url.RawQuery = "all=true"
+	}
+	req, err := kr.buildRequest(ctx, http.MethodGet, url)
 	if err != nil {
 		return nil, err
 	}

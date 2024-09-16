@@ -52,7 +52,7 @@ func main() {
 	oauthScopes := []string{"all:write"}
 	tailnet := os.Getenv("TAILSCALE_TAILNET")
 
-	&tsclient.Client{
+	client := &tsclient.Client{
 		Tailnet: os.Getenv("TAILSCALE_TAILNET"),
 		HTTP:    tsclient.OAuthConfig{
 			ClientID:     os.Getenv("TAILSCALE_OAUTH_CLIENT_ID"),
