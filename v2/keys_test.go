@@ -174,7 +174,7 @@ func TestClient_Keys(t *testing.T) {
 		"keys": expected,
 	}
 
-	actual, err := client.Keys().List(context.Background())
+	actual, err := client.Keys().List(context.Background(), false)
 	assert.NoError(t, err)
 	assert.EqualValues(t, expected, actual)
 	assert.Equal(t, http.MethodGet, server.Method)
