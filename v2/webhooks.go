@@ -23,22 +23,33 @@ const (
 )
 
 const (
-	WebhookNodeCreated                    WebhookSubscriptionType = "nodeCreated"
-	WebhookNodeNeedsApproval              WebhookSubscriptionType = "nodeNeedsApproval"
-	WebhookNodeApproved                   WebhookSubscriptionType = "nodeApproved"
-	WebhookNodeKeyExpiringInOneDay        WebhookSubscriptionType = "nodeKeyExpiringInOneDay"
-	WebhookNodeKeyExpired                 WebhookSubscriptionType = "nodeKeyExpired"
-	WebhookNodeDeleted                    WebhookSubscriptionType = "nodeDeleted"
-	WebhookPolicyUpdate                   WebhookSubscriptionType = "policyUpdate"
-	WebhookUserCreated                    WebhookSubscriptionType = "userCreated"
-	WebhookUserNeedsApproval              WebhookSubscriptionType = "userNeedsApproval"
-	WebhookUserSuspended                  WebhookSubscriptionType = "userSuspended"
-	WebhookUserRestored                   WebhookSubscriptionType = "userRestored"
-	WebhookUserDeleted                    WebhookSubscriptionType = "userDeleted"
-	WebhookUserApproved                   WebhookSubscriptionType = "userApproved"
-	WebhookUserRoleUpdated                WebhookSubscriptionType = "userRoleUpdated"
-	WebhookSubnetIPForwardingNotEnabled   WebhookSubscriptionType = "subnetIPForwardingNotEnabled"
-	WebhookExitNodeIPForwardingNotEnabled WebhookSubscriptionType = "exitNodeIPForwardingNotEnabled"
+	// WebhookCategoryTailnetManagement implies the entire group of events below.
+	// Note that subscribing to WebhookCategoryTailnetManagement will include any
+	// future events added below.
+	WebhookCategoryTailnetManagement WebhookSubscriptionType = "categoryTailnetManagement"
+	WebhookNodeCreated               WebhookSubscriptionType = "nodeCreated"
+	WebhookNodeNeedsApproval         WebhookSubscriptionType = "nodeNeedsApproval"
+	WebhookNodeApproved              WebhookSubscriptionType = "nodeApproved"
+	WebhookNodeKeyExpiringInOneDay   WebhookSubscriptionType = "nodeKeyExpiringInOneDay"
+	WebhookNodeKeyExpired            WebhookSubscriptionType = "nodeKeyExpired"
+	WebhookNodeDeleted               WebhookSubscriptionType = "nodeDeleted"
+	WebhookPolicyUpdate              WebhookSubscriptionType = "policyUpdate"
+	WebhookUserCreated               WebhookSubscriptionType = "userCreated"
+	WebhookUserNeedsApproval         WebhookSubscriptionType = "userNeedsApproval"
+	WebhookUserSuspended             WebhookSubscriptionType = "userSuspended"
+	WebhookUserRestored              WebhookSubscriptionType = "userRestored"
+	WebhookUserDeleted               WebhookSubscriptionType = "userDeleted"
+	WebhookUserApproved              WebhookSubscriptionType = "userApproved"
+	WebhookUserRoleUpdated           WebhookSubscriptionType = "userRoleUpdated"
+)
+
+const (
+	// WebhookCategoryDeviceMisconfigurations implies the entire group of events below.
+	// Note that subscribing to WebhookCategoryDeviceMisconfigurations will include any
+	// future events added below.
+	WebhookCategoryDeviceMisconfigurations WebhookSubscriptionType = "categoryDeviceMisconfigurations"
+	WebhookSubnetIPForwardingNotEnabled    WebhookSubscriptionType = "subnetIPForwardingNotEnabled"
+	WebhookExitNodeIPForwardingNotEnabled  WebhookSubscriptionType = "exitNodeIPForwardingNotEnabled"
 )
 
 type (
