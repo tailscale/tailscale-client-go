@@ -6,7 +6,6 @@ package tsclient
 import (
 	"context"
 	"net/http"
-	"path"
 
 	"golang.org/x/oauth2/clientcredentials"
 )
@@ -33,7 +32,7 @@ func (ocfg OAuthConfig) HTTPClient() *http.Client {
 		ClientID:     ocfg.ClientID,
 		ClientSecret: ocfg.ClientSecret,
 		Scopes:       ocfg.Scopes,
-		TokenURL:     path.Join(baseURL, "/api/v2/oauth/token"),
+		TokenURL:     baseURL + "/api/v2/oauth/token",
 	}
 
 	// Use context.Background() here, since this is used to refresh the token in the future.
