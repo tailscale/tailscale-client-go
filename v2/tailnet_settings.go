@@ -13,41 +13,39 @@ type TailnetSettingsResource struct {
 	*Client
 }
 
-type (
-	// TailnetSettings represents the current settings of a tailnet.
-	// See https://tailscale.com/api#model/tailnetsettings.
-	TailnetSettings struct {
-		DevicesApprovalOn      bool `json:"devicesApprovalOn"`
-		DevicesAutoUpdatesOn   bool `json:"devicesAutoUpdatesOn"`
-		DevicesKeyDurationDays int  `json:"devicesKeyDurationDays"` // days before device key expiry
+// TailnetSettings represents the current settings of a tailnet.
+// See https://tailscale.com/api#model/tailnetsettings.
+type TailnetSettings struct {
+	DevicesApprovalOn      bool `json:"devicesApprovalOn"`
+	DevicesAutoUpdatesOn   bool `json:"devicesAutoUpdatesOn"`
+	DevicesKeyDurationDays int  `json:"devicesKeyDurationDays"` // days before device key expiry
 
-		UsersApprovalOn                        bool                              `json:"usersApprovalOn"`
-		UsersRoleAllowedToJoinExternalTailnets RoleAllowedToJoinExternalTailnets `json:"usersRoleAllowedToJoinExternalTailnets"`
+	UsersApprovalOn                        bool                              `json:"usersApprovalOn"`
+	UsersRoleAllowedToJoinExternalTailnets RoleAllowedToJoinExternalTailnets `json:"usersRoleAllowedToJoinExternalTailnets"`
 
-		NetworkFlowLoggingOn        bool `json:"networkFlowLoggingOn"`
-		RegionalRoutingOn           bool `json:"regionalRoutingOn"`
-		PostureIdentityCollectionOn bool `json:"postureIdentityCollectionOn"`
-	}
+	NetworkFlowLoggingOn        bool `json:"networkFlowLoggingOn"`
+	RegionalRoutingOn           bool `json:"regionalRoutingOn"`
+	PostureIdentityCollectionOn bool `json:"postureIdentityCollectionOn"`
+}
 
-	// UpdateTailnetSettingsRequest is a request to update the settings of a tailnet.
-	// Nil values indicate that the existing setting should be left unchanged.
-	UpdateTailnetSettingsRequest struct {
-		DevicesApprovalOn      *bool `json:"devicesApprovalOn,omitempty"`
-		DevicesAutoUpdatesOn   *bool `json:"devicesAutoUpdatesOn,omitempty"`
-		DevicesKeyDurationDays *int  `json:"devicesKeyDurationDays,omitempty"` // days before device key expiry
+// UpdateTailnetSettingsRequest is a request to update the settings of a tailnet.
+// Nil values indicate that the existing setting should be left unchanged.
+type UpdateTailnetSettingsRequest struct {
+	DevicesApprovalOn      *bool `json:"devicesApprovalOn,omitempty"`
+	DevicesAutoUpdatesOn   *bool `json:"devicesAutoUpdatesOn,omitempty"`
+	DevicesKeyDurationDays *int  `json:"devicesKeyDurationDays,omitempty"` // days before device key expiry
 
-		UsersApprovalOn                        *bool                              `json:"usersApprovalOn,omitempty"`
-		UsersRoleAllowedToJoinExternalTailnets *RoleAllowedToJoinExternalTailnets `json:"usersRoleAllowedToJoinExternalTailnets,omitempty"`
+	UsersApprovalOn                        *bool                              `json:"usersApprovalOn,omitempty"`
+	UsersRoleAllowedToJoinExternalTailnets *RoleAllowedToJoinExternalTailnets `json:"usersRoleAllowedToJoinExternalTailnets,omitempty"`
 
-		NetworkFlowLoggingOn        *bool `json:"networkFlowLoggingOn,omitempty"`
-		RegionalRoutingOn           *bool `json:"regionalRoutingOn,omitempty"`
-		PostureIdentityCollectionOn *bool `json:"postureIdentityCollectionOn,omitempty"`
-	}
+	NetworkFlowLoggingOn        *bool `json:"networkFlowLoggingOn,omitempty"`
+	RegionalRoutingOn           *bool `json:"regionalRoutingOn,omitempty"`
+	PostureIdentityCollectionOn *bool `json:"postureIdentityCollectionOn,omitempty"`
+}
 
-	// RoleAllowedToJoinExternalTailnets constrains which users are allowed to join external tailnets
-	// based on their role.
-	RoleAllowedToJoinExternalTailnets string
-)
+// RoleAllowedToJoinExternalTailnets constrains which users are allowed to join external tailnets
+// based on their role.
+type RoleAllowedToJoinExternalTailnets string
 
 const (
 	RoleAllowedToJoinExternalTailnetsNone   RoleAllowedToJoinExternalTailnets = "none"

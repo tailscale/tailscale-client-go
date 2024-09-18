@@ -52,33 +52,31 @@ const (
 	WebhookExitNodeIPForwardingNotEnabled  WebhookSubscriptionType = "exitNodeIPForwardingNotEnabled"
 )
 
-type (
-	// WebhookProviderType defines the provider type for a Webhook destination.
-	WebhookProviderType string
+// WebhookProviderType defines the provider type for a Webhook destination.
+type WebhookProviderType string
 
-	// WebhookSubscriptionType defines events in tailscale to subscribe a Webhook to.
-	WebhookSubscriptionType string
+// WebhookSubscriptionType defines events in tailscale to subscribe a Webhook to.
+type WebhookSubscriptionType string
 
-	// Webhook type defines a webhook endpoint within a tailnet.
-	Webhook struct {
-		EndpointID       string                    `json:"endpointId"`
-		EndpointURL      string                    `json:"endpointUrl"`
-		ProviderType     WebhookProviderType       `json:"providerType"`
-		CreatorLoginName string                    `json:"creatorLoginName"`
-		Created          time.Time                 `json:"created"`
-		LastModified     time.Time                 `json:"lastModified"`
-		Subscriptions    []WebhookSubscriptionType `json:"subscriptions"`
-		// Secret is only populated on Webhook creation and after secret rotation.
-		Secret *string `json:"secret,omitempty"`
-	}
+// Webhook type defines a webhook endpoint within a tailnet.
+type Webhook struct {
+	EndpointID       string                    `json:"endpointId"`
+	EndpointURL      string                    `json:"endpointUrl"`
+	ProviderType     WebhookProviderType       `json:"providerType"`
+	CreatorLoginName string                    `json:"creatorLoginName"`
+	Created          time.Time                 `json:"created"`
+	LastModified     time.Time                 `json:"lastModified"`
+	Subscriptions    []WebhookSubscriptionType `json:"subscriptions"`
+	// Secret is only populated on Webhook creation and after secret rotation.
+	Secret *string `json:"secret,omitempty"`
+}
 
-	// CreateWebhookRequest type describes the configuration for creating a Webhook.
-	CreateWebhookRequest struct {
-		EndpointURL   string                    `json:"endpointUrl"`
-		ProviderType  WebhookProviderType       `json:"providerType"`
-		Subscriptions []WebhookSubscriptionType `json:"subscriptions"`
-	}
-)
+// CreateWebhookRequest type describes the configuration for creating a Webhook.
+type CreateWebhookRequest struct {
+	EndpointURL   string                    `json:"endpointUrl"`
+	ProviderType  WebhookProviderType       `json:"providerType"`
+	Subscriptions []WebhookSubscriptionType `json:"subscriptions"`
+}
 
 // Create creates a new [Webhook] with the specifications provided in the [CreateWebhookRequest].
 // Returns the created [Webhook] if successful.

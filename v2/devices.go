@@ -15,12 +15,10 @@ type DevicesResource struct {
 	*Client
 }
 
-type (
-	DeviceRoutes struct {
-		Advertised []string `json:"advertisedRoutes"`
-		Enabled    []string `json:"enabledRoutes"`
-	}
-)
+type DeviceRoutes struct {
+	Advertised []string `json:"advertisedRoutes"`
+	Enabled    []string `json:"enabledRoutes"`
+}
 
 // Time wraps a time and allows for unmarshalling timestamps that represent an empty time as an empty string (e.g "")
 // this is used by the tailscale API when it returns devices that have no created date, such as its hello service.
@@ -127,13 +125,11 @@ func (dr *DevicesResource) SetTags(ctx context.Context, deviceID string, tags []
 	return dr.do(req, nil)
 }
 
-type (
-	// DeviceKey type represents the properties of the key of an individual device within
-	// the tailnet.
-	DeviceKey struct {
-		KeyExpiryDisabled bool `json:"keyExpiryDisabled"` // Whether or not this device's key will ever expire.
-	}
-)
+// DeviceKey type represents the properties of the key of an individual device within
+// the tailnet.
+type DeviceKey struct {
+	KeyExpiryDisabled bool `json:"keyExpiryDisabled"` // Whether or not this device's key will ever expire.
+}
 
 // SetKey updates the properties of a device's key.
 func (dr *DevicesResource) SetKey(ctx context.Context, deviceID string, key DeviceKey) error {

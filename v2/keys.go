@@ -14,39 +14,37 @@ type KeysResource struct {
 	*Client
 }
 
-type (
-	// KeyCapabilities describes the capabilities of an authentication key.
-	KeyCapabilities struct {
-		Devices struct {
-			Create struct {
-				Reusable      bool     `json:"reusable"`
-				Ephemeral     bool     `json:"ephemeral"`
-				Tags          []string `json:"tags"`
-				Preauthorized bool     `json:"preauthorized"`
-			} `json:"create"`
-		} `json:"devices"`
-	}
+// KeyCapabilities describes the capabilities of an authentication key.
+type KeyCapabilities struct {
+	Devices struct {
+		Create struct {
+			Reusable      bool     `json:"reusable"`
+			Ephemeral     bool     `json:"ephemeral"`
+			Tags          []string `json:"tags"`
+			Preauthorized bool     `json:"preauthorized"`
+		} `json:"create"`
+	} `json:"devices"`
+}
 
-	// CreateKeyRequest describes the definition of an authentication key to create.
-	CreateKeyRequest struct {
-		Capabilities  KeyCapabilities `json:"capabilities"`
-		ExpirySeconds int64           `json:"expirySeconds"`
-		Description   string          `json:"description"`
-	}
+// CreateKeyRequest describes the definition of an authentication key to create.
+type CreateKeyRequest struct {
+	Capabilities  KeyCapabilities `json:"capabilities"`
+	ExpirySeconds int64           `json:"expirySeconds"`
+	Description   string          `json:"description"`
+}
 
-	// Key describes an authentication key within the tailnet.
-	Key struct {
-		ID           string          `json:"id"`
-		Key          string          `json:"key"`
-		Description  string          `json:"description"`
-		Created      time.Time       `json:"created"`
-		Expires      time.Time       `json:"expires"`
-		Revoked      time.Time       `json:"revoked"`
-		Invalid      bool            `json:"invalid"`
-		Capabilities KeyCapabilities `json:"capabilities"`
-		UserID       string          `json:"userId"`
-	}
-)
+// Key describes an authentication key within the tailnet.
+type Key struct {
+	ID           string          `json:"id"`
+	Key          string          `json:"key"`
+	Description  string          `json:"description"`
+	Created      time.Time       `json:"created"`
+	Expires      time.Time       `json:"expires"`
+	Revoked      time.Time       `json:"revoked"`
+	Invalid      bool            `json:"invalid"`
+	Capabilities KeyCapabilities `json:"capabilities"`
+	UserID       string          `json:"userId"`
+}
 
 // Create creates a new authentication key. Returns the generated [Key] if successful.
 func (kr *KeysResource) Create(ctx context.Context, ckr CreateKeyRequest) (*Key, error) {

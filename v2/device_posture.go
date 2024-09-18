@@ -22,37 +22,35 @@ const (
 	PostureIntegrationProviderSentinelOne PostureIntegrationProvider = "sentinelone"
 )
 
-type (
-	// PostureIntegrationProvider identifies a supported posture integration data provider.
-	PostureIntegrationProvider string
+// PostureIntegrationProvider identifies a supported posture integration data provider.
+type PostureIntegrationProvider string
 
-	// PostureIntegration is a configured posture integration.
-	PostureIntegration struct {
-		ID       string                     `json:"id,omitempty"`
-		Provider PostureIntegrationProvider `json:"provider,omitempty"`
-		CloudID  string                     `json:"cloudId,omitempty"`
-		ClientID string                     `json:"clientId,omitempty"`
-		TenantID string                     `json:"tenantId,omitempty"`
-	}
+// PostureIntegration is a configured posture integration.
+type PostureIntegration struct {
+	ID       string                     `json:"id,omitempty"`
+	Provider PostureIntegrationProvider `json:"provider,omitempty"`
+	CloudID  string                     `json:"cloudId,omitempty"`
+	ClientID string                     `json:"clientId,omitempty"`
+	TenantID string                     `json:"tenantId,omitempty"`
+}
 
-	// CreatePostureIntegrationRequest is a request to create a posture integration.
-	CreatePostureIntegrationRequest struct {
-		Provider     PostureIntegrationProvider `json:"provider,omitempty"`
-		CloudID      string                     `json:"cloudId,omitempty"`
-		ClientID     string                     `json:"clientId,omitempty"`
-		TenantID     string                     `json:"tenantId,omitempty"`
-		ClientSecret string                     `json:"clientSecret,omitempty"`
-	}
+// CreatePostureIntegrationRequest is a request to create a posture integration.
+type CreatePostureIntegrationRequest struct {
+	Provider     PostureIntegrationProvider `json:"provider,omitempty"`
+	CloudID      string                     `json:"cloudId,omitempty"`
+	ClientID     string                     `json:"clientId,omitempty"`
+	TenantID     string                     `json:"tenantId,omitempty"`
+	ClientSecret string                     `json:"clientSecret,omitempty"`
+}
 
-	// UpdatePostureIntegrationRequest is a request to update a posture integration.
-	UpdatePostureIntegrationRequest struct {
-		CloudID  string `json:"cloudId,omitempty"`
-		ClientID string `json:"clientId,omitempty"`
-		TenantID string `json:"tenantId,omitempty"`
-		// ClientSecret may be omitted to preserve the existing value
-		ClientSecret *string `json:"clientSecret,omitempty"`
-	}
-)
+// UpdatePostureIntegrationRequest is a request to update a posture integration.
+type UpdatePostureIntegrationRequest struct {
+	CloudID  string `json:"cloudId,omitempty"`
+	ClientID string `json:"clientId,omitempty"`
+	TenantID string `json:"tenantId,omitempty"`
+	// ClientSecret may be omitted to preserve the existing value
+	ClientSecret *string `json:"clientSecret,omitempty"`
+}
 
 // List lists every configured [PostureIntegration].
 func (pr *DevicePostureResource) ListIntegrations(ctx context.Context) ([]PostureIntegration, error) {
