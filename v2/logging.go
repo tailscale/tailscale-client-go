@@ -27,29 +27,27 @@ const (
 	LogTypeNetwork LogType = "network"
 )
 
-type (
-	// LogstreamConfiguration type defines a log stream entity in tailscale.
-	LogstreamConfiguration struct {
-		LogType         LogType               `json:"logType,omitempty"`
-		DestinationType LogstreamEndpointType `json:"destinationType,omitempty"`
-		URL             string                `json:"url,omitempty"`
-		User            string                `json:"user,omitempty"`
-	}
+// LogstreamConfiguration type defines a log stream entity in tailscale.
+type LogstreamConfiguration struct {
+	LogType         LogType               `json:"logType,omitempty"`
+	DestinationType LogstreamEndpointType `json:"destinationType,omitempty"`
+	URL             string                `json:"url,omitempty"`
+	User            string                `json:"user,omitempty"`
+}
 
-	// SetLogstreamConfigurationRequest type defines a request for setting a LogstreamConfiguration.
-	SetLogstreamConfigurationRequest struct {
-		DestinationType LogstreamEndpointType `json:"destinationType,omitempty"`
-		URL             string                `json:"url,omitempty"`
-		User            string                `json:"user,omitempty"`
-		Token           string                `json:"token,omitempty"`
-	}
+// SetLogstreamConfigurationRequest type defines a request for setting a LogstreamConfiguration.
+type SetLogstreamConfigurationRequest struct {
+	DestinationType LogstreamEndpointType `json:"destinationType,omitempty"`
+	URL             string                `json:"url,omitempty"`
+	User            string                `json:"user,omitempty"`
+	Token           string                `json:"token,omitempty"`
+}
 
-	// LogstreamEndpointType describes the type of the endpoint.
-	LogstreamEndpointType string
+// LogstreamEndpointType describes the type of the endpoint.
+type LogstreamEndpointType string
 
-	// LogType describes the type of logging.
-	LogType string
-)
+// LogType describes the type of logging.
+type LogType string
 
 // LogstreamConfiguration retrieves the tailnet's [LogstreamConfiguration] for the given [LogType].
 func (lr *LoggingResource) LogstreamConfiguration(ctx context.Context, logType LogType) (*LogstreamConfiguration, error) {

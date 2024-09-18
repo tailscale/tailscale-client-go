@@ -13,17 +13,15 @@ type DNSResource struct {
 	*Client
 }
 
-type (
-	// SplitDNSRequest is a map from domain names to a list of nameservers.
-	SplitDNSRequest map[string][]string
+// SplitDNSRequest is a map from domain names to a list of nameservers.
+type SplitDNSRequest map[string][]string
 
-	// SplitDNSResponse is a map from domain names to a list of nameservers.
-	SplitDNSResponse SplitDNSRequest
+// SplitDNSResponse is a map from domain names to a list of nameservers.
+type SplitDNSResponse SplitDNSRequest
 
-	DNSPreferences struct {
-		MagicDNS bool `json:"magicDNS"`
-	}
-)
+type DNSPreferences struct {
+	MagicDNS bool `json:"magicDNS"`
+}
 
 // SetSearchPaths replaces the list of search paths with the list supplied by the user and returns an error otherwise.
 func (dr *DNSResource) SetSearchPaths(ctx context.Context, searchPaths []string) error {

@@ -20,51 +20,49 @@ import (
 	"github.com/tailscale/hujson"
 )
 
-type (
-	// Client is used to perform actions against the Tailscale API.
-	Client struct {
-		// BaseURL is the base URL for accessing the Tailscale API server. Defaults to https://api.tailscale.com.
-		BaseURL *url.URL
-		// UserAgent configures the User-Agent HTTP header for requests. Defaults to "tailscale-client-go".
-		UserAgent string
-		// APIKey allows specifying an APIKey to use for authentication.
-		// To use OAuth Client credentials, construct an [http.Client] using [OAuthConfig] and specify that below.
-		APIKey string
-		// Tailnet allows specifying a specific Tailnet by name, to which this Client will connect by default.
-		Tailnet string
+// Client is used to perform actions against the Tailscale API.
+type Client struct {
+	// BaseURL is the base URL for accessing the Tailscale API server. Defaults to https://api.tailscale.com.
+	BaseURL *url.URL
+	// UserAgent configures the User-Agent HTTP header for requests. Defaults to "tailscale-client-go".
+	UserAgent string
+	// APIKey allows specifying an APIKey to use for authentication.
+	// To use OAuth Client credentials, construct an [http.Client] using [OAuthConfig] and specify that below.
+	APIKey string
+	// Tailnet allows specifying a specific Tailnet by name, to which this Client will connect by default.
+	Tailnet string
 
-		// HTTP is the [http.Client] to use for requests to the API server.
-		// If not specified, a new [http.Client] with a Timeout of 1 minute will be used.
-		HTTP *http.Client
+	// HTTP is the [http.Client] to use for requests to the API server.
+	// If not specified, a new [http.Client] with a Timeout of 1 minute will be used.
+	HTTP *http.Client
 
-		initOnce sync.Once
+	initOnce sync.Once
 
-		// Specific resources
-		contacts        *ContactsResource
-		devicePosture   *DevicePostureResource
-		devices         *DevicesResource
-		dns             *DNSResource
-		keys            *KeysResource
-		logging         *LoggingResource
-		policyFile      *PolicyFileResource
-		tailnetSettings *TailnetSettingsResource
-		users           *UsersResource
-		webhooks        *WebhooksResource
-	}
+	// Specific resources
+	contacts        *ContactsResource
+	devicePosture   *DevicePostureResource
+	devices         *DevicesResource
+	dns             *DNSResource
+	keys            *KeysResource
+	logging         *LoggingResource
+	policyFile      *PolicyFileResource
+	tailnetSettings *TailnetSettingsResource
+	users           *UsersResource
+	webhooks        *WebhooksResource
+}
 
-	// APIError type describes an error as returned by the Tailscale API.
-	APIError struct {
-		Message string         `json:"message"`
-		Data    []APIErrorData `json:"data"`
-		status  int
-	}
+// APIError type describes an error as returned by the Tailscale API.
+type APIError struct {
+	Message string         `json:"message"`
+	Data    []APIErrorData `json:"data"`
+	status  int
+}
 
-	// APIErrorData type describes elements of the data field within errors returned by the Tailscale API.
-	APIErrorData struct {
-		User   string   `json:"user"`
-		Errors []string `json:"errors"`
-	}
-)
+// APIErrorData type describes elements of the data field within errors returned by the Tailscale API.
+type APIErrorData struct {
+	User   string   `json:"user"`
+	Errors []string `json:"errors"`
+}
 
 const defaultContentType = "application/json"
 const defaultHttpClientTimeout = time.Minute

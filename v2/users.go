@@ -37,32 +37,30 @@ const (
 	UserStatusOverBillingLimit UserStatus = "over-billing-limit"
 )
 
-type (
-	// UserType is the type of relation this user has to the tailnet associated with the request.
-	UserType string
+// UserType is the type of relation this user has to the tailnet associated with the request.
+type UserType string
 
-	// UserRole is the role of the user.
-	UserRole string
+// UserRole is the role of the user.
+type UserRole string
 
-	// UserStatus is the status of the user.
-	UserStatus string
+// UserStatus is the status of the user.
+type UserStatus string
 
-	// User is a representation of a user within a tailnet.
-	User struct {
-		ID                 string     `json:"id"`
-		DisplayName        string     `json:"displayName"`
-		LoginName          string     `json:"loginName"`
-		ProfilePicURL      string     `json:"profilePicUrl"`
-		TailnetID          string     `json:"tailnetId"`
-		Created            time.Time  `json:"created"`
-		Type               UserType   `json:"type"`
-		Role               UserRole   `json:"role"`
-		Status             UserStatus `json:"status"`
-		DeviceCount        int        `json:"deviceCount"`
-		LastSeen           time.Time  `json:"lastSeen"`
-		CurrentlyConnected bool       `json:"currentlyConnected"`
-	}
-)
+// User is a representation of a user within a tailnet.
+type User struct {
+	ID                 string     `json:"id"`
+	DisplayName        string     `json:"displayName"`
+	LoginName          string     `json:"loginName"`
+	ProfilePicURL      string     `json:"profilePicUrl"`
+	TailnetID          string     `json:"tailnetId"`
+	Created            time.Time  `json:"created"`
+	Type               UserType   `json:"type"`
+	Role               UserRole   `json:"role"`
+	Status             UserStatus `json:"status"`
+	DeviceCount        int        `json:"deviceCount"`
+	LastSeen           time.Time  `json:"lastSeen"`
+	CurrentlyConnected bool       `json:"currentlyConnected"`
+}
 
 // List lists every [User] of the tailnet. If userType and/or role are provided,
 // the list of users will be filtered by those.
