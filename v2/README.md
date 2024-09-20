@@ -17,14 +17,13 @@ package main
 
 import (
 	"context"
-	"log"
 	"os"
 
 	tsclient "github.com/tailscale/tailscale-client-go/v2"
 )
 
 func main() {
-	&tsclient.Client{
+	client := &tsclient.Client{
 		Tailnet: os.Getenv("TAILSCALE_TAILNET"),
 		APIKey:  os.Getenv("TAILSCALE_API_KEY"),
 	}
@@ -40,18 +39,12 @@ package main
 
 import (
 	"context"
-	"log"
 	"os"
 
 	tsclient "github.com/tailscale/tailscale-client-go/v2"
 )
 
 func main() {
-	oauthClientID := 
-	oauthClientID := 
-	oauthScopes := []string{"all:write"}
-	tailnet := os.Getenv("TAILSCALE_TAILNET")
-
 	client := &tsclient.Client{
 		Tailnet: os.Getenv("TAILSCALE_TAILNET"),
 		HTTP:    tsclient.OAuthConfig{
