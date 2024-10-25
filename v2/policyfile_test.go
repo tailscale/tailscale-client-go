@@ -353,11 +353,13 @@ func TestClient_ACL(t *testing.T) {
 				Allow: []string{"100.60.3.4:22"},
 			},
 		},
+		ETag: "myetag",
 	}
+	server.ResponseHeader.Add("ETag", "myetag")
 
 	acl, err := client.PolicyFile().Get(context.Background())
 	assert.NoError(t, err)
-	assert.EqualValues(t, acl, server.ResponseBody)
+	assert.EqualValues(t, server.ResponseBody, acl)
 	assert.EqualValues(t, http.MethodGet, server.Method)
 	assert.EqualValues(t, "application/json", server.Header.Get("Accept"))
 	assert.EqualValues(t, "/api/v2/tailnet/example.com/acl", server.Path)
@@ -370,10 +372,15 @@ func TestClient_RawACL(t *testing.T) {
 
 	server.ResponseCode = http.StatusOK
 	server.ResponseBody = huJSONACL
+	server.ResponseHeader.Add("ETag", "myetag")
 
+	expectedRawACL := &tsclient.RawACL{
+		HuJSON: string(huJSONACL),
+		ETag:   "myetag",
+	}
 	acl, err := client.PolicyFile().Raw(context.Background())
 	assert.NoError(t, err)
-	assert.EqualValues(t, string(huJSONACL), acl)
+	assert.EqualValues(t, expectedRawACL, acl)
 	assert.EqualValues(t, http.MethodGet, server.Method)
 	assert.EqualValues(t, "application/hujson", server.Header.Get("Accept"))
 	assert.EqualValues(t, "/api/v2/tailnet/example.com/acl", server.Path)

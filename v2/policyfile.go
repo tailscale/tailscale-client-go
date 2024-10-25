@@ -33,6 +33,18 @@ type ACL struct {
 	// This API is subject to change. Internal bug: corp/13986
 	Postures             map[string][]string `json:"postures,omitempty" hujson:"Postures,omitempty"`
 	DefaultSourcePosture []string            `json:"defaultSrcPosture,omitempty" hujson:"DefaultSrcPosture,omitempty"`
+
+	// ETag is the etag corresponding to this version of the ACL
+	ETag string `json:"-"`
+}
+
+// RawACL contains a raw HuJSON ACL and its associated ETag.
+type RawACL struct {
+	// HuJSON is the raw HuJSON ACL string
+	HuJSON string
+
+	// ETag is the etag corresponding to this version of the ACL
+	ETag string
 }
 
 type ACLAutoApprovers struct {
@@ -116,22 +128,31 @@ func (pr *PolicyFileResource) Get(ctx context.Context) (*ACL, error) {
 		return nil, err
 	}
 
-	return body[ACL](pr, req)
+	acl, header, err := bodyWithResponseHeader[ACL](pr, req)
+	if err != nil {
+		return nil, err
+	}
+	acl.ETag = header.Get("Etag")
+	return acl, nil
 }
 
 // Raw retrieves the [ACL] that is currently set for the tailnet as a HuJSON string.
-func (pr *PolicyFileResource) Raw(ctx context.Context) (string, error) {
+func (pr *PolicyFileResource) Raw(ctx context.Context) (*RawACL, error) {
 	req, err := pr.buildRequest(ctx, http.MethodGet, pr.buildTailnetURL("acl"), requestContentType("application/hujson"))
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	var resp []byte
-	if err = pr.do(req, &resp); err != nil {
-		return "", err
+	header, err := pr.doWithResponseHeaders(req, &resp)
+	if err != nil {
+		return nil, err
 	}
 
-	return string(resp), nil
+	return &RawACL{
+		HuJSON: string(resp),
+		ETag:   header.Get("Etag"),
+	}, nil
 }
 
 // Set sets the [ACL] for the tailnet. acl can either be an [ACL], or a HuJSON string.

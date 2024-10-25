@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"maps"
 	"net"
 	"net/http"
 	"net/url"
@@ -28,15 +29,17 @@ type TestServer struct {
 	Body   *bytes.Buffer
 	Header http.Header
 
-	ResponseCode int
-	ResponseBody interface{}
+	ResponseCode   int
+	ResponseBody   interface{}
+	ResponseHeader http.Header
 }
 
 func NewTestHarness(t *testing.T) (*tsclient.Client, *TestServer) {
 	t.Helper()
 
 	testServer := &TestServer{
-		t: t,
+		t:              t,
+		ResponseHeader: make(http.Header),
 	}
 
 	mux := http.NewServeMux()
@@ -80,6 +83,7 @@ func (t *TestServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	_, err := io.Copy(t.Body, r.Body)
 	assert.NoError(t.t, err)
 
+	maps.Copy(w.Header(), t.ResponseHeader)
 	w.WriteHeader(t.ResponseCode)
 	if t.ResponseBody != nil {
 		switch body := t.ResponseBody.(type) {
