@@ -262,36 +262,47 @@ func (c *Client) buildRequest(ctx context.Context, method string, uri *url.URL, 
 	return req, nil
 }
 
-// doer is a resource type (such as *ContactsResource) with a do method that
-// sends an HTTP request and decodes its body into out.
+// doer is a resource type (such as *ContactsResource) with a doWithResponseHeaders
+// method that sends an HTTP request and decodes its body into out.
 //
-// Concretely, the do method will usually be (*Client).do, as all the Resource
-// types embed a *Client.
+// Concretely, the doWithResponseHeaders method will usually be (*Client).doWithResponseHeaders,
+// as all the Resource types embed a *Client.
 type doer interface {
-	do(req *http.Request, out any) error
+	doWithResponseHeaders(req *http.Request, out any) (http.Header, error)
 }
 
 // body calls resource.do, passing a *T to do, and returns
 // exactly one non-zero value depending on the result of do.
 func body[T any](resource doer, req *http.Request) (*T, error) {
+	t, _, err := bodyWithResponseHeader[T](resource, req)
+	return t, err
+}
+
+// bodyWithResponseHeader is like [body] but also returns the response header.
+func bodyWithResponseHeader[T any](resource doer, req *http.Request) (*T, http.Header, error) {
 	var v T
-	err := resource.do(req, &v)
+	header, err := resource.doWithResponseHeaders(req, &v)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return &v, nil
+	return &v, header, nil
 }
 
 func (c *Client) do(req *http.Request, out any) error {
+	_, err := c.doWithResponseHeaders(req, out)
+	return err
+}
+
+func (c *Client) doWithResponseHeaders(req *http.Request, out any) (http.Header, error) {
 	res, err := c.HTTP.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if res.StatusCode >= http.StatusOK && res.StatusCode < http.StatusMultipleChoices {
@@ -299,37 +310,37 @@ func (c *Client) do(req *http.Request, out any) error {
 		// API responses have empty bodies, so we don't want to try and standardize them for
 		// parsing.
 		if out == nil {
-			return nil
+			return res.Header, nil
 		}
 
 		// If we're expected to write result into a []byte, do not attempt to parse it.
 		if o, ok := out.(*[]byte); ok {
 			*o = bytes.Clone(body)
-			return nil
+			return res.Header, nil
 		}
 
 		// If we've got hujson back, convert it to JSON, so we can natively parse it.
 		if !json.Valid(body) {
 			body, err = hujson.Standardize(body)
 			if err != nil {
-				return err
+				return res.Header, err
 			}
 		}
 
-		return json.Unmarshal(body, out)
+		return res.Header, json.Unmarshal(body, out)
 	}
 
 	if res.StatusCode >= http.StatusBadRequest {
 		var apiErr APIError
 		if err := json.Unmarshal(body, &apiErr); err != nil {
-			return err
+			return res.Header, err
 		}
 
 		apiErr.status = res.StatusCode
-		return apiErr
+		return res.Header, apiErr
 	}
 
-	return nil
+	return res.Header, nil
 }
 
 func (err APIError) Error() string {
