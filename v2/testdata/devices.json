@@ -42,7 +42,39 @@
       "nodeKey": "nodekey:30dc3c061ac8b33fdc6d88a4a67b053b01b56930d78cae0cf7a164411d424c0d",
       "os": "linux",
       "updateAvailable": false,
-      "user": "foo@example.com"
+      "user": "foo@example.com",
+      "enabledRoutes": [
+        "10.0.0.0/16",
+        "192.168.1.0/24"
+      ],
+      "advertisedRoutes": [
+        "10.0.0.0/16",
+        "192.168.1.0/24"
+      ],
+      "clientConnectivity": {
+        "endpoints": [
+          "199.9.14.201:59128",
+          "192.68.0.21:59128"
+        ],
+        "latency": {
+          "Dallas": {
+            "latencyMs": 60.463043
+          },
+          "New York City": {
+            "preferred": true,
+            "latencyMs": 31.323811
+          }
+        },
+        "mappingVariesByDestIP": false,
+        "clientSupports": {
+          "hairPinning": false,
+          "ipv6": true,
+          "pcp": false,
+          "pmp": false,
+          "udp": false,
+          "upnp": false
+        }
+      }
     }
   ]
 }
