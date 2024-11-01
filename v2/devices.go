@@ -44,25 +44,57 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type DeviceClientConnectivityClientSupports struct {
+	HairPinning bool `json:"hairPinning"`
+	IPv6        bool `json:"ipv6"`
+	PCP         bool `json:"pcp"`
+	PMP         bool `json:"pmp"`
+	UDP         bool `json:"udp"`
+	UPnP        bool `json:"upnp"`
+}
+
+type DeviceClientConnectivityLocationLatency struct {
+	Preferred bool    `json:"preferred"`
+	LatencyMs float64 `json:"latencyMs"`
+}
+
+type DeviceClientConnectivity struct {
+	Endpoints             []string                                           `json:"endpoints"`
+	MappingVariesByDestIP bool                                               `json:"mappingVariesByDestIP"`
+	Latency               map[string]DeviceClientConnectivityLocationLatency `json:"latency"`
+	ClientSupports        DeviceClientConnectivityClientSupports             `json:"clientSupports"`
+}
+
+type DevicePostureIdentity struct {
+	Disabled      bool     `json:"disabled"`
+	SerialNumbers []string `json:"serialNumbers"`
+}
+
 type Device struct {
-	Addresses                 []string `json:"addresses"`
-	Name                      string   `json:"name"`
-	ID                        string   `json:"id"`
-	Authorized                bool     `json:"authorized"`
-	User                      string   `json:"user"`
-	Tags                      []string `json:"tags"`
-	KeyExpiryDisabled         bool     `json:"keyExpiryDisabled"`
-	BlocksIncomingConnections bool     `json:"blocksIncomingConnections"`
-	ClientVersion             string   `json:"clientVersion"`
-	Created                   Time     `json:"created"`
-	Expires                   Time     `json:"expires"`
-	Hostname                  string   `json:"hostname"`
-	IsExternal                bool     `json:"isExternal"`
-	LastSeen                  Time     `json:"lastSeen"`
-	MachineKey                string   `json:"machineKey"`
-	NodeKey                   string   `json:"nodeKey"`
-	OS                        string   `json:"os"`
-	UpdateAvailable           bool     `json:"updateAvailable"`
+	Addresses                 []string                 `json:"addresses"`
+	Name                      string                   `json:"name"`
+	ID                        string                   `json:"id"`
+	Authorized                bool                     `json:"authorized"`
+	User                      string                   `json:"user"`
+	Tags                      []string                 `json:"tags"`
+	KeyExpiryDisabled         bool                     `json:"keyExpiryDisabled"`
+	BlocksIncomingConnections bool                     `json:"blocksIncomingConnections"`
+	ClientVersion             string                   `json:"clientVersion"`
+	Created                   Time                     `json:"created"`
+	Expires                   Time                     `json:"expires"`
+	Hostname                  string                   `json:"hostname"`
+	IsExternal                bool                     `json:"isExternal"`
+	LastSeen                  Time                     `json:"lastSeen"`
+	MachineKey                string                   `json:"machineKey"`
+	NodeKey                   string                   `json:"nodeKey"`
+	OS                        string                   `json:"os"`
+	UpdateAvailable           bool                     `json:"updateAvailable"`
+	EnabledRoutes             []string                 `json:"enabledRoutes"`
+	AdvertisedRoutes          []string                 `json:"advertisedRoutes"`
+	ClientConnectivity        DeviceClientConnectivity `json:"clientConnectivity"`
+	TailnetLockError          string                   `json:"tailnetLockError"`
+	TailnetLockKey            string                   `json:"tailnetLockKey"`
+	PostureIdentity           DevicePostureIdentity    `json:"postureIdentity"`
 }
 
 // Get gets the [Device] identified by deviceID.
