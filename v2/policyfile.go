@@ -95,7 +95,7 @@ type ACLDERPNode struct {
 	STUNPort         int    `json:"stunPort,omitempty" hujson:"STUNPort,omitempty"`
 	STUNOnly         bool   `json:"stunOnly,omitempty" hujson:"STUNOnly,omitempty"`
 	DERPPort         int    `json:"derpPort,omitempty" hujson:"DERPPort,omitempty"`
-	InsecureForTests bool   `json:"insecureForRests,omitempty" hujson:"InsecureForTests,omitempty"`
+	InsecureForTests bool   `json:"InsecureForTests,omitempty" hujson:"InsecureForTests,omitempty"`
 	STUNTestIP       string `json:"stunTestIP,omitempty" hujson:"STUNTestIP,omitempty"`
 }
 
