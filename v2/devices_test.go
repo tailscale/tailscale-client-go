@@ -61,6 +61,8 @@ func TestClient_Devices_Get(t *testing.T) {
 		MachineKey:                "mkey:test",
 		NodeKey:                   "nodekey:test",
 		OS:                        "windows",
+		TailnetLockError:          "test error",
+		TailnetLockKey:            "tlpub:test",
 		UpdateAvailable:           true,
 	}
 
