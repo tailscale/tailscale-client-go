@@ -62,6 +62,8 @@ type Device struct {
 	MachineKey                string   `json:"machineKey"`
 	NodeKey                   string   `json:"nodeKey"`
 	OS                        string   `json:"os"`
+	TailnetLockError          string   `json:"tailnetLockError"`
+	TailnetLockKey            string   `json:"tailnetLockKey"`
 	UpdateAvailable           bool     `json:"updateAvailable"`
 }
 
