@@ -115,6 +115,18 @@ func (dr *DevicesResource) Delete(ctx context.Context, deviceID string) error {
 	return dr.do(req, nil)
 }
 
+// SetName updates the name of the device by deviceID.
+func (dr *DevicesResource) SetName(ctx context.Context, deviceID, name string) error {
+	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "name"), requestBody(map[string]string{
+		"name": name,
+	}))
+	if err != nil {
+		return err
+	}
+
+	return dr.do(req, nil)
+}
+
 // SetTags updates the tags of the device identified by deviceID.
 func (dr *DevicesResource) SetTags(ctx context.Context, deviceID string, tags []string) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "tags"), requestBody(map[string][]string{
