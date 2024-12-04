@@ -245,6 +245,24 @@ func TestClient_SetDeviceAuthorized(t *testing.T) {
 	}
 }
 
+func TestClient_SetDeviceName(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	const deviceID = "test"
+	name := "test"
+
+	assert.NoError(t, client.Devices().SetName(context.Background(), deviceID, name))
+	assert.EqualValues(t, http.MethodPost, server.Method)
+	assert.EqualValues(t, "/api/v2/device/"+deviceID+"/name", server.Path)
+
+	body := make(map[string]string)
+	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &body))
+	assert.EqualValues(t, name, body["name"])
+}
+
 func TestClient_SetDeviceTags(t *testing.T) {
 	t.Parallel()
 
