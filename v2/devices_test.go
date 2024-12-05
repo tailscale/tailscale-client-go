@@ -77,6 +77,35 @@ func TestClient_Devices_Get(t *testing.T) {
 	assert.EqualValues(t, expectedDevice, actualDevice)
 }
 
+func TestClient_Devices_GetPostureAttributes(t *testing.T) {
+	t.Parallel()
+
+	expectedAttributes := &tsclient.DevicePostureAttributes{
+		Attributes: map[string]interface{}{
+			"custom:key":          "value",
+			"node:os":             "linux",
+			"node:osVersion":      "5.19.0-42-generic",
+			"node:tsReleaseTrack": "stable",
+			"node:tsVersion":      "1.40.0",
+			"node:tsAutoUpdate":   false,
+		},
+		Expiries: map[string]tsclient.Time{
+			"custom:key": {time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC)},
+		},
+	}
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+	server.ResponseBody = expectedAttributes
+
+	actualAttributes, err := client.Devices().GetPostureAttributes(context.Background(), "testid")
+	assert.NoError(t, err)
+	assert.Equal(t, http.MethodGet, server.Method)
+	assert.Equal(t, "/api/v2/device/testid/attributes", server.Path)
+
+	assert.EqualValues(t, expectedAttributes, actualAttributes)
+}
+
 func TestClient_Devices_List(t *testing.T) {
 	t.Parallel()
 

@@ -67,6 +67,11 @@ type Device struct {
 	UpdateAvailable           bool     `json:"updateAvailable"`
 }
 
+type DevicePostureAttributes struct {
+	Attributes map[string]any  `json:"attributes"`
+	Expiries   map[string]Time `json:"expiries"`
+}
+
 // Get gets the [Device] identified by deviceID.
 func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildURL("device", deviceID))
@@ -75,6 +80,15 @@ func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, e
 	}
 
 	return body[Device](dr, req)
+}
+
+func (dr *DevicesResource) GetPostureAttributes(ctx context.Context, deviceID string) (*DevicePostureAttributes, error) {
+	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildURL("device", deviceID, "attributes"))
+	if err != nil {
+		return nil, err
+	}
+
+	return body[DevicePostureAttributes](dr, req)
 }
 
 // List lists every [Device] in the tailnet.
