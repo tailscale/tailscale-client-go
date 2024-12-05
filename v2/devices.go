@@ -72,6 +72,12 @@ type DevicePostureAttributes struct {
 	Expiries   map[string]Time `json:"expiries"`
 }
 
+type DevicePostureAttributeRequest struct {
+	Value   any    `json:"value"`
+	Expiry  Time   `json:"expiry"`
+	Comment string `json:"comment"`
+}
+
 // Get gets the [Device] identified by deviceID.
 func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildURL("device", deviceID))
@@ -82,6 +88,7 @@ func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, e
 	return body[Device](dr, req)
 }
 
+// GetPostureAttributes retrieves the posture attributes of the device identified by deviceID.
 func (dr *DevicesResource) GetPostureAttributes(ctx context.Context, deviceID string) (*DevicePostureAttributes, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildURL("device", deviceID, "attributes"))
 	if err != nil {
@@ -146,6 +153,16 @@ func (dr *DevicesResource) SetTags(ctx context.Context, deviceID string, tags []
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "tags"), requestBody(map[string][]string{
 		"tags": tags,
 	}))
+	if err != nil {
+		return err
+	}
+
+	return dr.do(req, nil)
+}
+
+// SetPostureAttribute sets the posture attribute of the device identified by deviceID.
+func (dr *DevicesResource) SetPostureAttribute(ctx context.Context, deviceID, attributeKey string, request DevicePostureAttributeRequest) error {
+	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "attributes", attributeKey), requestBody(request))
 	if err != nil {
 		return err
 	}
