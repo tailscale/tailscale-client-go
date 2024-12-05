@@ -77,6 +77,35 @@ func TestClient_Devices_Get(t *testing.T) {
 	assert.EqualValues(t, expectedDevice, actualDevice)
 }
 
+func TestClient_Devices_GetPostureAttributes(t *testing.T) {
+	t.Parallel()
+
+	expectedAttributes := &tsclient.DevicePostureAttributes{
+		Attributes: map[string]interface{}{
+			"custom:key":          "value",
+			"node:os":             "linux",
+			"node:osVersion":      "5.19.0-42-generic",
+			"node:tsReleaseTrack": "stable",
+			"node:tsVersion":      "1.40.0",
+			"node:tsAutoUpdate":   false,
+		},
+		Expiries: map[string]tsclient.Time{
+			"custom:key": {time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC)},
+		},
+	}
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+	server.ResponseBody = expectedAttributes
+
+	actualAttributes, err := client.Devices().GetPostureAttributes(context.Background(), "testid")
+	assert.NoError(t, err)
+	assert.Equal(t, http.MethodGet, server.Method)
+	assert.Equal(t, "/api/v2/device/testid/attributes", server.Path)
+
+	assert.EqualValues(t, expectedAttributes, actualAttributes)
+}
+
 func TestClient_Devices_List(t *testing.T) {
 	t.Parallel()
 
@@ -245,6 +274,24 @@ func TestClient_SetDeviceAuthorized(t *testing.T) {
 	}
 }
 
+func TestClient_SetDeviceName(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+
+	const deviceID = "test"
+	name := "test"
+
+	assert.NoError(t, client.Devices().SetName(context.Background(), deviceID, name))
+	assert.EqualValues(t, http.MethodPost, server.Method)
+	assert.EqualValues(t, "/api/v2/device/"+deviceID+"/name", server.Path)
+
+	body := make(map[string]string)
+	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &body))
+	assert.EqualValues(t, name, body["name"])
+}
+
 func TestClient_SetDeviceTags(t *testing.T) {
 	t.Parallel()
 
@@ -261,6 +308,32 @@ func TestClient_SetDeviceTags(t *testing.T) {
 	body := make(map[string][]string)
 	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &body))
 	assert.EqualValues(t, tags, body["tags"])
+}
+
+func TestClient_SetDevicePostureAttributes(t *testing.T) {
+	t.Parallel()
+
+	client, server := NewTestHarness(t)
+	server.ResponseCode = http.StatusOK
+	server.ResponseBody = nil
+
+	const deviceID = "test"
+	const attributeKey = "custom:test"
+
+	setRequest := tsclient.DevicePostureAttributeRequest{
+		Value:   "value",
+		Expiry:  tsclient.Time{time.Date(2022, 2, 10, 11, 50, 23, 0, time.UTC)},
+		Comment: "test",
+	}
+
+	assert.NoError(t, client.Devices().SetPostureAttribute(context.Background(), deviceID, attributeKey, setRequest))
+	assert.EqualValues(t, http.MethodPost, server.Method)
+	assert.EqualValues(t, "/api/v2/device/"+deviceID+"/attributes/"+attributeKey, server.Path)
+
+	var receivedRequest tsclient.DevicePostureAttributeRequest
+	err := json.Unmarshal(server.Body.Bytes(), &receivedRequest)
+	assert.NoError(t, err)
+	assert.EqualValues(t, setRequest, receivedRequest)
 }
 
 func TestClient_SetDeviceKey(t *testing.T) {
@@ -282,8 +355,8 @@ func TestClient_SetDeviceKey(t *testing.T) {
 	var actual tsclient.DeviceKey
 	assert.NoError(t, json.Unmarshal(server.Body.Bytes(), &actual))
 	assert.EqualValues(t, expected, actual)
-
 }
+
 func TestClient_SetDeviceIPv4Address(t *testing.T) {
 	t.Parallel()
 
