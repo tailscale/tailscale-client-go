@@ -464,17 +464,15 @@ type (
 	}
 
 	ACLDERPNode struct {
-		Name             string `json:"name" hujson:"Name"`
-		RegionID         int    `json:"regionID" hujson:"RegionID"`
-		HostName         string `json:"hostName" hujson:"HostName"`
-		CertName         string `json:"certName,omitempty" hujson:"CertName,omitempty"`
-		IPv4             string `json:"ipv4,omitempty" hujson:"IPv4,omitempty"`
-		IPv6             string `json:"ipv6,omitempty" hujson:"IPv6,omitempty"`
-		STUNPort         int    `json:"stunPort,omitempty" hujson:"STUNPort,omitempty"`
-		STUNOnly         bool   `json:"stunOnly,omitempty" hujson:"STUNOnly,omitempty"`
-		DERPPort         int    `json:"derpPort,omitempty" hujson:"DERPPort,omitempty"`
-		InsecureForTests bool   `json:"insecureForRests,omitempty" hujson:"InsecureForTests,omitempty"`
-		STUNTestIP       string `json:"stunTestIP,omitempty" hujson:"STUNTestIP,omitempty"`
+		Name     string `json:"name" hujson:"Name"`
+		RegionID int    `json:"regionID" hujson:"RegionID"`
+		HostName string `json:"hostName" hujson:"HostName"`
+		CertName string `json:"certName,omitempty" hujson:"CertName,omitempty"`
+		IPv4     string `json:"ipv4,omitempty" hujson:"IPv4,omitempty"`
+		IPv6     string `json:"ipv6,omitempty" hujson:"IPv6,omitempty"`
+		STUNPort int    `json:"stunPort,omitempty" hujson:"STUNPort,omitempty"`
+		STUNOnly bool   `json:"stunOnly,omitempty" hujson:"STUNOnly,omitempty"`
+		DERPPort int    `json:"derpPort,omitempty" hujson:"DERPPort,omitempty"`
 	}
 
 	ACLSSH struct {
