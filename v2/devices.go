@@ -98,6 +98,16 @@ func (dr *DevicesResource) GetPostureAttributes(ctx context.Context, deviceID st
 	return body[DevicePostureAttributes](dr, req)
 }
 
+// SetPostureAttribute sets the posture attribute of the device identified by deviceID.
+func (dr *DevicesResource) SetPostureAttribute(ctx context.Context, deviceID, attributeKey string, request DevicePostureAttributeRequest) error {
+	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "attributes", attributeKey), requestBody(request))
+	if err != nil {
+		return err
+	}
+
+	return dr.do(req, nil)
+}
+
 // List lists every [Device] in the tailnet.
 func (dr *DevicesResource) List(ctx context.Context) ([]Device, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildTailnetURL("devices"))
@@ -136,7 +146,7 @@ func (dr *DevicesResource) Delete(ctx context.Context, deviceID string) error {
 	return dr.do(req, nil)
 }
 
-// SetName updates the name of the device by deviceID.
+// SetName updates the name of the device identified by deviceID.
 func (dr *DevicesResource) SetName(ctx context.Context, deviceID, name string) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "name"), requestBody(map[string]string{
 		"name": name,
@@ -153,16 +163,6 @@ func (dr *DevicesResource) SetTags(ctx context.Context, deviceID string, tags []
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "tags"), requestBody(map[string][]string{
 		"tags": tags,
 	}))
-	if err != nil {
-		return err
-	}
-
-	return dr.do(req, nil)
-}
-
-// SetPostureAttribute sets the posture attribute of the device identified by deviceID.
-func (dr *DevicesResource) SetPostureAttribute(ctx context.Context, deviceID, attributeKey string, request DevicePostureAttributeRequest) error {
-	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "attributes", attributeKey), requestBody(request))
 	if err != nil {
 		return err
 	}
