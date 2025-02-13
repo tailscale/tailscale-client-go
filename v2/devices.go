@@ -47,7 +47,8 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 type Device struct {
 	Addresses                 []string `json:"addresses"`
 	Name                      string   `json:"name"`
-	ID                        string   `json:"id"`
+	ID                        string   `json:"id"`     // The legacy identifier for a device. Use NodeId instead.
+	NodeID                    string   `json:"nodeId"` // The preferred identifier for a device.
 	Authorized                bool     `json:"authorized"`
 	User                      string   `json:"user"`
 	Tags                      []string `json:"tags"`
@@ -79,6 +80,8 @@ type DevicePostureAttributeRequest struct {
 }
 
 // Get gets the [Device] identified by deviceID.
+//
+// Using the device's `NodeID` is preferred, but its numeric `ID` value can also be used.
 func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildURL("device", deviceID))
 	if err != nil {
@@ -89,6 +92,8 @@ func (dr *DevicesResource) Get(ctx context.Context, deviceID string) (*Device, e
 }
 
 // GetPostureAttributes retrieves the posture attributes of the device identified by deviceID.
+//
+// Using the device's `NodeID` is preferred, but its numeric `ID` value can also be used.
 func (dr *DevicesResource) GetPostureAttributes(ctx context.Context, deviceID string) (*DevicePostureAttributes, error) {
 	req, err := dr.buildRequest(ctx, http.MethodGet, dr.buildURL("device", deviceID, "attributes"))
 	if err != nil {
@@ -99,6 +104,8 @@ func (dr *DevicesResource) GetPostureAttributes(ctx context.Context, deviceID st
 }
 
 // SetPostureAttribute sets the posture attribute of the device identified by deviceID.
+//
+// Using the device's `NodeID` is preferred, but its numeric `ID` value can also be used.
 func (dr *DevicesResource) SetPostureAttribute(ctx context.Context, deviceID, attributeKey string, request DevicePostureAttributeRequest) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "attributes", attributeKey), requestBody(request))
 	if err != nil {
@@ -137,6 +144,8 @@ func (dr *DevicesResource) SetAuthorized(ctx context.Context, deviceID string, a
 }
 
 // Delete deletes the device identified by deviceID.
+//
+// Using the device's `NodeID` is preferred, but its numeric `ID` value can also be used.
 func (dr *DevicesResource) Delete(ctx context.Context, deviceID string) error {
 	req, err := dr.buildRequest(ctx, http.MethodDelete, dr.buildURL("device", deviceID))
 	if err != nil {
@@ -147,6 +156,8 @@ func (dr *DevicesResource) Delete(ctx context.Context, deviceID string) error {
 }
 
 // SetName updates the name of the device identified by deviceID.
+//
+// Using the device's `NodeID` is preferred, but its numeric `ID` value can also be used.
 func (dr *DevicesResource) SetName(ctx context.Context, deviceID, name string) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "name"), requestBody(map[string]string{
 		"name": name,
@@ -159,6 +170,8 @@ func (dr *DevicesResource) SetName(ctx context.Context, deviceID, name string) e
 }
 
 // SetTags updates the tags of the device identified by deviceID.
+//
+// Using the device's `NodeID` is preferred, but its numeric `ID` value can also be used.
 func (dr *DevicesResource) SetTags(ctx context.Context, deviceID string, tags []string) error {
 	req, err := dr.buildRequest(ctx, http.MethodPost, dr.buildURL("device", deviceID, "tags"), requestBody(map[string][]string{
 		"tags": tags,
