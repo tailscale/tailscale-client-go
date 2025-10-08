@@ -422,6 +422,7 @@ func TestClient_Devices(t *testing.T) {
 				Expires:                   tailscale.Time{time.Date(2022, 8, 9, 11, 50, 23, 0, time.UTC)},
 				Hostname:                  "test",
 				IsExternal:                false,
+				ConnectedToControl:        false,
 				LastSeen:                  tailscale.Time{time.Date(2022, 3, 9, 20, 3, 42, 0, time.UTC)},
 				MachineKey:                "mkey:test",
 				NodeKey:                   "nodekey:test",

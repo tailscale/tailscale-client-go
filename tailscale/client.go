@@ -721,6 +721,7 @@ type Device struct {
 	Expires                   Time     `json:"expires"`
 	Hostname                  string   `json:"hostname"`
 	IsExternal                bool     `json:"isExternal"`
+	ConnectedToControl        bool     `json:"connectedToControl"`
 	LastSeen                  Time     `json:"lastSeen"`
 	MachineKey                string   `json:"machineKey"`
 	NodeKey                   string   `json:"nodeKey"`
